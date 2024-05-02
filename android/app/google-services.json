@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "201099847936",
+    "project_id": "jar-app-2kol48",
+    "storage_bucket": "jar-app-2kol48.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201099847936:android:08b4f6b3c3cf6dbd7aabe5",
+        "android_client_info": {
+          "package_name": "com.copuchin.jarapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201099847936-qr4ugv1c0vj64khk3lpruui167ng49qt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.copuchin.jarapp",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "201099847936-3o54d1dtjdpb0273jqgmhmfcv03i7dh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmMAUtCq-BY3bNjARGTEG5GRYCgkhPIgw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201099847936-3o54d1dtjdpb0273jqgmhmfcv03i7dh4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "201099847936-5voo8ptpsnptpdqkj3thqu1loqi2e94j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.copuchin.jarapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
