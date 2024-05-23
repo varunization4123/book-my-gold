@@ -1,29 +1,25 @@
 import 'dart:convert';
+import '../cloud_functions/cloud_functions.dart';
+
+import 'package:flutter/foundation.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
 import 'api_manager.dart';
 
 export 'api_manager.dart' show ApiCallResponse;
 
-const _kPrivateApiFunctionName = 'ffPrivateApiCall';
+const _kPrivateApiFunctionName = 'allThatGlowsAintGlitter';
 
 class GoldPriceCall {
   static Future<ApiCallResponse> call() async {
-    return ApiManager.instance.makeApiCall(
-      callName: 'Gold Price',
-      apiUrl: 'https://www.goldapi.io/api/XAU/INR',
-      callType: ApiCallType.GET,
-      headers: {
-        'x-access-token': 'goldapi-f82cu2slurzazu4-io',
-        'Content-Type': 'application/json',
+    final response = await makeCloudCall(
+      _kPrivateApiFunctionName,
+      {
+        'callName': 'GoldPriceCall',
+        'variables': {},
       },
-      params: {},
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: false,
-      cache: false,
-      alwaysAllowBody: false,
     );
+    return ApiCallResponse.fromCloudCallResponse(response);
   }
 
   static double? price(dynamic response) => castToType<double>(getJsonField(
@@ -70,6 +66,9 @@ String _serializeList(List? list) {
   try {
     return json.encode(list);
   } catch (_) {
+    if (kDebugMode) {
+      print("List serialization failed. Returning empty list.");
+    }
     return '[]';
   }
 }
@@ -79,6 +78,9 @@ String _serializeJson(dynamic jsonVar, [bool isList = false]) {
   try {
     return json.encode(jsonVar);
   } catch (_) {
+    if (kDebugMode) {
+      print("Json serialization failed. Returning empty json.");
+    }
     return isList ? '[]' : '{}';
   }
 }

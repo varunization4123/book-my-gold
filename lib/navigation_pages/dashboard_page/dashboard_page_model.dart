@@ -1,3 +1,5 @@
+import '/backend/api_requests/api_calls.dart';
+import '/backend/backend.dart';
 import '/components/custom_graph_widget.dart';
 import '/components/grap_option_widget.dart';
 import '/components/s_i_p_card_widget.dart';
@@ -7,9 +9,19 @@ import 'dashboard_page_widget.dart' show DashboardPageWidget;
 import 'package:flutter/material.dart';
 
 class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
+  ///  Local state fields for this page.
+
+  double? goldPrice = 6000.0;
+
+  double? goldDifference = 0.0;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  // Stores action output result for [Backend Call - API (Gold Price)] action in DashboardPage widget.
+  ApiCallResponse? goldPriceFromApi;
+  // Stores action output result for [Firestore Query - Query a collection] action in DashboardPage widget.
+  AppSettingsRecord? readAppSettings;
   // Model for CustomGraph component.
   late CustomGraphModel customGraphModel;
   // Model for GrapOption component.
@@ -40,6 +52,14 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
   late SponsoredCardModel sponsoredCardModel3;
   // Model for SponsoredCard component.
   late SponsoredCardModel sponsoredCardModel4;
+  // Model for SponsoredCard component.
+  late SponsoredCardModel sponsoredCardModel5;
+  // Model for SponsoredCard component.
+  late SponsoredCardModel sponsoredCardModel6;
+  // Model for SponsoredCard component.
+  late SponsoredCardModel sponsoredCardModel7;
+  // Model for SponsoredCard component.
+  late SponsoredCardModel sponsoredCardModel8;
 
   @override
   void initState(BuildContext context) {
@@ -58,6 +78,10 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
     sponsoredCardModel2 = createModel(context, () => SponsoredCardModel());
     sponsoredCardModel3 = createModel(context, () => SponsoredCardModel());
     sponsoredCardModel4 = createModel(context, () => SponsoredCardModel());
+    sponsoredCardModel5 = createModel(context, () => SponsoredCardModel());
+    sponsoredCardModel6 = createModel(context, () => SponsoredCardModel());
+    sponsoredCardModel7 = createModel(context, () => SponsoredCardModel());
+    sponsoredCardModel8 = createModel(context, () => SponsoredCardModel());
   }
 
   @override
@@ -78,5 +102,9 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
     sponsoredCardModel2.dispose();
     sponsoredCardModel3.dispose();
     sponsoredCardModel4.dispose();
+    sponsoredCardModel5.dispose();
+    sponsoredCardModel6.dispose();
+    sponsoredCardModel7.dispose();
+    sponsoredCardModel8.dispose();
   }
 }

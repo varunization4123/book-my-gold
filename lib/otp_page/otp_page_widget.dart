@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'otp_page_model.dart';
 export 'otp_page_model.dart';
@@ -119,7 +120,7 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
               size: 30.0,
             ),
             onPressed: () async {
-              context.pop();
+              context.safePop();
             },
           ),
           title: Text(
@@ -271,7 +272,7 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       FlutterFlowTimer(
-                                        initialTime: _model.timerMilliseconds,
+                                        initialTime: _model.timerInitialTimeMs,
                                         getDisplayTime: (value) =>
                                             StopWatchTimer.getDisplayTime(
                                           value,
@@ -375,6 +376,9 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                               .validate()) {
                                         return;
                                       }
+                                      setState(() {
+                                        _model.isLoading = true;
+                                      });
                                       GoRouter.of(context).prepareAuthEvent();
                                       final smsCodeVal =
                                           _model.pinCodeController!.text;
@@ -423,18 +427,41 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                         ),
                                         alignment:
                                             const AlignmentDirectional(0.0, 0.0),
-                                        child: Text(
-                                          'Verify',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyLarge
-                                              .override(
-                                                fontFamily: 'Nunito',
-                                                color:
+                                        child: Builder(
+                                          builder: (context) {
+                                            if (!_model.isLoading) {
+                                              return Text(
+                                                'Verify',
+                                                style:
                                                     FlutterFlowTheme.of(context)
-                                                        .primaryBtnText,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                        .bodyLarge
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryBtnText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                              );
+                                            } else {
+                                              return CircularPercentIndicator(
+                                                percent: 1.0,
+                                                radius: 10.0,
+                                                lineWidth: 3.0,
+                                                animation: true,
+                                                animateFromLastPercent: true,
+                                                progressColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryBackground,
+                                                backgroundColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                                startAngle: 90.0,
+                                              );
+                                            }
+                                          },
                                         ),
                                       ),
                                     ),

@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/components/withdraw_full_widget.dart';
+import '/custom_animations/custom_animation1/custom_animation1_widget.dart';
 import '/flutter_flow/flutter_flow_button_tabbar.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
@@ -91,15 +92,11 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
         if (!snapshot.hasData) {
           return Scaffold(
             backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-            body: Center(
+            body: const Center(
               child: SizedBox(
-                width: 50.0,
-                height: 50.0,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    FlutterFlowTheme.of(context).primary,
-                  ),
-                ),
+                width: 320.0,
+                height: 148.0,
+                child: CustomAnimation1Widget(),
               ),
             ),
           );
@@ -291,7 +288,7 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                             ),
                       ),
                       FlutterFlowTimer(
-                        initialTime: _model.timerMilliseconds,
+                        initialTime: _model.timerInitialTimeMs,
                         getDisplayTime: (value) =>
                             StopWatchTimer.getDisplayTime(
                           value,

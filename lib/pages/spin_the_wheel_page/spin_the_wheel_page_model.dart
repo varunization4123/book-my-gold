@@ -1,9 +1,8 @@
 import '/flutter_flow/flutter_flow_util.dart';
-import 'admin_dashboard_page_widget.dart' show AdminDashboardPageWidget;
+import 'spin_the_wheel_page_widget.dart' show SpinTheWheelPageWidget;
 import 'package:flutter/material.dart';
 
-class AdminDashboardPageModel
-    extends FlutterFlowModel<AdminDashboardPageWidget> {
+class SpinTheWheelPageModel extends FlutterFlowModel<SpinTheWheelPageWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();

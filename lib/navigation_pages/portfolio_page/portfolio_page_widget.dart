@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/transaction_tile_widget.dart';
+import '/custom_animations/custom_animation1/custom_animation1_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -42,21 +43,19 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<ApiCallResponse>(
-      future: GoldPriceCall.call(),
+      future: FFAppState().previousTransactionQuery(
+        requestFn: () => GoldPriceCall.call(),
+      ),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
           return Scaffold(
             backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-            body: Center(
+            body: const Center(
               child: SizedBox(
-                width: 40.0,
-                height: 40.0,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    FlutterFlowTheme.of(context).secondary,
-                  ),
-                ),
+                width: 320.0,
+                height: 148.0,
+                child: CustomAnimation1Widget(),
               ),
             ),
           );
@@ -112,7 +111,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                     top: false,
                     child: Padding(
                       padding:
-                          const EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 36.0),
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 12.0),
                       child: SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.max,

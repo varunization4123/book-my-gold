@@ -32,7 +32,5 @@ export '/purchase_failure_page/purchase_failure_page_widget.dart'
     show PurchaseFailurePageWidget;
 export '/withdraw_failure_page/withdraw_failure_page_widget.dart'
     show WithdrawFailurePageWidget;
-export '/navigation_pages/admin_dashboard_page/admin_dashboard_page_widget.dart'
-    show AdminDashboardPageWidget;
-export '/navigation_pages/edit_user_page/edit_user_page_widget.dart'
-    show EditUserPageWidget;
+export '/pages/spin_the_wheel_page/spin_the_wheel_page_widget.dart'
+    show SpinTheWheelPageWidget;

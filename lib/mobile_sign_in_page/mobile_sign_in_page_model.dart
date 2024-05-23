@@ -3,6 +3,10 @@ import 'mobile_sign_in_page_widget.dart' show MobileSignInPageWidget;
 import 'package:flutter/material.dart';
 
 class MobileSignInPageModel extends FlutterFlowModel<MobileSignInPageWidget> {
+  ///  Local state fields for this page.
+
+  bool isLoading = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();

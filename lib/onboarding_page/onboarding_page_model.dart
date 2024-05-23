@@ -3,6 +3,10 @@ import 'onboarding_page_widget.dart' show OnboardingPageWidget;
 import 'package:flutter/material.dart';
 
 class OnboardingPageModel extends FlutterFlowModel<OnboardingPageWidget> {
+  ///  Local state fields for this page.
+
+  bool isLoading = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();

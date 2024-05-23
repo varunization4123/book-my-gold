@@ -141,42 +141,44 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                 children: [
                                   Align(
                                     alignment: const AlignmentDirectional(0.0, 0.0),
-                                    child: AuthUserStreamWidget(
-                                      builder: (context) => InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          final selectedMedia =
-                                              await selectMediaWithSourceBottomSheet(
-                                            context: context,
-                                            maxWidth: 480.00,
-                                            maxHeight: 480.00,
-                                            imageQuality: 100,
-                                            allowPhoto: true,
-                                          );
-                                          if (selectedMedia != null &&
-                                              selectedMedia.every((m) =>
-                                                  validateFileFormat(
-                                                      m.storagePath,
-                                                      context))) {
-                                            setState(() =>
-                                                _model.isDataUploading1 = true);
-                                            var selectedUploadedFiles =
-                                                <FFUploadedFile>[];
-
-                                            var downloadUrls = <String>[];
-                                            try {
-                                              showUploadMessage(
-                                                context,
-                                                'Uploading file...',
-                                                showLoading: true,
+                                    child: Builder(
+                                      builder: (context) {
+                                        if (currentUserPhoto != '') {
+                                          return InkWell(
+                                            splashColor: Colors.transparent,
+                                            focusColor: Colors.transparent,
+                                            hoverColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () async {
+                                              final selectedMedia =
+                                                  await selectMediaWithSourceBottomSheet(
+                                                context: context,
+                                                maxWidth: 480.00,
+                                                maxHeight: 480.00,
+                                                imageQuality: 100,
+                                                allowPhoto: true,
                                               );
-                                              selectedUploadedFiles =
-                                                  selectedMedia
-                                                      .map(
-                                                          (m) => FFUploadedFile(
+                                              if (selectedMedia != null &&
+                                                  selectedMedia.every((m) =>
+                                                      validateFileFormat(
+                                                          m.storagePath,
+                                                          context))) {
+                                                setState(() => _model
+                                                    .isDataUploading1 = true);
+                                                var selectedUploadedFiles =
+                                                    <FFUploadedFile>[];
+
+                                                var downloadUrls = <String>[];
+                                                try {
+                                                  showUploadMessage(
+                                                    context,
+                                                    'Uploading file...',
+                                                    showLoading: true,
+                                                  );
+                                                  selectedUploadedFiles =
+                                                      selectedMedia
+                                                          .map((m) =>
+                                                              FFUploadedFile(
                                                                 name: m
                                                                     .storagePath
                                                                     .split('/')
@@ -191,88 +193,92 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                                                 blurHash:
                                                                     m.blurHash,
                                                               ))
-                                                      .toList();
+                                                          .toList();
 
-                                              downloadUrls = (await Future.wait(
-                                                selectedMedia.map(
-                                                  (m) async => await uploadData(
-                                                      m.storagePath, m.bytes),
+                                                  downloadUrls =
+                                                      (await Future.wait(
+                                                    selectedMedia.map(
+                                                      (m) async =>
+                                                          await uploadData(
+                                                              m.storagePath,
+                                                              m.bytes),
+                                                    ),
+                                                  ))
+                                                          .where(
+                                                              (u) => u != null)
+                                                          .map((u) => u!)
+                                                          .toList();
+                                                } finally {
+                                                  ScaffoldMessenger.of(context)
+                                                      .hideCurrentSnackBar();
+                                                  _model.isDataUploading1 =
+                                                      false;
+                                                }
+                                                if (selectedUploadedFiles
+                                                            .length ==
+                                                        selectedMedia.length &&
+                                                    downloadUrls.length ==
+                                                        selectedMedia.length) {
+                                                  setState(() {
+                                                    _model.uploadedLocalFile1 =
+                                                        selectedUploadedFiles
+                                                            .first;
+                                                    _model.uploadedFileUrl1 =
+                                                        downloadUrls.first;
+                                                  });
+                                                  showUploadMessage(
+                                                      context, 'Success!');
+                                                } else {
+                                                  setState(() {});
+                                                  showUploadMessage(context,
+                                                      'Failed to upload data');
+                                                  return;
+                                                }
+                                              }
+
+                                              await currentUserReference!
+                                                  .update({
+                                                ...mapToFirestore(
+                                                  {
+                                                    'photo_url':
+                                                        FieldValue.delete(),
+                                                  },
                                                 ),
-                                              ))
-                                                  .where((u) => u != null)
-                                                  .map((u) => u!)
-                                                  .toList();
-                                            } finally {
-                                              ScaffoldMessenger.of(context)
-                                                  .hideCurrentSnackBar();
-                                              _model.isDataUploading1 = false;
-                                            }
-                                            if (selectedUploadedFiles.length ==
-                                                    selectedMedia.length &&
-                                                downloadUrls.length ==
-                                                    selectedMedia.length) {
-                                              setState(() {
-                                                _model.uploadedLocalFile1 =
-                                                    selectedUploadedFiles.first;
-                                                _model.uploadedFileUrl1 =
-                                                    downloadUrls.first;
                                               });
-                                              showUploadMessage(
-                                                  context, 'Success!');
-                                            } else {
-                                              setState(() {});
-                                              showUploadMessage(context,
-                                                  'Failed to upload data');
-                                              return;
-                                            }
-                                          }
 
-                                          await currentUserReference!
-                                              .update(createUsersRecordData(
-                                            photoUrl: _model.uploadedFileUrl2,
-                                          ));
-                                          setState(() {});
-                                        },
-                                        child: Container(
-                                          width: 120.0,
-                                          height: 120.0,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: CachedNetworkImage(
-                                            fadeInDuration:
-                                                const Duration(milliseconds: 0),
-                                            fadeOutDuration:
-                                                const Duration(milliseconds: 0),
-                                            imageUrl: currentUserPhoto,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: const AlignmentDirectional(0.0, 0.0),
-                                    child: Builder(
-                                      builder: (context) {
-                                        if (currentUserPhoto == 'null') {
-                                          return Container(
-                                            width: 122.0,
-                                            height: 122.0,
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFFECECEC),
-                                              shape: BoxShape.circle,
+                                              await currentUserReference!
+                                                  .update(createUsersRecordData(
+                                                photoUrl:
+                                                    _model.uploadedFileUrl2,
+                                              ));
+                                              setState(() {});
+                                            },
+                                            child: Container(
+                                              width: 120.0,
+                                              height: 120.0,
+                                              clipBehavior: Clip.antiAlias,
+                                              decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: CachedNetworkImage(
+                                                fadeInDuration:
+                                                    const Duration(milliseconds: 0),
+                                                fadeOutDuration:
+                                                    const Duration(milliseconds: 0),
+                                                imageUrl: currentUserPhoto,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           );
                                         } else {
                                           return Container(
-                                            width: 1.0,
-                                            height: 1.0,
+                                            width: 120.0,
+                                            height: 120.0,
                                             decoration: BoxDecoration(
                                               color:
                                                   FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
+                                                      .formBorder,
+                                              shape: BoxShape.circle,
                                             ),
                                           );
                                         }

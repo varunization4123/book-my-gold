@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'onboarding_page_model.dart';
 export 'onboarding_page_model.dart';
 
@@ -391,6 +392,9 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                                   .validate()) {
                                             return;
                                           }
+                                          setState(() {
+                                            _model.isLoading = true;
+                                          });
 
                                           await currentUserReference!
                                               .update(createUsersRecordData(
@@ -421,19 +425,44 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                             ),
                                             alignment:
                                                 const AlignmentDirectional(0.0, 0.0),
-                                            child: Text(
-                                              'Continue',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyLarge
-                                                  .override(
-                                                    fontFamily: 'Nunito',
-                                                    color: FlutterFlowTheme.of(
+                                            child: Builder(
+                                              builder: (context) {
+                                                if (!_model.isLoading) {
+                                                  return Text(
+                                                    'Continue',
+                                                    style: FlutterFlowTheme.of(
                                                             context)
-                                                        .primaryBtnText,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                        .bodyLarge
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryBtnText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                  );
+                                                } else {
+                                                  return CircularPercentIndicator(
+                                                    percent: 1.0,
+                                                    radius: 10.0,
+                                                    lineWidth: 3.0,
+                                                    animation: true,
+                                                    animateFromLastPercent:
+                                                        true,
+                                                    progressColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .primaryBackground,
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .primary,
+                                                    startAngle: 90.0,
+                                                  );
+                                                }
+                                              },
                                             ),
                                           ),
                                         ),

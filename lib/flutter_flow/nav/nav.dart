@@ -237,14 +237,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ),
         ),
         FFRoute(
-          name: 'AdminDashboardPage',
-          path: '/adminDashboardPage',
-          builder: (context, params) => const AdminDashboardPageWidget(),
-        ),
-        FFRoute(
-          name: 'EditUserPage',
-          path: '/editUserPage',
-          builder: (context, params) => const EditUserPageWidget(),
+          name: 'SpinTheWheelPage',
+          path: '/spinTheWheelPage',
+          builder: (context, params) => const SpinTheWheelPageWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -503,4 +498,14 @@ class RootPageContext {
         value: RootPageContext(true, errorRoute),
         child: child,
       );
+}
+
+extension GoRouterLocationExtension on GoRouter {
+  String getCurrentLocation() {
+    final RouteMatch lastMatch = routerDelegate.currentConfiguration.last;
+    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
+        ? lastMatch.matches
+        : routerDelegate.currentConfiguration;
+    return matchList.uri.toString();
+  }
 }

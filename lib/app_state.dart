@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'flutter_flow/request_manager.dart';
 import '/backend/backend.dart';
 import 'backend/api_requests/api_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:csv/csv.dart';
+import 'package:synchronized/synchronized.dart';
 
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
@@ -18,9 +20,10 @@ class FFAppState extends ChangeNotifier {
   }
 
   Future initializePersistedState() async {
-    prefs = await SharedPreferences.getInstance();
-    _safeInit(() {
-      _phoneNumber = prefs.getString('ff_phoneNumber') ?? _phoneNumber;
+    secureStorage = const FlutterSecureStorage();
+    await _safeInitAsync(() async {
+      _phoneNumber =
+          await secureStorage.getString('ff_phoneNumber') ?? _phoneNumber;
     });
   }
 
@@ -29,29 +32,18 @@ class FFAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  late SharedPreferences prefs;
+  late FlutterSecureStorage secureStorage;
 
   String _phoneNumber = '';
   String get phoneNumber => _phoneNumber;
   set phoneNumber(String value) {
     _phoneNumber = value;
-    prefs.setString('ff_phoneNumber', value);
+    secureStorage.setString('ff_phoneNumber', value);
   }
 
-  final _lastSavedManager = FutureRequestManager<ApiCallResponse>();
-  Future<ApiCallResponse> lastSaved({
-    String? uniqueQueryKey,
-    bool? overrideCache,
-    required Future<ApiCallResponse> Function() requestFn,
-  }) =>
-      _lastSavedManager.performRequest(
-        uniqueQueryKey: uniqueQueryKey,
-        overrideCache: overrideCache,
-        requestFn: requestFn,
-      );
-  void clearLastSavedCache() => _lastSavedManager.clear();
-  void clearLastSavedCacheKey(String? uniqueKey) =>
-      _lastSavedManager.clearRequest(uniqueKey);
+  void deletePhoneNumber() {
+    secureStorage.delete(key: 'ff_phoneNumber');
+  }
 
   final _transactionsQueryManager =
       FutureRequestManager<List<DigiGoldBuyRecord>>();
@@ -68,6 +60,23 @@ class FFAppState extends ChangeNotifier {
   void clearTransactionsQueryCache() => _transactionsQueryManager.clear();
   void clearTransactionsQueryCacheKey(String? uniqueKey) =>
       _transactionsQueryManager.clearRequest(uniqueKey);
+
+  final _previousTransactionQueryManager =
+      FutureRequestManager<ApiCallResponse>();
+  Future<ApiCallResponse> previousTransactionQuery({
+    String? uniqueQueryKey,
+    bool? overrideCache,
+    required Future<ApiCallResponse> Function() requestFn,
+  }) =>
+      _previousTransactionQueryManager.performRequest(
+        uniqueQueryKey: uniqueQueryKey,
+        overrideCache: overrideCache,
+        requestFn: requestFn,
+      );
+  void clearPreviousTransactionQueryCache() =>
+      _previousTransactionQueryManager.clear();
+  void clearPreviousTransactionQueryCacheKey(String? uniqueKey) =>
+      _previousTransactionQueryManager.clearRequest(uniqueKey);
 }
 
 void _safeInit(Function() initializeField) {
@@ -80,4 +89,47 @@ Future _safeInitAsync(Function() initializeField) async {
   try {
     await initializeField();
   } catch (_) {}
+}
+
+extension FlutterSecureStorageExtensions on FlutterSecureStorage {
+  static final _lock = Lock();
+
+  Future<void> writeSync({required String key, String? value}) async =>
+      await _lock.synchronized(() async {
+        await write(key: key, value: value);
+      });
+
+  void remove(String key) => delete(key: key);
+
+  Future<String?> getString(String key) async => await read(key: key);
+  Future<void> setString(String key, String value) async =>
+      await writeSync(key: key, value: value);
+
+  Future<bool?> getBool(String key) async => (await read(key: key)) == 'true';
+  Future<void> setBool(String key, bool value) async =>
+      await writeSync(key: key, value: value.toString());
+
+  Future<int?> getInt(String key) async =>
+      int.tryParse(await read(key: key) ?? '');
+  Future<void> setInt(String key, int value) async =>
+      await writeSync(key: key, value: value.toString());
+
+  Future<double?> getDouble(String key) async =>
+      double.tryParse(await read(key: key) ?? '');
+  Future<void> setDouble(String key, double value) async =>
+      await writeSync(key: key, value: value.toString());
+
+  Future<List<String>?> getStringList(String key) async =>
+      await read(key: key).then((result) {
+        if (result == null || result.isEmpty) {
+          return null;
+        }
+        return const CsvToListConverter()
+            .convert(result)
+            .first
+            .map((e) => e.toString())
+            .toList();
+      });
+  Future<void> setStringList(String key, List<String> value) async =>
+      await writeSync(key: key, value: const ListToCsvConverter().convert([value]));
 }

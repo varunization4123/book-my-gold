@@ -16,6 +16,7 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
   InstantTimer? mainTimer;
   InstantTimer? refreshTimer;
   // State field(s) for Timer widget.
+  final timerInitialTimeMs = 300000;
   int timerMilliseconds = 300000;
   String timerValue = StopWatchTimer.getDisplayTime(
     300000,

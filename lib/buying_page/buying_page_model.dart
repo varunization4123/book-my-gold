@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/price_option_selected_widget.dart';
 import '/components/price_option_widget.dart';
@@ -9,14 +10,37 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:flutter/material.dart';
 
 class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
+  ///  Local state fields for this page.
+
+  double goldPrice = 6000.0;
+
+  double? commisionFees = 1.0;
+
+  double? discount = 1.0;
+
+  double? buyingFees = 1.0;
+
+  double? gst = 3.0;
+
+  double? rewards = 1.0;
+
+  double? goldDifference = 1.0;
+
+  double? enteredAmount = 0.0;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
+  // Stores action output result for [Firestore Query - Query a collection] action in BuyingPage widget.
+  AppSettingsRecord? readAppSettings;
   InstantTimer? mainTimer;
   InstantTimer? refreshTimer;
+  // Stores action output result for [Backend Call - API (Gold Price)] action in BuyingPage widget.
+  ApiCallResponse? goldDataAPI;
   // State field(s) for Timer widget.
+  final timerInitialTimeMs = 300000;
   int timerMilliseconds = 300000;
   String timerValue = StopWatchTimer.getDisplayTime(
     300000,
