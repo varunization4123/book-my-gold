@@ -1,5 +1,6 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
+import '/components/f_a_q_point_widget.dart';
 import '/components/price_option_selected_widget.dart';
 import '/components/price_option_widget.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
@@ -87,6 +88,12 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   String? razorpayPaymentId2;
   // Stores action output result for [Backend Call - Create Document] action in SetupBtn widget.
   DigiGoldBuyRecord? updateTransaction2;
+  // Model for FAQPoint component.
+  late FAQPointModel fAQPointModel1;
+  // Model for FAQPoint component.
+  late FAQPointModel fAQPointModel2;
+  // Model for FAQPoint component.
+  late FAQPointModel fAQPointModel3;
 
   @override
   void initState(BuildContext context) {
@@ -100,6 +107,9 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
     priceOptionSelectedModel2 =
         createModel(context, () => PriceOptionSelectedModel());
     priceOptionModel6 = createModel(context, () => PriceOptionModel());
+    fAQPointModel1 = createModel(context, () => FAQPointModel());
+    fAQPointModel2 = createModel(context, () => FAQPointModel());
+    fAQPointModel3 = createModel(context, () => FAQPointModel());
   }
 
   @override
@@ -123,5 +133,8 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
     priceOptionModel5.dispose();
     priceOptionSelectedModel2.dispose();
     priceOptionModel6.dispose();
+    fAQPointModel1.dispose();
+    fAQPointModel2.dispose();
+    fAQPointModel3.dispose();
   }
 }

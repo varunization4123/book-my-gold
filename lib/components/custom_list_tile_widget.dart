@@ -29,6 +29,8 @@ class _CustomListTileWidgetState extends State<CustomListTileWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => CustomListTileModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

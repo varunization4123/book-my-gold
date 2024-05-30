@@ -25,6 +25,7 @@ class _MarketplacePageWidgetState extends State<MarketplacePageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'MarketplacePage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
@@ -76,20 +77,27 @@ class _MarketplacePageWidgetState extends State<MarketplacePageWidget> {
         ),
         body: SafeArea(
           top: true,
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 20.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  FlutterFlowWebView(
-                    content: 'https://gelly.in',
-                    bypass: true,
-                    height: MediaQuery.sizeOf(context).height * 0.9,
-                    verticalScroll: true,
-                    horizontalScroll: false,
-                  ),
-                ],
+          child: Visibility(
+            visible: responsiveVisibility(
+              context: context,
+              tabletLandscape: false,
+              desktop: false,
+            ),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 20.0, 0.0, 20.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    FlutterFlowWebView(
+                      content: 'https://gelly.in',
+                      bypass: true,
+                      height: MediaQuery.sizeOf(context).height * 0.9,
+                      verticalScroll: true,
+                      horizontalScroll: false,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -31,6 +31,7 @@ class _SavingsPlanCheckoutPageWidgetState
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'SavingsPlanCheckoutPage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

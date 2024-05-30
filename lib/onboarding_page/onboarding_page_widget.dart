@@ -60,6 +60,8 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
         ],
       ),
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

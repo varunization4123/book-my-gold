@@ -32,6 +32,8 @@ class _SIPCardWidgetState extends State<SIPCardWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => SIPCardModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

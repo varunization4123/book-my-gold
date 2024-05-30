@@ -24,6 +24,7 @@ class _SavingsPlanPage1WidgetState extends State<SavingsPlanPage1Widget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'SavingsPlanPage1'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

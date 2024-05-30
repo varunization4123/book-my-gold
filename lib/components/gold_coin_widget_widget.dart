@@ -24,6 +24,8 @@ class _GoldCoinWidgetWidgetState extends State<GoldCoinWidgetWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => GoldCoinWidgetModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

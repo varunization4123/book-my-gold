@@ -36,6 +36,8 @@ class _UserProfileSearchWidgetState extends State<UserProfileSearchWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => UserProfileSearchModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

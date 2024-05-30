@@ -26,6 +26,8 @@ class _BirthdaySelectorWidgetState extends State<BirthdaySelectorWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => BirthdaySelectorModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

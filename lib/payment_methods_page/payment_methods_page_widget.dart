@@ -29,6 +29,7 @@ class _PaymentMethodsPageWidgetState extends State<PaymentMethodsPageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'PaymentMethodsPage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

@@ -26,6 +26,8 @@ class _CustomGraphWidgetState extends State<CustomGraphWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => CustomGraphModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

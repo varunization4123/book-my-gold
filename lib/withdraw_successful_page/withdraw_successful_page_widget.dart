@@ -36,6 +36,7 @@ class _WithdrawSuccessfulPageWidgetState
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'WithdrawSuccessfulPage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

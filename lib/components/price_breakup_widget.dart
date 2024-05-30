@@ -52,6 +52,8 @@ class _PriceBreakupWidgetState extends State<PriceBreakupWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => PriceBreakupModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

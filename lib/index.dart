@@ -34,3 +34,5 @@ export '/withdraw_failure_page/withdraw_failure_page_widget.dart'
     show WithdrawFailurePageWidget;
 export '/pages/spin_the_wheel_page/spin_the_wheel_page_widget.dart'
     show SpinTheWheelPageWidget;
+export '/app_security_page/app_security_page_widget.dart'
+    show AppSecurityPageWidget;

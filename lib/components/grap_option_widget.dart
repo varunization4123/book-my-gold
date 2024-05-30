@@ -31,6 +31,8 @@ class _GrapOptionWidgetState extends State<GrapOptionWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => GrapOptionModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

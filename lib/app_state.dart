@@ -25,6 +25,10 @@ class FFAppState extends ChangeNotifier {
       _phoneNumber =
           await secureStorage.getString('ff_phoneNumber') ?? _phoneNumber;
     });
+    await _safeInitAsync(() async {
+      _biometricEnabled = await secureStorage.getBool('ff_biometricEnabled') ??
+          _biometricEnabled;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -43,6 +47,17 @@ class FFAppState extends ChangeNotifier {
 
   void deletePhoneNumber() {
     secureStorage.delete(key: 'ff_phoneNumber');
+  }
+
+  bool _biometricEnabled = false;
+  bool get biometricEnabled => _biometricEnabled;
+  set biometricEnabled(bool value) {
+    _biometricEnabled = value;
+    secureStorage.setBool('ff_biometricEnabled', value);
+  }
+
+  void deleteBiometricEnabled() {
+    secureStorage.delete(key: 'ff_biometricEnabled');
   }
 
   final _transactionsQueryManager =

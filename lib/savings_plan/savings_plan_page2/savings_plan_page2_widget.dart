@@ -43,6 +43,8 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
 
     _model.amountFieldTextController3 ??= TextEditingController();
     _model.amountFieldFocusNode3 ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

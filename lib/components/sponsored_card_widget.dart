@@ -32,6 +32,8 @@ class _SponsoredCardWidgetState extends State<SponsoredCardWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => SponsoredCardModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
@@ -76,7 +78,7 @@ class _SponsoredCardWidgetState extends State<SponsoredCardWidget> {
                 widget.title,
                 'Title',
               ),
-              style: FlutterFlowTheme.of(context).bodyLarge.override(
+              style: FlutterFlowTheme.of(context).bodyMedium.override(
                     fontFamily: 'Nunito',
                     letterSpacing: 0.0,
                     fontWeight: FontWeight.bold,

@@ -34,6 +34,7 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'PurchaseSuccessPage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

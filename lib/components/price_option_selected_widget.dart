@@ -30,6 +30,8 @@ class _PriceOptionSelectedWidgetState extends State<PriceOptionSelectedWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => PriceOptionSelectedModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

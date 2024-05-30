@@ -43,6 +43,8 @@ class _LoadingScreenWidgetState extends State<LoadingScreenWidget>
         ],
       ),
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

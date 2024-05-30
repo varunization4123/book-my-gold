@@ -42,6 +42,8 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => TransactionTileModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

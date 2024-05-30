@@ -28,6 +28,7 @@ class _AddressBookPageWidgetState extends State<AddressBookPageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'AddressBookPage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

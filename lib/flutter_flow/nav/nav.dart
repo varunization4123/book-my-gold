@@ -106,6 +106,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'OnboardingPage',
           path: '/onboardingPage',
+          requireAuth: true,
           builder: (context, params) => const OnboardingPageWidget(),
         ),
         FFRoute(
@@ -135,6 +136,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'PurchaseSuccessPage',
           path: '/purchaseSuccessPage',
+          requireAuth: true,
           builder: (context, params) => PurchaseSuccessPageWidget(
             amount: params.getParam(
               'amount',
@@ -153,6 +155,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'WithdrawSuccessfulPage',
           path: '/withdrawSuccessfulPage',
+          requireAuth: true,
           builder: (context, params) => WithdrawSuccessfulPageWidget(
             amount: params.getParam(
               'amount',
@@ -177,11 +180,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'LoadingScreen',
           path: '/loadingScreen',
+          requireAuth: true,
           builder: (context, params) => const LoadingScreenWidget(),
         ),
         FFRoute(
           name: 'MarketplacePage',
           path: '/marketplacePage',
+          requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? const NavBarPage(initialPage: 'MarketplacePage')
               : const MarketplacePageWidget(),
@@ -189,21 +194,25 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'AddressBookPage',
           path: '/addressBookPage',
+          requireAuth: true,
           builder: (context, params) => const AddressBookPageWidget(),
         ),
         FFRoute(
           name: 'PaymentMethodsPage',
           path: '/paymentMethodsPage',
+          requireAuth: true,
           builder: (context, params) => const PaymentMethodsPageWidget(),
         ),
         FFRoute(
           name: 'SavingsPlanPage1',
           path: '/savingsPlanPage1',
+          requireAuth: true,
           builder: (context, params) => const SavingsPlanPage1Widget(),
         ),
         FFRoute(
           name: 'SavingsPlanPage2',
           path: '/savingsPlanPage2',
+          requireAuth: true,
           builder: (context, params) => const SavingsPlanPage2Widget(),
         ),
         FFRoute(
@@ -220,11 +229,13 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'PurchaseFailurePage',
           path: '/purchaseFailurePage',
+          requireAuth: true,
           builder: (context, params) => const PurchaseFailurePageWidget(),
         ),
         FFRoute(
           name: 'WithdrawFailurePage',
           path: '/withdrawFailurePage',
+          requireAuth: true,
           builder: (context, params) => WithdrawFailurePageWidget(
             upiId: params.getParam(
               'upiId',
@@ -239,7 +250,14 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
         FFRoute(
           name: 'SpinTheWheelPage',
           path: '/spinTheWheelPage',
+          requireAuth: true,
           builder: (context, params) => const SpinTheWheelPageWidget(),
+        ),
+        FFRoute(
+          name: 'AppSecurityPage',
+          path: '/appSecurityPage',
+          requireAuth: true,
+          builder: (context, params) => const AppSecurityPageWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -424,17 +442,19 @@ class FFRoute {
                 )
               : builder(context, ffParams);
           final child = appStateNotifier.loading
-              ? Container(
-                  color: FlutterFlowTheme.of(context).primaryBackground,
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/New_Artboard.gif',
-                      width: 200.0,
-                      height: 200.0,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                )
+              ? isWeb
+                  ? Container()
+                  : Container(
+                      color: FlutterFlowTheme.of(context).primaryBackground,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/New_Artboard.gif',
+                          width: 200.0,
+                          height: 200.0,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    )
               : page;
 
           final transitionInfo = state.transitionInfo;

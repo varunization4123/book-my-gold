@@ -140,6 +140,8 @@ class _CustomAnimation1WidgetState extends State<CustomAnimation1Widget>
         ],
       ),
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

@@ -26,6 +26,8 @@ class _GenderSelectorWidgetState extends State<GenderSelectorWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => GenderSelectorModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

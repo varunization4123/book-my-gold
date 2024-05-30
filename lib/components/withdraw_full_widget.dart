@@ -24,6 +24,8 @@ class _WithdrawFullWidgetState extends State<WithdrawFullWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => WithdrawFullModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

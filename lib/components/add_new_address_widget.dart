@@ -29,6 +29,8 @@ class _AddNewAddressWidgetState extends State<AddNewAddressWidget> {
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

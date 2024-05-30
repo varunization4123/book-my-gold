@@ -31,6 +31,7 @@ class _WithdrawFailurePageWidgetState extends State<WithdrawFailurePageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'WithdrawFailurePage'});
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
