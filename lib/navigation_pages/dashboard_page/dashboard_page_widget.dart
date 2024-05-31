@@ -8,12 +8,13 @@ import '/components/s_i_p_card_widget.dart';
 import '/components/sponsored_card_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/walkthroughs/app_walkthrough.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart'
+    show TutorialCoachMark;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:provider/provider.dart';
 import 'dashboard_page_model.dart';
 export 'dashboard_page_model.dart';
 
@@ -41,31 +42,18 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       _model.readAppSettings = await queryAppSettingsRecordOnce(
         singleRecord: true,
       ).then((s) => s.firstOrNull);
-      if (FFAppState().biometricEnabled) {
-        final localAuth = LocalAuthentication();
-        bool isBiometricSupported = await localAuth.isDeviceSupported();
-        bool canCheckBiometrics = await localAuth.canCheckBiometrics;
-        if (isBiometricSupported && canCheckBiometrics) {
-          _model.biometricOnLoad = await localAuth.authenticate(
-              localizedReason: 'Authenticate to continue',
-              options: const AuthenticationOptions(biometricOnly: true));
-          setState(() {});
-        }
-      }
-      setState(() {
-        _model.goldDifference =
-            _model.readAppSettings?.goldDiffAmount.toDouble();
-      });
+      _model.goldDifference =
+          _model.readAppSettings?.goldDiffAmount.toDouble();
+      setState(() {});
       _model.goldPriceFromApi = await GoldPriceCall.call();
       if ((_model.goldPriceFromApi?.succeeded ?? true)) {
-        setState(() {
-          _model.goldPrice = valueOrDefault<double>(
-            GoldPriceCall.currentPrice(
-              (_model.goldPriceFromApi?.jsonBody ?? ''),
-            ),
-            6000.00,
-          );
-        });
+        _model.goldPrice = valueOrDefault<double>(
+          GoldPriceCall.currentPrice(
+            (_model.goldPriceFromApi?.jsonBody ?? ''),
+          ),
+          6000.00,
+        );
+        setState(() {});
       }
     });
 
@@ -81,8 +69,6 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<FFAppState>();
-
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -284,81 +270,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                               children: [
                                                 AuthUserStreamWidget(
                                                   builder: (context) => Text(
-                                                    '${() {
-                                                      if (valueOrDefault<
-                                                              double>(
-                                                            valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0),
-                                                                  0.0,
-                                                                ) *
-                                                                valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault<
-                                                                          double>(
-                                                                        _model
-                                                                            .goldPrice,
-                                                                        6000.00,
-                                                                      ) +
-                                                                      (valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.00,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldDifference,
-                                                                                0.0,
-                                                                              ) /
-                                                                              100)),
-                                                                  6000.0,
-                                                                ),
-                                                            0.0,
-                                                          ) >
-                                                          valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.amountBought,
-                                                              0.0)) {
-                                                        return '+';
-                                                      } else if (valueOrDefault<
-                                                              double>(
-                                                            valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.goldBought,
-                                                                    0.0) *
-                                                                valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault<
-                                                                          double>(
-                                                                        _model
-                                                                            .goldPrice,
-                                                                        6000.00,
-                                                                      ) +
-                                                                      (valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.00,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldDifference,
-                                                                                0.0,
-                                                                              ) /
-                                                                              100)),
-                                                                  6000.0,
-                                                                ),
-                                                            0.0,
-                                                          ) <
-                                                          valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.amountBought,
-                                                              0.0)) {
-                                                        return '-';
-                                                      } else {
-                                                        return ' ';
-                                                      }
-                                                    }()}${valueOrDefault<String>(
+                                                    valueOrDefault<String>(
                                                       formatNumber(
                                                         (valueOrDefault(
                                                                     currentUserDocument
@@ -395,7 +307,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                                         locale: 'en_US',
                                                       ),
                                                       '0',
-                                                    )}',
+                                                    ),
                                                     style:
                                                         FlutterFlowTheme.of(
                                                                 context)
@@ -586,6 +498,9 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                       ),
                                     ),
                                   ),
+                                ).addWalkthrough(
+                                  containerJwkfyeql,
+                                  _model.appWalkthroughController,
                                 ),
                                 InkWell(
                                   splashColor: Colors.transparent,
@@ -636,6 +551,9 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                       ),
                                     ),
                                   ),
+                                ).addWalkthrough(
+                                  containerVcfz0bry,
+                                  _model.appWalkthroughController,
                                 ),
                               ].divide(const SizedBox(width: 36.0)),
                             ),
@@ -1222,6 +1140,9 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                       'Track your savings everyday, hassle free and relax',
                                 ),
                               ),
+                            ).addWalkthrough(
+                              containerSx22cg5d,
+                              _model.appWalkthroughController,
                             ),
                             InkWell(
                               splashColor: Colors.transparent,
@@ -1488,4 +1409,15 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       ),
     );
   }
+
+  TutorialCoachMark createPageWalkthrough(BuildContext context) =>
+      TutorialCoachMark(
+        targets: createWalkthroughTargets(context),
+        onFinish: () async {
+          safeSetState(() => _model.appWalkthroughController = null);
+        },
+        onSkip: () {
+          return true;
+        },
+      );
 }

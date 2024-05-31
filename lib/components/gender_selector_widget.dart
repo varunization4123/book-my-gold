@@ -56,14 +56,12 @@ class _GenderSelectorWidgetState extends State<GenderSelectorWidget> {
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () async {
-                    setState(() {
-                      _model.maleSelected = true;
-                      _model.femaleSelected = false;
-                      _model.pnsSelected = false;
-                    });
-                    setState(() {
-                      _model.selectedGender = 'Male';
-                    });
+                    _model.maleSelected = true;
+                    _model.femaleSelected = false;
+                    _model.pnsSelected = false;
+                    setState(() {});
+                    _model.selectedGender = 'Male';
+                    setState(() {});
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -83,9 +81,8 @@ class _GenderSelectorWidgetState extends State<GenderSelectorWidget> {
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
-                          setState(() {
-                            _model.selectedGender = 'Male';
-                          });
+                          _model.selectedGender = 'Male';
+                          setState(() {});
                         },
                         child: Text(
                           'Male',
@@ -113,14 +110,12 @@ class _GenderSelectorWidgetState extends State<GenderSelectorWidget> {
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () async {
-                    setState(() {
-                      _model.maleSelected = false;
-                      _model.femaleSelected = true;
-                      _model.pnsSelected = false;
-                    });
-                    setState(() {
-                      _model.selectedGender = 'Female';
-                    });
+                    _model.maleSelected = false;
+                    _model.femaleSelected = true;
+                    _model.pnsSelected = false;
+                    setState(() {});
+                    _model.selectedGender = 'Female';
+                    setState(() {});
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -157,14 +152,12 @@ class _GenderSelectorWidgetState extends State<GenderSelectorWidget> {
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () async {
-                    setState(() {
-                      _model.maleSelected = false;
-                      _model.femaleSelected = false;
-                      _model.pnsSelected = true;
-                    });
-                    setState(() {
-                      _model.selectedGender = 'Prefer Not to Say';
-                    });
+                    _model.maleSelected = false;
+                    _model.femaleSelected = false;
+                    _model.pnsSelected = true;
+                    setState(() {});
+                    _model.selectedGender = 'Prefer Not to Say';
+                    setState(() {});
                   },
                   child: Container(
                     decoration: BoxDecoration(

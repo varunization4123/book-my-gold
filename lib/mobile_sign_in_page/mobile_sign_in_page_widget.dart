@@ -332,9 +332,8 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
                                                           .validate()) {
                                                     return;
                                                   }
-                                                  setState(() {
-                                                    _model.isLoading = true;
-                                                  });
+                                                  _model.isLoading = true;
+                                                  setState(() {});
                                                   final phoneNumberVal =
                                                       '+91${_model.mobileNumberTextController.text}';
                                                   if (phoneNumberVal.isEmpty ||

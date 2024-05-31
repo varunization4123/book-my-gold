@@ -376,9 +376,8 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                               .validate()) {
                                         return;
                                       }
-                                      setState(() {
-                                        _model.isLoading = true;
-                                      });
+                                      _model.isLoading = true;
+                                      setState(() {});
                                       GoRouter.of(context).prepareAuthEvent();
                                       final smsCodeVal =
                                           _model.pinCodeController!.text;

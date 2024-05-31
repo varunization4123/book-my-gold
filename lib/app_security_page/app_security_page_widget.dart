@@ -136,24 +136,28 @@ class _AppSecurityPageWidgetState extends State<AppSecurityPageWidget> {
                     hoverColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onTap: () async {
-                      final localAuth = LocalAuthentication();
-                      bool isBiometricSupported =
-                          await localAuth.isDeviceSupported();
-                      bool canCheckBiometrics =
-                          await localAuth.canCheckBiometrics;
-                      if (isBiometricSupported && canCheckBiometrics) {
-                        _model.biometricVerification =
-                            await localAuth.authenticate(
-                                localizedReason:
-                                    'Use your existing biometric to add extra security to your account',
-                                options: const AuthenticationOptions(
-                                    biometricOnly: true));
+                      if (!FFAppState().biometricEnabled) {
+                        final localAuth = LocalAuthentication();
+                        bool isBiometricSupported =
+                            await localAuth.isDeviceSupported();
+                        bool canCheckBiometrics =
+                            await localAuth.canCheckBiometrics;
+                        if (isBiometricSupported && canCheckBiometrics) {
+                          _model.biometricVerification =
+                              await localAuth.authenticate(
+                                  localizedReason:
+                                      'Use your existing biometric to add extra security to your account',
+                                  options: const AuthenticationOptions(
+                                      biometricOnly: true));
+                          setState(() {});
+                        }
+
+                        FFAppState().biometricEnabled = true;
+                        setState(() {});
+                      } else {
+                        FFAppState().biometricEnabled = false;
                         setState(() {});
                       }
-
-                      setState(() {
-                        FFAppState().biometricEnabled = true;
-                      });
 
                       setState(() {});
                     },

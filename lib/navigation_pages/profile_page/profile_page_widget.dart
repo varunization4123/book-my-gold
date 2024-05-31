@@ -259,6 +259,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                                     photoUrl:
                                                         _model.uploadedFileUrl2,
                                                   ));
+
                                                   setState(() {});
                                                 },
                                                 child: Container(
@@ -426,6 +427,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                                         photoUrl: _model
                                                             .uploadedFileUrl2,
                                                       ));
+
                                                       setState(() {});
                                                     },
                                                     child: Icon(

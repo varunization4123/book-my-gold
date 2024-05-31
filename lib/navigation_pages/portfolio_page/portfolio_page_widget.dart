@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
+import '/components/list_empty_component_widget.dart';
 import '/components/sort_by_options_widget.dart';
 import '/components/transaction_tile_widget.dart';
 import '/custom_animations/custom_animation1/custom_animation1_widget.dart';
@@ -374,55 +375,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                 children: [
                                                   AuthUserStreamWidget(
                                                     builder: (context) => Text(
-                                                      '${() {
-                                                        if (valueOrDefault<
-                                                                double>(
-                                                              valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  valueOrDefault<
-                                                                      double>(
-                                                                    GoldPriceCall
-                                                                        .price(
-                                                                      portfolioPageGoldPriceResponse
-                                                                          .jsonBody,
-                                                                    ),
-                                                                    7000.0,
-                                                                  ),
-                                                              0.0,
-                                                            ) >
-                                                            valueOrDefault(
-                                                                currentUserDocument
-                                                                    ?.amountBought,
-                                                                0.0)) {
-                                                          return '+ ';
-                                                        } else if (valueOrDefault<
-                                                                double>(
-                                                              valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  valueOrDefault<
-                                                                      double>(
-                                                                    GoldPriceCall
-                                                                        .price(
-                                                                      portfolioPageGoldPriceResponse
-                                                                          .jsonBody,
-                                                                    ),
-                                                                    7000.0,
-                                                                  ),
-                                                              0.0,
-                                                            ) <
-                                                            valueOrDefault(
-                                                                currentUserDocument
-                                                                    ?.amountBought,
-                                                                0.0)) {
-                                                          return '- ';
-                                                        } else {
-                                                          return ' ';
-                                                        }
-                                                      }()}${valueOrDefault<String>(
+                                                      valueOrDefault<String>(
                                                         formatNumber(
                                                           (valueOrDefault(
                                                                       currentUserDocument
@@ -448,7 +401,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                           locale: 'en_US',
                                                         ),
                                                         '0',
-                                                      )}',
+                                                      ),
                                                       style:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -583,55 +536,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                                     8.0,
                                                                     2.0),
                                                         child: Text(
-                                                          '${() {
-                                                            if (valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault(
-                                                                          currentUserDocument
-                                                                              ?.goldBought,
-                                                                          0.0) *
-                                                                      valueOrDefault<
-                                                                          double>(
-                                                                        GoldPriceCall
-                                                                            .price(
-                                                                          portfolioPageGoldPriceResponse
-                                                                              .jsonBody,
-                                                                        ),
-                                                                        7000.0,
-                                                                      ),
-                                                                  0.0,
-                                                                ) >
-                                                                valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.amountBought,
-                                                                    0.0)) {
-                                                              return '+';
-                                                            } else if (valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault(
-                                                                          currentUserDocument
-                                                                              ?.goldBought,
-                                                                          0.0) *
-                                                                      valueOrDefault<
-                                                                          double>(
-                                                                        GoldPriceCall
-                                                                            .price(
-                                                                          portfolioPageGoldPriceResponse
-                                                                              .jsonBody,
-                                                                        ),
-                                                                        7000.0,
-                                                                      ),
-                                                                  0.0,
-                                                                ) <
-                                                                valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.amountBought,
-                                                                    0.0)) {
-                                                              return '-';
-                                                            } else {
-                                                              return ' ';
-                                                            }
-                                                          }()}${valueOrDefault<String>(
+                                                          '${valueOrDefault<String>(
                                                             formatNumber(
                                                               (((valueOrDefault(
                                                                                   currentUserDocument
@@ -660,7 +565,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                               locale: 'en_US',
                                                             ),
                                                             '0',
-                                                          )}',
+                                                          )}%',
                                                           style: FlutterFlowTheme
                                                                   .of(context)
                                                               .bodyMedium
@@ -1047,55 +952,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                   ),
                                                   AuthUserStreamWidget(
                                                     builder: (context) => Text(
-                                                      '${() {
-                                                        if (valueOrDefault<
-                                                                double>(
-                                                              valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  valueOrDefault<
-                                                                      double>(
-                                                                    GoldPriceCall
-                                                                        .price(
-                                                                      portfolioPageGoldPriceResponse
-                                                                          .jsonBody,
-                                                                    ),
-                                                                    7000.0,
-                                                                  ),
-                                                              0.0,
-                                                            ) >
-                                                            valueOrDefault(
-                                                                currentUserDocument
-                                                                    ?.amountBought,
-                                                                0.0)) {
-                                                          return '+ ';
-                                                        } else if (valueOrDefault<
-                                                                double>(
-                                                              valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  valueOrDefault<
-                                                                      double>(
-                                                                    GoldPriceCall
-                                                                        .price(
-                                                                      portfolioPageGoldPriceResponse
-                                                                          .jsonBody,
-                                                                    ),
-                                                                    7000.0,
-                                                                  ),
-                                                              0.0,
-                                                            ) <
-                                                            valueOrDefault(
-                                                                currentUserDocument
-                                                                    ?.amountBought,
-                                                                0.0)) {
-                                                          return '- ';
-                                                        } else {
-                                                          return ' ';
-                                                        }
-                                                      }()}${valueOrDefault<String>(
+                                                      valueOrDefault<String>(
                                                         formatNumber(
                                                           (valueOrDefault(
                                                                       currentUserDocument
@@ -1121,7 +978,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                           locale: 'en_US',
                                                         ),
                                                         '0',
-                                                      )}',
+                                                      ),
                                                       style:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -1327,7 +1184,11 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                         ),
                                       ),
                                     ),
-
+                                    noItemsFoundIndicatorBuilder: (_) =>
+                                        const ListEmptyComponentWidget(
+                                      text:
+                                          'You haven\'t made any transaction yet.',
+                                    ),
                                     itemBuilder: (context, _, listViewIndex) {
                                       final listViewDigiGoldBuyRecord = _model
                                           .listViewPagingController!

@@ -47,17 +47,15 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
       _model.readAppSettings = await queryAppSettingsRecordOnce(
         singleRecord: true,
       ).then((s) => s.firstOrNull);
-      setState(() {
-        _model.commisionFees =
-            _model.readAppSettings?.commisionFees.toDouble();
-        _model.discount = _model.readAppSettings?.discount.toDouble();
-        _model.buyingFees =
-            _model.readAppSettings?.transactionFeesBuy.toDouble();
-        _model.gst = _model.readAppSettings?.gst.toDouble();
-        _model.rewards = _model.readAppSettings?.rewards.toDouble();
-        _model.goldDifference =
-            _model.readAppSettings?.goldDiffAmount.toDouble();
-      });
+      _model.commisionFees = _model.readAppSettings?.commisionFees.toDouble();
+      _model.discount = _model.readAppSettings?.discount.toDouble();
+      _model.buyingFees =
+          _model.readAppSettings?.transactionFeesBuy.toDouble();
+      _model.gst = _model.readAppSettings?.gst.toDouble();
+      _model.rewards = _model.readAppSettings?.rewards.toDouble();
+      _model.goldDifference =
+          _model.readAppSettings?.goldDiffAmount.toDouble();
+      setState(() {});
       await Future.wait([
         Future(() async {
           _model.mainTimer = InstantTimer.periodic(
@@ -79,12 +77,11 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
         }),
         Future(() async {
           _model.goldDataAPI = await GoldPriceCall.call();
-          setState(() {
-            _model.goldPrice = valueOrDefault<double>(
-              (_model.goldDataAPI?.jsonBody ?? ''),
-              6000.0,
-            );
-          });
+          _model.goldPrice = valueOrDefault<double>(
+            (_model.goldDataAPI?.jsonBody ?? ''),
+            6000.0,
+          );
+          setState(() {});
         }),
       ]);
     });
@@ -578,13 +575,23 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                   onTap: (i) async {
                                     [
                                       () async {
+                                        _model.enteredAmount = 0.0;
+                                        setState(() {});
                                         setState(() {
-                                          _model.enteredAmount = 0.0;
+                                          _model.amountFieldTextController1
+                                              ?.clear();
+                                          _model.amountFieldTextController2
+                                              ?.clear();
                                         });
                                       },
                                       () async {
+                                        _model.enteredAmount = 0.0;
+                                        setState(() {});
                                         setState(() {
-                                          _model.enteredAmount = 0.0;
+                                          _model.amountFieldTextController1
+                                              ?.clear();
+                                          _model.amountFieldTextController2
+                                              ?.clear();
                                         });
                                       }
                                     ][i]();
@@ -696,12 +703,12 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                       milliseconds:
                                                                           25),
                                                                   () async {
+                                                                    _model.enteredAmount =
+                                                                        double.tryParse(_model
+                                                                            .amountFieldTextController1
+                                                                            .text);
                                                                     setState(
-                                                                        () {
-                                                                      _model.enteredAmount = double.tryParse(_model
-                                                                          .amountFieldTextController1
-                                                                          .text);
-                                                                    });
+                                                                        () {});
                                                                   },
                                                                 ),
                                                                 autofocus:
@@ -1378,10 +1385,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController1
                                                             ?.text = '10';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            10.0;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          10.0;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -1408,10 +1414,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController1
                                                             ?.text = '101';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            101.0;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          101.0;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -1438,10 +1443,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController1
                                                             ?.text = '501';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            501.0;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          501.0;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -1479,10 +1483,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                   .amountFieldTextController1
                                                                   ?.text = '1001';
                                                             });
-                                                            setState(() {
-                                                              _model.enteredAmount =
-                                                                  1001.0;
-                                                            });
+                                                            _model.enteredAmount =
+                                                                1001.0;
+                                                            setState(() {});
                                                           },
                                                           child: wrapWithModel(
                                                             model: _model
@@ -1621,9 +1624,10 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                   onTap: () async {
                                                     await processRazorpayPayment(
                                                       context,
-                                                      amount: _model
-                                                          .enteredAmount!
-                                                          .round(),
+                                                      amount: int.parse(_model
+                                                              .amountFieldTextController1
+                                                              .text) *
+                                                          100,
                                                       currency: 'INR',
                                                       userName:
                                                           currentUserDisplayName,
@@ -2391,17 +2395,16 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                       milliseconds:
                                                                           25),
                                                                   () async {
+                                                                    _model.enteredAmount =
+                                                                        valueOrDefault<
+                                                                            double>(
+                                                                      double.tryParse(_model
+                                                                          .amountFieldTextController2
+                                                                          .text),
+                                                                      0.0,
+                                                                    );
                                                                     setState(
-                                                                        () {
-                                                                      _model.enteredAmount =
-                                                                          valueOrDefault<
-                                                                              double>(
-                                                                        double.tryParse(_model
-                                                                            .amountFieldTextController2
-                                                                            .text),
-                                                                        0.0,
-                                                                      );
-                                                                    });
+                                                                        () {});
                                                                   },
                                                                 ),
                                                                 autofocus:
@@ -3293,10 +3296,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController2
                                                             ?.text = '0.1';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            0.1;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          0.1;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -3323,10 +3325,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController2
                                                             ?.text = '0.5';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            0.5;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          0.5;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -3364,10 +3365,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                   .amountFieldTextController2
                                                                   ?.text = '1.0';
                                                             });
-                                                            setState(() {
-                                                              _model.enteredAmount =
-                                                                  1.0;
-                                                            });
+                                                            _model.enteredAmount =
+                                                                1.0;
+                                                            setState(() {});
                                                           },
                                                           child: wrapWithModel(
                                                             model: _model
@@ -3424,10 +3424,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                             .amountFieldTextController2
                                                             ?.text = '1.5';
                                                       });
-                                                      setState(() {
-                                                        _model.enteredAmount =
-                                                            1.5;
-                                                      });
+                                                      _model.enteredAmount =
+                                                          1.5;
+                                                      setState(() {});
                                                     },
                                                     child: wrapWithModel(
                                                       model: _model
@@ -3541,123 +3540,119 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                     try {
                                                       await processRazorpayPayment(
                                                         context,
-                                                        amount:
-                                                            valueOrDefault<int>(
-                                                          ((valueOrDefault<
-                                                                          double>(
-                                                                        _model
-                                                                            .enteredAmount,
-                                                                        0.0,
-                                                                      ) *
-                                                                      (valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.0,
-                                                                          ) +
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) *
-                                                                              valueOrDefault<double>(
-                                                                                _model.goldDifference,
-                                                                                0.0,
-                                                                              ) /
-                                                                              100))) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .buyingFees,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .commisionFees,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .gst,
-                                                                        3.0,
-                                                                      ) /
-                                                                      100) -
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .discount,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100))
-                                                              .round(),
-                                                          1,
-                                                        ),
+                                                        amount: (((valueOrDefault<
+                                                                            double>(
+                                                                          _model
+                                                                              .enteredAmount,
+                                                                          0.0,
+                                                                        ) *
+                                                                        (valueOrDefault<double>(
+                                                                              _model.goldPrice,
+                                                                              6000.0,
+                                                                            ) +
+                                                                            (valueOrDefault<double>(
+                                                                                  _model.goldPrice,
+                                                                                  6000.0,
+                                                                                ) *
+                                                                                valueOrDefault<double>(
+                                                                                  _model.goldDifference,
+                                                                                  0.0,
+                                                                                ) /
+                                                                                100))) +
+                                                                    ((valueOrDefault<double>(
+                                                                              _model.enteredAmount,
+                                                                              0.0,
+                                                                            ) *
+                                                                            (valueOrDefault<double>(
+                                                                                  _model.goldPrice,
+                                                                                  6000.0,
+                                                                                ) +
+                                                                                (valueOrDefault<double>(
+                                                                                      _model.goldPrice,
+                                                                                      6000.0,
+                                                                                    ) *
+                                                                                    valueOrDefault<double>(
+                                                                                      _model.goldDifference,
+                                                                                      0.0,
+                                                                                    ) /
+                                                                                    100))) *
+                                                                        valueOrDefault<double>(
+                                                                          _model
+                                                                              .buyingFees,
+                                                                          0.0,
+                                                                        ) /
+                                                                        100) +
+                                                                    ((valueOrDefault<double>(
+                                                                              _model.enteredAmount,
+                                                                              0.0,
+                                                                            ) *
+                                                                            (valueOrDefault<double>(
+                                                                                  _model.goldPrice,
+                                                                                  6000.0,
+                                                                                ) +
+                                                                                (valueOrDefault<double>(
+                                                                                      _model.goldPrice,
+                                                                                      6000.0,
+                                                                                    ) *
+                                                                                    valueOrDefault<double>(
+                                                                                      _model.goldDifference,
+                                                                                      0.0,
+                                                                                    ) /
+                                                                                    100))) *
+                                                                        valueOrDefault<double>(
+                                                                          _model
+                                                                              .commisionFees,
+                                                                          0.0,
+                                                                        ) /
+                                                                        100) +
+                                                                    ((valueOrDefault<double>(
+                                                                              _model.enteredAmount,
+                                                                              0.0,
+                                                                            ) *
+                                                                            (valueOrDefault<double>(
+                                                                                  _model.goldPrice,
+                                                                                  6000.0,
+                                                                                ) +
+                                                                                (valueOrDefault<double>(
+                                                                                      _model.goldPrice,
+                                                                                      6000.0,
+                                                                                    ) *
+                                                                                    valueOrDefault<double>(
+                                                                                      _model.goldDifference,
+                                                                                      0.0,
+                                                                                    ) /
+                                                                                    100))) *
+                                                                        valueOrDefault<double>(
+                                                                          _model
+                                                                              .gst,
+                                                                          3.0,
+                                                                        ) /
+                                                                        100) -
+                                                                    ((valueOrDefault<double>(
+                                                                              _model.enteredAmount,
+                                                                              0.0,
+                                                                            ) *
+                                                                            (valueOrDefault<double>(
+                                                                                  _model.goldPrice,
+                                                                                  6000.0,
+                                                                                ) +
+                                                                                (valueOrDefault<double>(
+                                                                                      _model.goldPrice,
+                                                                                      6000.0,
+                                                                                    ) *
+                                                                                    valueOrDefault<double>(
+                                                                                      _model.goldDifference,
+                                                                                      0.0,
+                                                                                    ) /
+                                                                                    100))) *
+                                                                        valueOrDefault<double>(
+                                                                          _model
+                                                                              .discount,
+                                                                          0.0,
+                                                                        ) /
+                                                                        100)) *
+                                                                100)
+                                                            .round(),
                                                         currency: 'INR',
                                                         userContact:
                                                             FFAppState()

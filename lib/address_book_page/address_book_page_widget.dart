@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/components/add_new_address_widget.dart';
 import '/components/custom_list_tile_widget.dart';
+import '/components/list_empty_component_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -93,6 +94,11 @@ class _AddressBookPageWidgetState extends State<AddressBookPageWidget> {
                           final address =
                               (currentUserDocument?.address.toList() ?? [])
                                   .toList();
+                          if (address.isEmpty) {
+                            return const ListEmptyComponentWidget(
+                              text: 'You haven\'t added any address yet.',
+                            );
+                          }
                           return ListView.separated(
                             padding: EdgeInsets.zero,
                             primary: false,

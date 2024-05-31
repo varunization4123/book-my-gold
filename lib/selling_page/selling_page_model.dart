@@ -1,4 +1,5 @@
 import '/backend/api_requests/api_calls.dart';
+import '/backend/backend.dart';
 import '/components/withdraw_full_widget.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -8,13 +9,27 @@ import 'selling_page_widget.dart' show SellingPageWidget;
 import 'package:flutter/material.dart';
 
 class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
+  ///  Local state fields for this page.
+
+  double? goldPrice = 6000.0;
+
+  double? goldDifference = 1.0;
+
+  double? enteredAmount = 0.0;
+
+  double? sellingFees = 1.0;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
   final formKey2 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
+  // Stores action output result for [Firestore Query - Query a collection] action in SellingPage widget.
+  AppSettingsRecord? readAppSettings;
   InstantTimer? mainTimer;
   InstantTimer? refreshTimer;
+  // Stores action output result for [Backend Call - API (Gold Price)] action in SellingPage widget.
+  ApiCallResponse? goldDataAPI;
   // State field(s) for Timer widget.
   final timerInitialTimeMs = 300000;
   int timerMilliseconds = 300000;

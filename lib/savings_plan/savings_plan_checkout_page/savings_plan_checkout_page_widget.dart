@@ -197,11 +197,10 @@ class _SavingsPlanCheckoutPageWidgetState
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                setState(() {
-                                  _model.upiPlatform = 'PhonePe';
-                                  _model.phonePeSelected = true;
-                                  _model.gPaySelected = false;
-                                });
+                                _model.upiPlatform = 'PhonePe';
+                                _model.phonePeSelected = true;
+                                _model.gPaySelected = false;
+                                setState(() {});
                               },
                               child: wrapWithModel(
                                 model: _model.paymentProviderModel1,
@@ -220,11 +219,10 @@ class _SavingsPlanCheckoutPageWidgetState
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                setState(() {
-                                  _model.upiPlatform = 'GPe';
-                                  _model.phonePeSelected = false;
-                                  _model.gPaySelected = true;
-                                });
+                                _model.upiPlatform = 'GPe';
+                                _model.phonePeSelected = false;
+                                _model.gPaySelected = true;
+                                setState(() {});
                               },
                               child: wrapWithModel(
                                 model: _model.paymentProviderModel2,

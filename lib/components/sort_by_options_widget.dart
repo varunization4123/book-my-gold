@@ -38,9 +38,8 @@ class _SortByOptionsWidgetState extends State<SortByOptionsWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24.0),
       child: Container(
-        width: 300.0,
         decoration: BoxDecoration(
           color: FlutterFlowTheme.of(context).secondaryBackground,
           boxShadow: const [
@@ -56,7 +55,7 @@ class _SortByOptionsWidgetState extends State<SortByOptionsWidget> {
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 12.0),
+          padding: const EdgeInsets.all(18.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,10 +86,9 @@ class _SortByOptionsWidgetState extends State<SortByOptionsWidget> {
                       hoverColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () async {
-                        setState(() {
-                          _model.dateIsSelected = true;
-                          _model.priceIsSelected = false;
-                        });
+                        _model.dateIsSelected = true;
+                        _model.priceIsSelected = false;
+                        setState(() {});
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
@@ -156,10 +154,9 @@ class _SortByOptionsWidgetState extends State<SortByOptionsWidget> {
                     hoverColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onTap: () async {
-                      setState(() {
-                        _model.priceIsSelected = true;
-                        _model.dateIsSelected = false;
-                      });
+                      _model.priceIsSelected = true;
+                      _model.dateIsSelected = false;
+                      setState(() {});
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.max,

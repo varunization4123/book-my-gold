@@ -83,6 +83,16 @@ class UsersRecord extends FirestoreRecord {
   double get goldBought => _goldBought ?? 0.0;
   bool hasGoldBought() => _goldBought != null;
 
+  // "userRef" field.
+  DocumentReference? _userRef;
+  DocumentReference? get userRef => _userRef;
+  bool hasUserRef() => _userRef != null;
+
+  // "userRefs" field.
+  List<DocumentReference>? _userRefs;
+  List<DocumentReference> get userRefs => _userRefs ?? const [];
+  bool hasUserRefs() => _userRefs != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -97,6 +107,8 @@ class UsersRecord extends FirestoreRecord {
     _upiIds = getDataList(snapshotData['upi_ids']);
     _amountBought = castToType<double>(snapshotData['amount_bought']);
     _goldBought = castToType<double>(snapshotData['gold_bought']);
+    _userRef = snapshotData['userRef'] as DocumentReference?;
+    _userRefs = getDataList(snapshotData['userRefs']);
   }
 
   static CollectionReference get collection =>
@@ -155,6 +167,18 @@ class UsersRecord extends FirestoreRecord {
             ParamType.double,
             false,
           ),
+          'userRef': convertAlgoliaParam(
+            snapshot.data['userRef'],
+            ParamType.DocumentReference,
+            false,
+          ),
+          'userRefs': safeGet(
+            () => convertAlgoliaParam<DocumentReference>(
+              snapshot.data['userRefs'],
+              ParamType.DocumentReference,
+              true,
+            ).toList(),
+          ),
         },
         UsersRecord.collection.doc(snapshot.objectID),
       );
@@ -202,6 +226,7 @@ Map<String, dynamic> createUsersRecordData({
   String? gender,
   double? amountBought,
   double? goldBought,
+  DocumentReference? userRef,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -216,6 +241,7 @@ Map<String, dynamic> createUsersRecordData({
       'gender': gender,
       'amount_bought': amountBought,
       'gold_bought': goldBought,
+      'userRef': userRef,
     }.withoutNulls,
   );
 
@@ -240,7 +266,9 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         listEquality.equals(e1?.address, e2?.address) &&
         listEquality.equals(e1?.upiIds, e2?.upiIds) &&
         e1?.amountBought == e2?.amountBought &&
-        e1?.goldBought == e2?.goldBought;
+        e1?.goldBought == e2?.goldBought &&
+        e1?.userRef == e2?.userRef &&
+        listEquality.equals(e1?.userRefs, e2?.userRefs);
   }
 
   @override
@@ -257,7 +285,9 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.address,
         e?.upiIds,
         e?.amountBought,
-        e?.goldBought
+        e?.goldBought,
+        e?.userRef,
+        e?.userRefs
       ]);
 
   @override

@@ -394,9 +394,8 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                                   .validate()) {
                                             return;
                                           }
-                                          setState(() {
-                                            _model.isLoading = true;
-                                          });
+                                          _model.isLoading = true;
+                                          setState(() {});
 
                                           await currentUserReference!
                                               .update(createUsersRecordData(

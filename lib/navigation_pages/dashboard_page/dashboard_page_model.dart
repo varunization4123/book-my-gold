@@ -7,6 +7,8 @@ import '/components/s_i_p_card_widget.dart';
 import '/components/sponsored_card_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dashboard_page_widget.dart' show DashboardPageWidget;
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart'
+    show TutorialCoachMark;
 import 'package:flutter/material.dart';
 
 class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
@@ -18,10 +20,10 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
+  TutorialCoachMark? appWalkthroughController;
   final unfocusNode = FocusNode();
   // Stores action output result for [Firestore Query - Query a collection] action in DashboardPage widget.
   AppSettingsRecord? readAppSettings;
-  bool biometricOnLoad = false;
   // Stores action output result for [Backend Call - API (Gold Price)] action in DashboardPage widget.
   ApiCallResponse? goldPriceFromApi;
   // Model for CustomGraph component.
@@ -79,6 +81,7 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
 
   @override
   void dispose() {
+    appWalkthroughController?.finish();
     unfocusNode.dispose();
     customGraphModel.dispose();
     grapOptionModel1.dispose();

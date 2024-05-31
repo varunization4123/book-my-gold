@@ -72,9 +72,8 @@ class _FAQPointWidgetState extends State<FAQPointWidget> {
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   onTap: () async {
-                    setState(() {
-                      _model.isSelected = !_model.isSelected;
-                    });
+                    _model.isSelected = !_model.isSelected;
+                    setState(() {});
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.max,

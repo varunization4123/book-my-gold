@@ -1,6 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/components/add_new_u_p_i_widget.dart';
 import '/components/custom_list_tile_widget.dart';
+import '/components/list_empty_component_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -82,119 +83,122 @@ class _PaymentMethodsPageWidgetState extends State<PaymentMethodsPageWidget> {
           top: true,
           child: Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(12.0, 36.0, 12.0, 36.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(),
-                    child: AuthUserStreamWidget(
-                      builder: (context) => Builder(
-                        builder: (context) {
-                          final upiId =
-                              (currentUserDocument?.upiIds.toList() ?? [])
-                                  .toList();
-                          return ListView.separated(
-                            padding: EdgeInsets.zero,
-                            primary: false,
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: upiId.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 16.0),
-                            itemBuilder: (context, upiIdIndex) {
-                              final upiIdItem = upiId[upiIdIndex];
-                              return CustomListTileWidget(
-                                key: Key(
-                                    'Key5yu_${upiIdIndex}_of_${upiId.length}'),
-                                item: upiIdItem,
-                              );
-                            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(),
+                  child: AuthUserStreamWidget(
+                    builder: (context) => Builder(
+                      builder: (context) {
+                        final upiId =
+                            (currentUserDocument?.upiIds.toList() ?? [])
+                                .toList();
+                        if (upiId.isEmpty) {
+                          return const Center(
+                            child: ListEmptyComponentWidget(
+                              text: 'No Payment Methods Added',
+                            ),
                           );
-                        },
-                      ),
+                        }
+                        return ListView.separated(
+                          padding: EdgeInsets.zero,
+                          primary: false,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: upiId.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 16.0),
+                          itemBuilder: (context, upiIdIndex) {
+                            final upiIdItem = upiId[upiIdIndex];
+                            return CustomListTileWidget(
+                              key: Key(
+                                  'Key5yu_${upiIdIndex}_of_${upiId.length}'),
+                              item: upiIdItem,
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
-                  InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      await showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor:
-                            FlutterFlowTheme.of(context).primaryBackground,
-                        barrierColor: const Color(0x50000000),
-                        enableDrag: false,
-                        context: context,
-                        builder: (context) {
-                          return WebViewAware(
-                            child: GestureDetector(
-                              onTap: () => _model.unfocusNode.canRequestFocus
-                                  ? FocusScope.of(context)
-                                      .requestFocus(_model.unfocusNode)
-                                  : FocusScope.of(context).unfocus(),
-                              child: Padding(
-                                padding: MediaQuery.viewInsetsOf(context),
-                                child: SizedBox(
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.5,
-                                  child: const AddNewUPIWidget(),
-                                ),
+                ),
+                InkWell(
+                  splashColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () async {
+                    await showModalBottomSheet(
+                      isScrollControlled: true,
+                      backgroundColor:
+                          FlutterFlowTheme.of(context).primaryBackground,
+                      barrierColor: const Color(0x50000000),
+                      enableDrag: false,
+                      context: context,
+                      builder: (context) {
+                        return WebViewAware(
+                          child: GestureDetector(
+                            onTap: () => _model.unfocusNode.canRequestFocus
+                                ? FocusScope.of(context)
+                                    .requestFocus(_model.unfocusNode)
+                                : FocusScope.of(context).unfocus(),
+                            child: Padding(
+                              padding: MediaQuery.viewInsetsOf(context),
+                              child: SizedBox(
+                                height: MediaQuery.sizeOf(context).height * 0.5,
+                                child: const AddNewUPIWidget(),
                               ),
                             ),
-                          );
-                        },
-                      ).then((value) => safeSetState(() {}));
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            FlutterFlowTheme.of(context).secondary,
-                            FlutterFlowTheme.of(context).tertiary,
-                            FlutterFlowTheme.of(context).secondary
-                          ],
-                          stops: const [0.0, 0.6, 1.0],
-                          begin: const AlignmentDirectional(1.0, -0.5),
-                          end: const AlignmentDirectional(-1.0, 0.5),
-                        ),
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).tertiary,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.add_box,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 24.0,
-                            ),
                           ),
-                          Text(
-                            'Add a new UPI ID',
-                            style: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  fontFamily: 'Nunito',
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
+                        );
+                      },
+                    ).then((value) => safeSetState(() {}));
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          FlutterFlowTheme.of(context).secondary,
+                          FlutterFlowTheme.of(context).tertiary,
+                          FlutterFlowTheme.of(context).secondary
                         ],
+                        stops: const [0.0, 0.6, 1.0],
+                        begin: const AlignmentDirectional(1.0, -0.5),
+                        end: const AlignmentDirectional(-1.0, 0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(
+                        color: FlutterFlowTheme.of(context).tertiary,
                       ),
                     ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.add_box,
+                            color: FlutterFlowTheme.of(context).primaryText,
+                            size: 24.0,
+                          ),
+                        ),
+                        Text(
+                          'Add a new UPI ID',
+                          style: FlutterFlowTheme.of(context)
+                              .titleSmall
+                              .override(
+                                fontFamily: 'Nunito',
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ],
+                    ),
                   ),
-                ].divide(const SizedBox(height: 24.0)),
-              ),
+                ),
+              ].divide(const SizedBox(height: 24.0)),
             ),
           ),
         ),
