@@ -48,7 +48,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       _model.goldPriceFromApi = await GoldPriceCall.call();
       if ((_model.goldPriceFromApi?.succeeded ?? true)) {
         _model.goldPrice = valueOrDefault<double>(
-          GoldPriceCall.currentPrice(
+          GoldPriceCall.price(
             (_model.goldPriceFromApi?.jsonBody ?? ''),
           ),
           6000.00,
@@ -1385,7 +1385,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                 context.pushNamed('SpinTheWheelPage');
                               },
                               child: wrapWithModel(
-                                model: _model.rewardsCardModel,
+                                model: _model.rewardsCardModel1,
                                 updateCallback: () => setState(() {}),
                                 child: const RewardsCardWidget(
                                   title: 'Spin the wheel of fortune',
@@ -1393,6 +1393,84 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                       'https://firebasestorage.googleapis.com/v0/b/jar-app-2kol48.appspot.com/o/app-images%2FWheel%20of%20fortune%20small.png?alt=media&token=98e7b847-509d-42c0-a350-8a50c601b017',
                                   description:
                                       'Stand a chance to win upto 1gm of \nExtra Gold',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(12.0, 12.0, 12.0, 0.0),
+                      child: Container(
+                        decoration: const BoxDecoration(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Divider(
+                              thickness: 1.0,
+                              color: FlutterFlowTheme.of(context).formBorder,
+                            ),
+                            Align(
+                              alignment: const AlignmentDirectional(-1.0, 0.0),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 12.0, 0.0, 0.0),
+                                child: Text(
+                                  'Refer a Friend',
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: 'Nunito',
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: const AlignmentDirectional(-1.0, 0.0),
+                              child: Text(
+                                'Refer a friend and get rewarded in Gold',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed('ReferAndEarnPage');
+                              },
+                              child: wrapWithModel(
+                                model: _model.rewardsCardModel2,
+                                updateCallback: () => setState(() {}),
+                                child: const RewardsCardWidget(
+                                  title: 'Refer a friend',
+                                  img:
+                                      'https://firebasestorage.googleapis.com/v0/b/jar-app-2kol48.appspot.com/o/app-images%2FReferral.png?alt=media&token=cdcc0ff0-07a1-48f5-88bf-18249919f4fa',
+                                  description:
+                                      'Win upto 1gm of  Gold for every\nreferral you make',
                                 ),
                               ),
                             ),

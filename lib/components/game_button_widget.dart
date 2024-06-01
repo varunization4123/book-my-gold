@@ -2,6 +2,7 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'game_button_model.dart';
 export 'game_button_model.dart';
@@ -29,6 +30,15 @@ class _GameButtonWidgetState extends State<GameButtonWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => GameButtonModel());
+
+    // On component load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (animationsMap['containerOnActionTriggerAnimation1'] != null) {
+        await animationsMap['containerOnActionTriggerAnimation1']!
+            .controller
+            .forward(from: 0.0);
+      }
+    });
 
     animationsMap.addAll({
       'containerOnActionTriggerAnimation1': AnimationInfo(

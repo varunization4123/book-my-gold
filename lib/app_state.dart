@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'flutter_flow/request_manager.dart';
 import '/backend/backend.dart';
-import 'backend/api_requests/api_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:csv/csv.dart';
 import 'package:synchronized/synchronized.dart';
-import 'flutter_flow/flutter_flow_util.dart';
 
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
@@ -29,9 +27,6 @@ class FFAppState extends ChangeNotifier {
     await _safeInitAsync(() async {
       _biometricEnabled = await secureStorage.getBool('ff_biometricEnabled') ??
           _biometricEnabled;
-    });
-    await _safeInitAsync(() async {
-      _userRef = (await secureStorage.getString('ff_userRef'))?.ref ?? _userRef;
     });
   }
 
@@ -64,19 +59,6 @@ class FFAppState extends ChangeNotifier {
     secureStorage.delete(key: 'ff_biometricEnabled');
   }
 
-  DocumentReference? _userRef;
-  DocumentReference? get userRef => _userRef;
-  set userRef(DocumentReference? value) {
-    _userRef = value;
-    value != null
-        ? secureStorage.setString('ff_userRef', value.path)
-        : secureStorage.remove('ff_userRef');
-  }
-
-  void deleteUserRef() {
-    secureStorage.delete(key: 'ff_userRef');
-  }
-
   final _transactionsQueryManager =
       FutureRequestManager<List<DigiGoldBuyRecord>>();
   Future<List<DigiGoldBuyRecord>> transactionsQuery({
@@ -92,23 +74,6 @@ class FFAppState extends ChangeNotifier {
   void clearTransactionsQueryCache() => _transactionsQueryManager.clear();
   void clearTransactionsQueryCacheKey(String? uniqueKey) =>
       _transactionsQueryManager.clearRequest(uniqueKey);
-
-  final _previousTransactionQueryManager =
-      FutureRequestManager<ApiCallResponse>();
-  Future<ApiCallResponse> previousTransactionQuery({
-    String? uniqueQueryKey,
-    bool? overrideCache,
-    required Future<ApiCallResponse> Function() requestFn,
-  }) =>
-      _previousTransactionQueryManager.performRequest(
-        uniqueQueryKey: uniqueQueryKey,
-        overrideCache: overrideCache,
-        requestFn: requestFn,
-      );
-  void clearPreviousTransactionQueryCache() =>
-      _previousTransactionQueryManager.clear();
-  void clearPreviousTransactionQueryCacheKey(String? uniqueKey) =>
-      _previousTransactionQueryManager.clearRequest(uniqueKey);
 }
 
 void _safeInit(Function() initializeField) {

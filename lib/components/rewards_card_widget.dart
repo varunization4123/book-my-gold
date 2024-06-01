@@ -52,6 +52,9 @@ class _RewardsCardWidgetState extends State<RewardsCardWidget> {
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).accent1,
         borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(
+          color: FlutterFlowTheme.of(context).secondary,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.max,

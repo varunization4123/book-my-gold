@@ -258,6 +258,35 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: '/appSecurityPage',
           requireAuth: true,
           builder: (context, params) => const AppSecurityPageWidget(),
+        ),
+        FFRoute(
+          name: 'ReferAndEarnPage',
+          path: '/referAndEarnPage',
+          requireAuth: true,
+          builder: (context, params) => const ReferAndEarnPageWidget(),
+        ),
+        FFRoute(
+          name: 'TransactionDetailPage',
+          path: '/transactionDetailPage',
+          requireAuth: true,
+          builder: (context, params) => TransactionDetailPageWidget(
+            amount: params.getParam(
+              'amount',
+              ParamType.String,
+            ),
+            gold: params.getParam(
+              'gold',
+              ParamType.String,
+            ),
+            status: params.getParam(
+              'status',
+              ParamType.bool,
+            ),
+            time: params.getParam(
+              'time',
+              ParamType.DateTime,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

@@ -36,3 +36,7 @@ export '/pages/spin_the_wheel_page/spin_the_wheel_page_widget.dart'
     show SpinTheWheelPageWidget;
 export '/app_security_page/app_security_page_widget.dart'
     show AppSecurityPageWidget;
+export '/refer_and_earn_page/refer_and_earn_page_widget.dart'
+    show ReferAndEarnPageWidget;
+export '/transaction_detail_page/transaction_detail_page_widget.dart'
+    show TransactionDetailPageWidget;

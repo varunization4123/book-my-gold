@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'portfolio_page_widget.dart' show PortfolioPageWidget;
@@ -5,9 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
+  ///  Local state fields for this page.
+
+  double? goldPrice = 6000.0;
+
+  double? goldDifference = 1.0;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  // Stores action output result for [Backend Call - API (Gold Price)] action in PortfolioPage widget.
+  ApiCallResponse? goldApiData;
   // State field(s) for ListView widget.
 
   PagingController<DocumentSnapshot?, DigiGoldBuyRecord>?

@@ -57,7 +57,9 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
   // Model for SponsoredCard component.
   late SponsoredCardModel sponsoredCardModel4;
   // Model for RewardsCard component.
-  late RewardsCardModel rewardsCardModel;
+  late RewardsCardModel rewardsCardModel1;
+  // Model for RewardsCard component.
+  late RewardsCardModel rewardsCardModel2;
 
   @override
   void initState(BuildContext context) {
@@ -76,7 +78,8 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
     sponsoredCardModel2 = createModel(context, () => SponsoredCardModel());
     sponsoredCardModel3 = createModel(context, () => SponsoredCardModel());
     sponsoredCardModel4 = createModel(context, () => SponsoredCardModel());
-    rewardsCardModel = createModel(context, () => RewardsCardModel());
+    rewardsCardModel1 = createModel(context, () => RewardsCardModel());
+    rewardsCardModel2 = createModel(context, () => RewardsCardModel());
   }
 
   @override
@@ -98,6 +101,7 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
     sponsoredCardModel2.dispose();
     sponsoredCardModel3.dispose();
     sponsoredCardModel4.dispose();
-    rewardsCardModel.dispose();
+    rewardsCardModel1.dispose();
+    rewardsCardModel2.dispose();
   }
 }

@@ -8,7 +8,7 @@ async function _goldPriceCall(context, ffVariables) {
 
   var url = `https://www.goldapi.io/api/XAU/INR`;
   var headers = {
-    "x-access-token": `goldapi-f82cu2slurzazu4-io`,
+    "x-access-token": `goldapi-5z18ld4gkwkcye86-io`,
     "Content-Type": `application/json`,
   };
   var params = {};
