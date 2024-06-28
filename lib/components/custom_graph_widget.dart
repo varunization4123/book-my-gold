@@ -83,7 +83,7 @@ class _CustomGraphWidgetState extends State<CustomGraphWidget> {
                             barWidth: 2.0,
                             isCurved: true,
                             preventCurveOverShooting: true,
-                            dotData: FlDotData(show: false),
+                            dotData: const FlDotData(show: false),
                             belowBarData: BarAreaData(
                               show: true,
                               color: FlutterFlowTheme.of(context).accent1,

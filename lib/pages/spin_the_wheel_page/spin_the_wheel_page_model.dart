@@ -4,6 +4,12 @@ import 'spin_the_wheel_page_widget.dart' show SpinTheWheelPageWidget;
 import 'package:flutter/material.dart';
 
 class SpinTheWheelPageModel extends FlutterFlowModel<SpinTheWheelPageWidget> {
+  ///  Local state fields for this page.
+
+  int? spinCounter = 5;
+
+  bool isSpinning = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();

@@ -77,6 +77,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
         }),
         Future(() async {
           _model.goldDataAPI = await GoldPriceCall.call();
+
           _model.goldPrice = valueOrDefault<double>(
             (_model.goldDataAPI?.jsonBody ?? ''),
             6000.0,
@@ -1384,6 +1385,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController1
                                                             ?.text = '10';
+                                                        _model.amountFieldTextController1
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController1!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           10.0;
@@ -1413,6 +1421,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController1
                                                             ?.text = '101';
+                                                        _model.amountFieldTextController1
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController1!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           101.0;
@@ -1442,6 +1457,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController1
                                                             ?.text = '501';
+                                                        _model.amountFieldTextController1
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController1!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           501.0;
@@ -1482,6 +1504,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               _model
                                                                   .amountFieldTextController1
                                                                   ?.text = '1001';
+                                                              _model.amountFieldTextController1
+                                                                      ?.selection =
+                                                                  TextSelection.collapsed(
+                                                                      offset: _model
+                                                                          .amountFieldTextController1!
+                                                                          .text
+                                                                          .length);
                                                             });
                                                             _model.enteredAmount =
                                                                 1001.0;
@@ -3295,6 +3324,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController2
                                                             ?.text = '0.1';
+                                                        _model.amountFieldTextController2
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController2!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           0.1;
@@ -3324,6 +3360,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController2
                                                             ?.text = '0.5';
+                                                        _model.amountFieldTextController2
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController2!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           0.5;
@@ -3364,6 +3407,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               _model
                                                                   .amountFieldTextController2
                                                                   ?.text = '1.0';
+                                                              _model.amountFieldTextController2
+                                                                      ?.selection =
+                                                                  TextSelection.collapsed(
+                                                                      offset: _model
+                                                                          .amountFieldTextController2!
+                                                                          .text
+                                                                          .length);
                                                             });
                                                             _model.enteredAmount =
                                                                 1.0;
@@ -3423,6 +3473,13 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         _model
                                                             .amountFieldTextController2
                                                             ?.text = '1.5';
+                                                        _model.amountFieldTextController2
+                                                                ?.selection =
+                                                            TextSelection.collapsed(
+                                                                offset: _model
+                                                                    .amountFieldTextController2!
+                                                                    .text
+                                                                    .length);
                                                       });
                                                       _model.enteredAmount =
                                                           1.5;

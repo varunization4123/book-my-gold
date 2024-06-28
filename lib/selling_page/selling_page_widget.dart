@@ -68,6 +68,7 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
         }),
         Future(() async {
           _model.goldDataAPI = await GoldPriceCall.call();
+
           _model.goldPrice = valueOrDefault<double>(
             (_model.goldDataAPI?.jsonBody ?? ''),
             6000.0,
@@ -655,6 +656,13 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                               format: '###.#',
                                               locale: 'en_US',
                                             );
+                                            _model.amountFieldTextController
+                                                    ?.selection =
+                                                TextSelection.collapsed(
+                                                    offset: _model
+                                                        .amountFieldTextController!
+                                                        .text
+                                                        .length);
                                           });
                                           _model
                                               .enteredAmount = (valueOrDefault(
@@ -835,6 +843,7 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                           } else {
                                             _model.apiResultd1v =
                                                 await GoldPriceCall.call();
+
                                             if ((_model
                                                     .apiResultd1v?.succeeded ??
                                                 true)) {
@@ -1199,6 +1208,13 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                               format: '##.##',
                                               locale: 'en_US',
                                             );
+                                            _model.gramsFieldTextController
+                                                    ?.selection =
+                                                TextSelection.collapsed(
+                                                    offset: _model
+                                                        .gramsFieldTextController!
+                                                        .text
+                                                        .length);
                                           });
                                           _model.enteredAmount =
                                               valueOrDefault<double>(

@@ -40,3 +40,6 @@ export '/refer_and_earn_page/refer_and_earn_page_widget.dart'
     show ReferAndEarnPageWidget;
 export '/transaction_detail_page/transaction_detail_page_widget.dart'
     show TransactionDetailPageWidget;
+export '/support_page/support_page_widget.dart' show SupportPageWidget;
+export '/chat_support_page/chat_support_page_widget.dart'
+    show ChatSupportPageWidget;

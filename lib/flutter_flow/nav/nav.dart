@@ -287,6 +287,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               ParamType.DateTime,
             ),
           ),
+        ),
+        FFRoute(
+          name: 'SupportPage',
+          path: '/supportPage',
+          requireAuth: true,
+          builder: (context, params) => const SupportPageWidget(),
+        ),
+        FFRoute(
+          name: 'ChatSupportPage',
+          path: '/chatSupportPage',
+          requireAuth: true,
+          builder: (context, params) => const ChatSupportPageWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

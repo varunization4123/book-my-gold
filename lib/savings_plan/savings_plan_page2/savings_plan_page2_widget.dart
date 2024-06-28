@@ -343,6 +343,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController1
                                                     ?.text = '10';
+                                                _model.amountFieldTextController1
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController1!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -364,6 +371,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController1
                                                     ?.text = '101';
+                                                _model.amountFieldTextController1
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController1!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -385,6 +399,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController1
                                                     ?.text = '501';
+                                                _model.amountFieldTextController1
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController1!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -419,6 +440,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                       _model
                                                           .amountFieldTextController1
                                                           ?.text = '1001';
+                                                      _model.amountFieldTextController1
+                                                              ?.selection =
+                                                          TextSelection.collapsed(
+                                                              offset: _model
+                                                                  .amountFieldTextController1!
+                                                                  .text
+                                                                  .length);
                                                     });
                                                   },
                                                   child: wrapWithModel(
@@ -758,6 +786,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController2
                                                     ?.text = '10';
+                                                _model.amountFieldTextController2
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController2!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -779,6 +814,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController2
                                                     ?.text = '101';
+                                                _model.amountFieldTextController2
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController2!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -800,6 +842,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController2
                                                     ?.text = '501';
+                                                _model.amountFieldTextController2
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController2!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -834,6 +883,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                       _model
                                                           .amountFieldTextController2
                                                           ?.text = '1001';
+                                                      _model.amountFieldTextController2
+                                                              ?.selection =
+                                                          TextSelection.collapsed(
+                                                              offset: _model
+                                                                  .amountFieldTextController2!
+                                                                  .text
+                                                                  .length);
                                                     });
                                                   },
                                                   child: wrapWithModel(
@@ -1173,6 +1229,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController3
                                                     ?.text = '10';
+                                                _model.amountFieldTextController3
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController3!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -1194,6 +1257,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController3
                                                     ?.text = '101';
+                                                _model.amountFieldTextController3
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController3!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -1215,6 +1285,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                 _model
                                                     .amountFieldTextController3
                                                     ?.text = '501';
+                                                _model.amountFieldTextController3
+                                                        ?.selection =
+                                                    TextSelection.collapsed(
+                                                        offset: _model
+                                                            .amountFieldTextController3!
+                                                            .text
+                                                            .length);
                                               });
                                             },
                                             child: wrapWithModel(
@@ -1249,6 +1326,13 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                                                       _model
                                                           .amountFieldTextController3
                                                           ?.text = '1001';
+                                                      _model.amountFieldTextController3
+                                                              ?.selection =
+                                                          TextSelection.collapsed(
+                                                              offset: _model
+                                                                  .amountFieldTextController3!
+                                                                  .text
+                                                                  .length);
                                                     });
                                                   },
                                                   child: wrapWithModel(

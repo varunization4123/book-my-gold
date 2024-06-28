@@ -46,6 +46,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
           _model.readAppSettings?.goldDiffAmount.toDouble();
       setState(() {});
       _model.goldPriceFromApi = await GoldPriceCall.call();
+
       if ((_model.goldPriceFromApi?.succeeded ?? true)) {
         _model.goldPrice = valueOrDefault<double>(
           GoldPriceCall.price(

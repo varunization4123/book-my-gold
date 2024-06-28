@@ -37,6 +37,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       _model.goldApiData = await GoldPriceCall.call();
+
       if ((_model.goldApiData?.succeeded ?? true)) {
         _model.goldPrice = valueOrDefault<double>(
           GoldPriceCall.price(
