@@ -35,8 +35,10 @@ dependencies:
   cloud_functions_platform_interface: 5.5.26
   cloud_functions_web: 4.9.4
   collection: 1.18.0
+  crypto: ^3.0.3
   csv: 6.0.0
   easy_debounce: 2.0.1
+  encrypt: ^5.0.3
   equatable: 2.0.5
   file_picker: 8.0.3
   firebase_analytics: 10.10.5
@@ -76,7 +78,7 @@ dependencies:
   google_generative_ai: 0.1.0
   google_sign_in: 6.1.5
   google_sign_in_android: 6.1.20
-  google_sign_in_ios: 5.6.4
+  google_sign_in_ios: 5.7.6
   google_sign_in_platform_interface: 2.4.2
   google_sign_in_web: 0.12.1
   http: 1.2.1

@@ -1,16 +1,43 @@
+import '/backend/api_requests/api_calls.dart';
 import '/components/price_option_selected_widget.dart';
 import '/components/price_option_widget.dart';
+import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/instant_timer.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'savings_plan_page2_widget.dart' show SavingsPlanPage2Widget;
 import 'package:flutter/material.dart';
 
 class SavingsPlanPage2Model extends FlutterFlowModel<SavingsPlanPage2Widget> {
+  ///  Local state fields for this page.
+
+  double? goldPrice = 6000.0;
+
+  bool isLoading = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
   final formKey3 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
+  InstantTimer? mainTimer;
+  InstantTimer? refreshTimer;
+  // Stores action output result for [Backend Call - API (Buy Price API)] action in SavingsPlanPage2 widget.
+  ApiCallResponse? goldPriceFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SavingsPlanPage2 widget.
+  String? decryptedApiResponse;
+  // State field(s) for Timer widget.
+  final timerInitialTimeMs = 300000;
+  int timerMilliseconds = 300000;
+  String timerValue = StopWatchTimer.getDisplayTime(
+    300000,
+    hours: false,
+    milliSecond: false,
+  );
+  FlutterFlowTimerController timerController =
+      FlutterFlowTimerController(StopWatchTimer(mode: StopWatchMode.countDown));
+
   // State field(s) for TabBar widget.
   TabController? tabBarController;
   int get tabBarCurrentIndex =>
@@ -117,6 +144,9 @@ class SavingsPlanPage2Model extends FlutterFlowModel<SavingsPlanPage2Widget> {
   @override
   void dispose() {
     unfocusNode.dispose();
+    mainTimer?.cancel();
+    refreshTimer?.cancel();
+    timerController.dispose();
     tabBarController?.dispose();
     amountFieldFocusNode1?.dispose();
     amountFieldTextController1?.dispose();

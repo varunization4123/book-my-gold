@@ -2,18 +2,22 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/withdraw_full_widget.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_button_tabbar.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/instant_timer.dart';
-import '/flutter_flow/random_data_util.dart' as random_data;
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:collection/collection.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'selling_page_model.dart';
 export 'selling_page_model.dart';
@@ -30,6 +34,8 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
   late SellingPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -67,13 +73,38 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
           );
         }),
         Future(() async {
-          _model.goldDataAPI = await GoldPriceCall.call();
+          _model.goldSellPriceFromApi =
+              await SafeGoldAPIGroupGroup.sellPriceAPICall.call();
 
-          _model.goldPrice = valueOrDefault<double>(
-            (_model.goldDataAPI?.jsonBody ?? ''),
-            6000.0,
+          _model.decryptedApiResponse = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.goldSellPriceFromApi?.bodyText ?? ''),
           );
-          setState(() {});
+          if ((_model.goldSellPriceFromApi?.statusCode ?? 200) == 200) {
+            _model.goldPrice = valueOrDefault<double>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              ),
+              6000.0,
+            );
+            _model.rateId = valueOrDefault<String>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['rate_id']''',
+              )?.toString().toString(),
+              '6000',
+            );
+            setState(() {});
+            FFAppState().sellPrice = valueOrDefault<String>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              )?.toString().toString(),
+              '6000',
+            );
+            setState(() {});
+          }
         }),
       ]);
     });
@@ -88,6 +119,22 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
 
     _model.gramsFieldTextController ??= TextEditingController();
     _model.gramsFieldFocusNode ??= FocusNode();
+
+    animationsMap.addAll({
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 2000.0.ms,
+            begin: 0.0,
+            end: 5.0,
+          ),
+        ],
+      ),
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -824,6 +871,14 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                         hoverColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
+                                          if (_model.formKey2.currentState ==
+                                                  null ||
+                                              !_model.formKey2.currentState!
+                                                  .validate()) {
+                                            return;
+                                          }
+                                          _model.isLoading = true;
+                                          setState(() {});
                                           if (double.parse(_model
                                                   .amountFieldTextController
                                                   .text) >
@@ -840,74 +895,92 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                               _model.gramsFieldTextController
                                                   ?.clear();
                                             });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'You can only withdraw upto ${valueOrDefault(currentUserDocument?.amountBought, 0.0).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .primaryBackground,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                duration: const Duration(
+                                                    milliseconds: 4000),
+                                                backgroundColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                              ),
+                                            );
                                           } else {
-                                            _model.apiResultd1v =
-                                                await GoldPriceCall.call();
+                                            _model.sellVerifyApi =
+                                                await SafeGoldAPIGroupGroup
+                                                    .sellVerifyAPICall
+                                                    .call(
+                                              userId: FFAppState().userId,
+                                            );
 
+                                            actions
+                                                .encryptSellVerifyApiRequest(
+                                              _model.rateId!,
+                                              _model.goldPrice!.toString(),
+                                              _model.enteredAmount!.toString(),
+                                              FFAppState().safeGoldAccessToken,
+                                            );
                                             if ((_model
-                                                    .apiResultd1v?.succeeded ??
+                                                    .sellVerifyApi?.succeeded ??
                                                 true)) {
-                                              await Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 5000));
-
-                                              context.goNamed('LoadingScreen');
-
-                                              context.goNamed(
-                                                'WithdrawSuccessfulPage',
+                                              context.pushNamed(
+                                                'PurchaseSuccessPage',
                                                 queryParameters: {
                                                   'amount': serializeParam(
-                                                    _model
-                                                        .amountFieldTextController
-                                                        .text,
+                                                    _model.enteredAmount
+                                                        ?.toString(),
                                                     ParamType.String,
                                                   ),
                                                   'gold': serializeParam(
-                                                    valueOrDefault<String>(
-                                                      (double entered,
-                                                              double goldPrice) {
-                                                        return "${entered / goldPrice}";
-                                                      }(
-                                                          double.parse(_model
-                                                              .amountFieldTextController
-                                                              .text),
-                                                          _model.goldPrice!),
-                                                      '0',
-                                                    ),
-                                                    ParamType.String,
+                                                    _model.enteredAmount,
+                                                    ParamType.double,
                                                   ),
-                                                  'upiId': serializeParam(
-                                                    (currentUserDocument?.upiIds
-                                                                .toList() ??
-                                                            [])
-                                                        .first,
-                                                    ParamType.String,
+                                                  'goldPrice': serializeParam(
+                                                    _model.goldPrice,
+                                                    ParamType.double,
                                                   ),
                                                 }.withoutNulls,
                                               );
                                             } else {
-                                              await Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 5000));
-
-                                              context.goNamed('LoadingScreen');
-
-                                              context.goNamed(
-                                                'WithdrawFailurePage',
-                                                queryParameters: {
-                                                  'upiId': serializeParam(
-                                                    (currentUserDocument?.upiIds
-                                                                .toList() ??
-                                                            [])
-                                                        .first,
-                                                    ParamType.String,
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Status ${(_model.sellVerifyApi?.statusCode ?? 200).toString()}',
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryBackground,
+                                                          letterSpacing: 0.0,
+                                                        ),
                                                   ),
-                                                  'name': serializeParam(
-                                                    currentUserDisplayName,
-                                                    ParamType.String,
-                                                  ),
-                                                }.withoutNulls,
+                                                  duration: const Duration(
+                                                      milliseconds: 4000),
+                                                  backgroundColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                ),
                                               );
+                                              _model.isLoading = false;
+                                              setState(() {});
                                             }
                                           }
 
@@ -924,18 +997,45 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                           ),
                                           alignment:
                                               const AlignmentDirectional(0.0, 0.0),
-                                          child: Text(
-                                            'Withdraw',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyLarge
-                                                .override(
-                                                  fontFamily: 'Nunito',
-                                                  color: FlutterFlowTheme.of(
+                                          child: Builder(
+                                            builder: (context) {
+                                              if (!_model.isLoading) {
+                                                return Text(
+                                                  'Withdraw',
+                                                  style: FlutterFlowTheme.of(
                                                           context)
-                                                      .primaryBtnText,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
+                                                      .bodyLarge
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryBtnText,
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                );
+                                              } else {
+                                                return CircularPercentIndicator(
+                                                  percent: 0.85,
+                                                  radius: 10.0,
+                                                  lineWidth: 3.0,
+                                                  animation: true,
+                                                  animateFromLastPercent: true,
+                                                  progressColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primaryBackground,
+                                                  backgroundColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                  startAngle: 90.0,
+                                                ).animateOnPageLoad(animationsMap[
+                                                    'progressBarOnPageLoadAnimation']!);
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),
@@ -1392,14 +1492,23 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                         hoverColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
+                                          if (_model.formKey2.currentState ==
+                                                  null ||
+                                              !_model.formKey2.currentState!
+                                                  .validate()) {
+                                            return;
+                                          }
+                                          _model.isLoading = true;
+                                          setState(() {});
                                           if (double.parse(_model
-                                                      .gramsFieldTextController
-                                                      .text) *
-                                                  (_model.goldPrice!) >
+                                                  .amountFieldTextController
+                                                  .text) >
                                               valueOrDefault<double>(
-                                                random_data.randomDouble(
-                                                    10.0, 99.0),
-                                                60.0,
+                                                valueOrDefault(
+                                                    currentUserDocument
+                                                        ?.amountBought,
+                                                    0.0),
+                                                0.0,
                                               )) {
                                             setState(() {
                                               _model.amountFieldTextController
@@ -1407,9 +1516,97 @@ class _SellingPageWidgetState extends State<SellingPageWidget>
                                               _model.gramsFieldTextController
                                                   ?.clear();
                                             });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'You can only withdraw upto ${valueOrDefault(currentUserDocument?.amountBought, 0.0).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .primaryBackground,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                duration: const Duration(
+                                                    milliseconds: 4000),
+                                                backgroundColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                              ),
+                                            );
                                           } else {
-                                            context.pushNamed('LoadingScreen');
+                                            _model.sellVerifyApi2 =
+                                                await SafeGoldAPIGroupGroup
+                                                    .sellVerifyAPICall
+                                                    .call(
+                                              userId: FFAppState().userId,
+                                            );
+
+                                            _model.encryptSellVerifyApiRequest2 =
+                                                actions
+                                                    .encryptSellVerifyApiRequest(
+                                              _model.rateId!,
+                                              _model.goldPrice!.toString(),
+                                              _model.enteredAmount!.toString(),
+                                              FFAppState().safeGoldAccessToken,
+                                            );
+                                            if ((_model.sellVerifyApi2
+                                                    ?.succeeded ??
+                                                true)) {
+                                              context.pushNamed(
+                                                'PurchaseSuccessPage',
+                                                queryParameters: {
+                                                  'amount': serializeParam(
+                                                    _model.enteredAmount
+                                                        ?.toString(),
+                                                    ParamType.String,
+                                                  ),
+                                                  'gold': serializeParam(
+                                                    _model.enteredAmount,
+                                                    ParamType.double,
+                                                  ),
+                                                  'goldPrice': serializeParam(
+                                                    _model.goldPrice,
+                                                    ParamType.double,
+                                                  ),
+                                                }.withoutNulls,
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Status ${(_model.sellVerifyApi2?.statusCode ?? 200).toString()}',
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .titleSmall
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryBackground,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                                  ),
+                                                  duration: const Duration(
+                                                      milliseconds: 4000),
+                                                  backgroundColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                ),
+                                              );
+                                              _model.isLoading = false;
+                                              setState(() {});
+                                            }
                                           }
+
+                                          setState(() {});
                                         },
                                         child: Container(
                                           width: double.infinity,

@@ -1,12 +1,20 @@
+import '/backend/api_requests/api_calls.dart';
 import '/components/price_option_selected_widget.dart';
 import '/components/price_option_widget.dart';
 import '/flutter_flow/flutter_flow_button_tabbar.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/instant_timer.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'savings_plan_page2_model.dart';
 export 'savings_plan_page2_model.dart';
 
@@ -30,6 +38,49 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'SavingsPlanPage2'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await Future.wait([
+        Future(() async {
+          _model.mainTimer = InstantTimer.periodic(
+            duration: const Duration(milliseconds: 1000),
+            callback: (timer) async {
+              _model.timerController.onStartTimer();
+            },
+            startImmediately: true,
+          );
+        }),
+        Future(() async {
+          _model.refreshTimer = InstantTimer.periodic(
+            duration: const Duration(milliseconds: 300000),
+            callback: (timer) async {
+              setState(() {});
+            },
+            startImmediately: false,
+          );
+        }),
+        Future(() async {
+          _model.goldPriceFromApi =
+              await SafeGoldAPIGroupGroup.buyPriceAPICall.call();
+
+          _model.decryptedApiResponse = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.goldPriceFromApi?.bodyText ?? ''),
+          );
+          if ((_model.goldPriceFromApi?.statusCode ?? 200) == 200) {
+            _model.goldPrice = valueOrDefault<double>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              ),
+              6000.0,
+            );
+            setState(() {});
+          }
+        }),
+      ]);
+    });
+
     _model.tabBarController = TabController(
       vsync: this,
       length: 3,
@@ -56,6 +107,8 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -66,80 +119,180 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
         body: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 6.0),
-              child: Container(
-                width: double.infinity,
-                height: MediaQuery.sizeOf(context).height * 0.16,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      FlutterFlowTheme.of(context).secondary,
-                      FlutterFlowTheme.of(context).tertiary,
-                      FlutterFlowTheme.of(context).secondary
-                    ],
-                    stops: const [0.0, 0.5, 1.0],
-                    begin: const AlignmentDirectional(1.0, 0.98),
-                    end: const AlignmentDirectional(-1.0, -0.98),
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(12.0),
-                    bottomRight: Radius.circular(12.0),
-                    topLeft: Radius.circular(0.0),
-                    topRight: Radius.circular(0.0),
-                  ),
+            Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F4FF),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12.0),
+                  bottomRight: Radius.circular(12.0),
+                  topLeft: Radius.circular(0.0),
+                  topRight: Radius.circular(0.0),
                 ),
-                child: Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(16.0, 24.0, 16.0, 0.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        splashColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        onTap: () async {
-                          context.safePop();
-                        },
-                        child: Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: FlutterFlowTheme.of(context).secondaryText,
-                          size: 24.0,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 6.0),
+                    child: Container(
+                      width: double.infinity,
+                      height: MediaQuery.sizeOf(context).height * 0.16,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            FlutterFlowTheme.of(context).secondary,
+                            FlutterFlowTheme.of(context).tertiary,
+                            FlutterFlowTheme.of(context).secondary
+                          ],
+                          stops: const [0.0, 0.5, 1.0],
+                          begin: const AlignmentDirectional(1.0, 0.98),
+                          end: const AlignmentDirectional(-1.0, -0.98),
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(12.0),
+                          bottomRight: Radius.circular(12.0),
+                          topLeft: Radius.circular(0.0),
+                          topRight: Radius.circular(0.0),
                         ),
                       ),
-                      Align(
-                        alignment: const AlignmentDirectional(0.0, 0.0),
-                        child: Text(
-                          'Savings Plan',
-                          textAlign: TextAlign.center,
-                          style: FlutterFlowTheme.of(context)
-                              .titleLarge
-                              .override(
-                                fontFamily: 'Lato',
+                      child: Padding(
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 0.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.goNamed('DashboardPage');
+                              },
+                              child: Icon(
+                                Icons.arrow_back_ios_rounded,
                                 color:
                                     FlutterFlowTheme.of(context).secondaryText,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.w800,
+                                size: 24.0,
                               ),
+                            ),
+                            Align(
+                              alignment: const AlignmentDirectional(0.0, 0.0),
+                              child: Text(
+                                'Savings Plan',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .override(
+                                      fontFamily: 'Nunito',
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText,
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ),
+                            Opacity(
+                              opacity: 0.0,
+                              child: Container(
+                                width: 12.0,
+                                height: 27.0,
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Opacity(
-                        opacity: 0.0,
-                        child: Container(
-                          width: 24.0,
-                          height: 27.0,
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 6.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.radio_button_checked_rounded,
+                          color: FlutterFlowTheme.of(context).accent3,
+                          size: 16.0,
+                        ),
+                        Text(
+                          'Current Buy Price',
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Nunito',
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    fontSize: 10.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                        ),
+                        Text(
+                          '₹ ${valueOrDefault<String>(
+                            _model.goldPrice?.toString(),
+                            '6000',
+                          )}',
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Nunito',
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    fontSize: 12.0,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ].divide(const SizedBox(width: 8.0)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 16.0, 0.0, 0.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: FlutterFlowTheme.of(context).primary,
+                    size: 14.0,
+                  ),
+                  Text(
+                    'Valid for',
+                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                          fontFamily: 'Nunito',
+                          color: FlutterFlowTheme.of(context).primary,
+                          fontSize: 12.0,
+                          letterSpacing: 0.0,
+                        ),
+                  ),
+                  FlutterFlowTimer(
+                    initialTime: _model.timerInitialTimeMs,
+                    getDisplayTime: (value) => StopWatchTimer.getDisplayTime(
+                      value,
+                      hours: false,
+                      milliSecond: false,
+                    ),
+                    controller: _model.timerController,
+                    updateStateInterval: const Duration(milliseconds: 1000),
+                    onChanged: (value, displayTime, shouldUpdate) {
+                      _model.timerMilliseconds = value;
+                      _model.timerValue = displayTime;
+                      if (shouldUpdate) setState(() {});
+                    },
+                    textAlign: TextAlign.start,
+                    style: FlutterFlowTheme.of(context).headlineSmall.override(
+                          fontFamily: 'Lato',
+                          color: FlutterFlowTheme.of(context).primary,
+                          fontSize: 12.0,
+                          letterSpacing: 0.0,
+                        ),
+                  ),
+                ].divide(const SizedBox(width: 6.0)),
               ),
             ),
             Container(
@@ -149,7 +302,7 @@ class _SavingsPlanPage2WidgetState extends State<SavingsPlanPage2Widget>
                 color: FlutterFlowTheme.of(context).secondaryBackground,
               ),
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16.0, 36.0, 16.0, 0.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 0.0),
                 child: Column(
                   children: [
                     Align(

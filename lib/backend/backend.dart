@@ -6,7 +6,6 @@ import '../flutter_flow/flutter_flow_util.dart';
 import 'schema/util/firestore_util.dart';
 
 import 'schema/users_record.dart';
-import 'schema/graph_record.dart';
 import 'schema/digi_gold_buy_record.dart';
 import 'schema/app_settings_record.dart';
 import 'dart:async';
@@ -20,7 +19,6 @@ export 'schema/util/firestore_util.dart';
 export 'schema/util/schema_util.dart';
 
 export 'schema/users_record.dart';
-export 'schema/graph_record.dart';
 export 'schema/digi_gold_buy_record.dart';
 export 'schema/app_settings_record.dart';
 
@@ -83,84 +81,6 @@ Future<FFFirestorePage<UsersRecord>> queryUsersRecordPage({
       if (isStream) {
         final streamSubscription =
             (page.dataStream)?.listen((List<UsersRecord> data) {
-          for (var item in data) {
-            final itemIndexes = controller.itemList!
-                .asMap()
-                .map((k, v) => MapEntry(v.reference.id, k));
-            final index = itemIndexes[item.reference.id];
-            final items = controller.itemList!;
-            if (index != null) {
-              items.replaceRange(index, index + 1, [item]);
-              controller.itemList = {
-                for (var item in items) item.reference: item
-              }.values.toList();
-            }
-          }
-        });
-        streamSubscriptions?.add(streamSubscription);
-      }
-      return page;
-    });
-
-/// Functions to query GraphRecords (as a Stream and as a Future).
-Future<int> queryGraphRecordCount({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-}) =>
-    queryCollectionCount(
-      GraphRecord.collection,
-      queryBuilder: queryBuilder,
-      limit: limit,
-    );
-
-Stream<List<GraphRecord>> queryGraphRecord({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollection(
-      GraphRecord.collection,
-      GraphRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-
-Future<List<GraphRecord>> queryGraphRecordOnce({
-  Query Function(Query)? queryBuilder,
-  int limit = -1,
-  bool singleRecord = false,
-}) =>
-    queryCollectionOnce(
-      GraphRecord.collection,
-      GraphRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      limit: limit,
-      singleRecord: singleRecord,
-    );
-Future<FFFirestorePage<GraphRecord>> queryGraphRecordPage({
-  Query Function(Query)? queryBuilder,
-  DocumentSnapshot? nextPageMarker,
-  required int pageSize,
-  required bool isStream,
-  required PagingController<DocumentSnapshot?, GraphRecord> controller,
-  List<StreamSubscription?>? streamSubscriptions,
-}) =>
-    queryCollectionPage(
-      GraphRecord.collection,
-      GraphRecord.fromSnapshot,
-      queryBuilder: queryBuilder,
-      nextPageMarker: nextPageMarker,
-      pageSize: pageSize,
-      isStream: isStream,
-    ).then((page) {
-      controller.appendPage(
-        page.data,
-        page.nextPageMarker,
-      );
-      if (isStream) {
-        final streamSubscription =
-            (page.dataStream)?.listen((List<GraphRecord> data) {
           for (var item in data) {
             final itemIndexes = controller.itemList!
                 .asMap()

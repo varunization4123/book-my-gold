@@ -101,6 +101,7 @@ class _PaymentMethodsPageWidgetState extends State<PaymentMethodsPageWidget> {
                             ),
                           );
                         }
+
                         return ListView.separated(
                           padding: EdgeInsets.zero,
                           primary: false,

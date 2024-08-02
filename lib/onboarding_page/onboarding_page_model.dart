@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'onboarding_page_widget.dart' show OnboardingPageWidget;
 import 'package:flutter/material.dart';
@@ -44,6 +45,10 @@ class OnboardingPageModel extends FlutterFlowModel<OnboardingPageWidget> {
 
   // State field(s) for Checkbox widget.
   bool? checkboxValue;
+  // Stores action output result for [Backend Call - API (Registration API)] action in ContinueBtn widget.
+  ApiCallResponse? registerUserApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in ContinueBtn widget.
+  String? decryptedRegistrationApi;
 
   @override
   void initState(BuildContext context) {

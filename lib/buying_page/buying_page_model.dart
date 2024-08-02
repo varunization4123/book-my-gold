@@ -29,6 +29,10 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
 
   double? enteredAmount = 0.0;
 
+  String? rateIdApi;
+
+  bool isLoading = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -38,8 +42,10 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   AppSettingsRecord? readAppSettings;
   InstantTimer? mainTimer;
   InstantTimer? refreshTimer;
-  // Stores action output result for [Backend Call - API (Gold Price)] action in BuyingPage widget.
-  ApiCallResponse? goldDataAPI;
+  // Stores action output result for [Backend Call - API (Buy Price API)] action in BuyingPage widget.
+  ApiCallResponse? goldPriceFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in BuyingPage widget.
+  String? decryptedApiResponse;
   // State field(s) for Timer widget.
   final timerInitialTimeMs = 300000;
   int timerMilliseconds = 300000;
@@ -57,9 +63,22 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
       tabBarController != null ? tabBarController!.index : 0;
 
   // State field(s) for amountField widget.
-  FocusNode? amountFieldFocusNode1;
-  TextEditingController? amountFieldTextController1;
-  String? Function(BuildContext, String?)? amountFieldTextController1Validator;
+  FocusNode? amountFieldFocusNode;
+  TextEditingController? amountFieldTextController;
+  String? Function(BuildContext, String?)? amountFieldTextControllerValidator;
+  String? _amountFieldTextControllerValidator(
+      BuildContext context, String? val) {
+    if (val == null || val.isEmpty) {
+      return 'Field is required';
+    }
+
+    if (val.isEmpty) {
+      return 'Requires at least 1 characters.';
+    }
+
+    return null;
+  }
+
   // Model for PriceOption component.
   late PriceOptionModel priceOptionModel1;
   // Model for PriceOption component.
@@ -68,14 +87,30 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   late PriceOptionModel priceOptionModel3;
   // Model for PriceOptionSelected component.
   late PriceOptionSelectedModel priceOptionSelectedModel1;
+  // Stores action output result for [Custom Action - encryptBuyVerifyApiRequest] action in SetupBtn widget.
+  String? encryptedBuyVerifyApiRequest;
+  // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
+  ApiCallResponse? buyVerifyApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedApiResponse1;
   // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
   String? razorpayPaymentId;
-  // Stores action output result for [Backend Call - Create Document] action in SetupBtn widget.
-  DigiGoldBuyRecord? updateTransaction1;
-  // State field(s) for amountField widget.
-  FocusNode? amountFieldFocusNode2;
-  TextEditingController? amountFieldTextController2;
-  String? Function(BuildContext, String?)? amountFieldTextController2Validator;
+  // State field(s) for goldField widget.
+  FocusNode? goldFieldFocusNode;
+  TextEditingController? goldFieldTextController;
+  String? Function(BuildContext, String?)? goldFieldTextControllerValidator;
+  String? _goldFieldTextControllerValidator(BuildContext context, String? val) {
+    if (val == null || val.isEmpty) {
+      return 'Field is required';
+    }
+
+    if (val.isEmpty) {
+      return 'Requires at least 1 characters.';
+    }
+
+    return null;
+  }
+
   // Model for PriceOption component.
   late PriceOptionModel priceOptionModel4;
   // Model for PriceOption component.
@@ -84,10 +119,14 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   late PriceOptionSelectedModel priceOptionSelectedModel2;
   // Model for PriceOption component.
   late PriceOptionModel priceOptionModel6;
+  // Stores action output result for [Custom Action - encryptBuyVerifyApiRequest] action in SetupBtn widget.
+  String? encryptedBuyVerifyApiRequest2;
+  // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
+  ApiCallResponse? buyVerifyApi2;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedApiResponse2;
   // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
-  String? razorpayPaymentId2;
-  // Stores action output result for [Backend Call - Create Document] action in SetupBtn widget.
-  DigiGoldBuyRecord? updateTransaction2;
+  String? razorpayPaymentIdCopy;
   // Model for FAQPoint component.
   late FAQPointModel fAQPointModel1;
   // Model for FAQPoint component.
@@ -97,11 +136,13 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
 
   @override
   void initState(BuildContext context) {
+    amountFieldTextControllerValidator = _amountFieldTextControllerValidator;
     priceOptionModel1 = createModel(context, () => PriceOptionModel());
     priceOptionModel2 = createModel(context, () => PriceOptionModel());
     priceOptionModel3 = createModel(context, () => PriceOptionModel());
     priceOptionSelectedModel1 =
         createModel(context, () => PriceOptionSelectedModel());
+    goldFieldTextControllerValidator = _goldFieldTextControllerValidator;
     priceOptionModel4 = createModel(context, () => PriceOptionModel());
     priceOptionModel5 = createModel(context, () => PriceOptionModel());
     priceOptionSelectedModel2 =
@@ -119,15 +160,15 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
     refreshTimer?.cancel();
     timerController.dispose();
     tabBarController?.dispose();
-    amountFieldFocusNode1?.dispose();
-    amountFieldTextController1?.dispose();
+    amountFieldFocusNode?.dispose();
+    amountFieldTextController?.dispose();
 
     priceOptionModel1.dispose();
     priceOptionModel2.dispose();
     priceOptionModel3.dispose();
     priceOptionSelectedModel1.dispose();
-    amountFieldFocusNode2?.dispose();
-    amountFieldTextController2?.dispose();
+    goldFieldFocusNode?.dispose();
+    goldFieldTextController?.dispose();
 
     priceOptionModel4.dispose();
     priceOptionModel5.dispose();

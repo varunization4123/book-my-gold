@@ -101,13 +101,22 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'mobileNumber',
               ParamType.String,
             ),
+            trueMobileNumber: params.getParam(
+              'trueMobileNumber',
+              ParamType.int,
+            ),
           ),
         ),
         FFRoute(
           name: 'OnboardingPage',
           path: '/onboardingPage',
           requireAuth: true,
-          builder: (context, params) => const OnboardingPageWidget(),
+          builder: (context, params) => OnboardingPageWidget(
+            mobileNumber: params.getParam(
+              'mobileNumber',
+              ParamType.int,
+            ),
+          ),
         ),
         FFRoute(
           name: 'DashboardPage',

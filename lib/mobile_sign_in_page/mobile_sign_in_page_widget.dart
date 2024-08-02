@@ -4,6 +4,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -33,6 +34,18 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'MobileSignInPage'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      FFAppState().deletePhoneNumber();
+      FFAppState().phoneNumber = '';
+
+      FFAppState().deleteUserId();
+      FFAppState().userId = 0;
+
+      FFAppState().buyPrice = '6000';
+      setState(() {});
+    });
+
     _model.mobileNumberTextController ??= TextEditingController();
     _model.mobileNumberFocusNode ??= FocusNode();
 
@@ -69,6 +82,19 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
             duration: 300.0.ms,
             begin: const Offset(-0.349, 0),
             end: const Offset(0, 0),
+          ),
+        ],
+      ),
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 2000.0.ms,
+            begin: 0.0,
+            end: 5.0,
           ),
         ],
       ),
@@ -366,6 +392,13 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
                                                                 .text,
                                                             ParamType.String,
                                                           ),
+                                                          'trueMobileNumber':
+                                                              serializeParam(
+                                                            int.tryParse(_model
+                                                                .mobileNumberTextController
+                                                                .text),
+                                                            ParamType.int,
+                                                          ),
                                                         }.withoutNulls,
                                                         ignoreRedirect: true,
                                                       );
@@ -373,7 +406,7 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
                                                   );
 
                                                   FFAppState().phoneNumber =
-                                                      '+91${FFAppState().phoneNumber}';
+                                                      '+91${_model.mobileNumberTextController.text}';
                                                 },
                                                 child: Material(
                                                   color: Colors.transparent,
@@ -424,7 +457,7 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
                                                           );
                                                         } else {
                                                           return CircularPercentIndicator(
-                                                            percent: 1.0,
+                                                            percent: 0.85,
                                                             radius: 10.0,
                                                             lineWidth: 3.0,
                                                             animation: true,
@@ -439,7 +472,9 @@ class _MobileSignInPageWidgetState extends State<MobileSignInPageWidget>
                                                                         context)
                                                                     .primary,
                                                             startAngle: 90.0,
-                                                          );
+                                                          ).animateOnPageLoad(
+                                                              animationsMap[
+                                                                  'progressBarOnPageLoadAnimation']!);
                                                         }
                                                       },
                                                     ),

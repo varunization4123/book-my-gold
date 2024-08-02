@@ -28,6 +28,21 @@ class FFAppState extends ChangeNotifier {
       _biometricEnabled = await secureStorage.getBool('ff_biometricEnabled') ??
           _biometricEnabled;
     });
+    await _safeInitAsync(() async {
+      _userId = await secureStorage.getInt('ff_userId') ?? _userId;
+    });
+    await _safeInitAsync(() async {
+      _xAxis = (await secureStorage.getStringList('ff_xAxis'))
+              ?.map(int.parse)
+              .toList() ??
+          _xAxis;
+    });
+    await _safeInitAsync(() async {
+      _yAxis = (await secureStorage.getStringList('ff_yAxis'))
+              ?.map(double.parse)
+              .toList() ??
+          _yAxis;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -57,6 +72,154 @@ class FFAppState extends ChangeNotifier {
 
   void deleteBiometricEnabled() {
     secureStorage.delete(key: 'ff_biometricEnabled');
+  }
+
+  String _safeGoldAccessToken = 'c5a967bb7aad36f120dcbc58c7ea666d';
+  String get safeGoldAccessToken => _safeGoldAccessToken;
+  set safeGoldAccessToken(String value) {
+    _safeGoldAccessToken = value;
+  }
+
+  String _buyPrice = '6000';
+  String get buyPrice => _buyPrice;
+  set buyPrice(String value) {
+    _buyPrice = value;
+  }
+
+  int _userId = 0;
+  int get userId => _userId;
+  set userId(int value) {
+    _userId = value;
+    secureStorage.setInt('ff_userId', value);
+  }
+
+  void deleteUserId() {
+    secureStorage.delete(key: 'ff_userId');
+  }
+
+  String _sellPrice = '6000';
+  String get sellPrice => _sellPrice;
+  set sellPrice(String value) {
+    _sellPrice = value;
+  }
+
+  List<dynamic> _goldData = [];
+  List<dynamic> get goldData => _goldData;
+  set goldData(List<dynamic> value) {
+    _goldData = value;
+  }
+
+  void addToGoldData(dynamic value) {
+    goldData.add(value);
+  }
+
+  void removeFromGoldData(dynamic value) {
+    goldData.remove(value);
+  }
+
+  void removeAtIndexFromGoldData(int index) {
+    goldData.removeAt(index);
+  }
+
+  void updateGoldDataAtIndex(
+    int index,
+    dynamic Function(dynamic) updateFn,
+  ) {
+    goldData[index] = updateFn(_goldData[index]);
+  }
+
+  void insertAtIndexInGoldData(int index, dynamic value) {
+    goldData.insert(index, value);
+  }
+
+  List<int> _xAxis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  List<int> get xAxis => _xAxis;
+  set xAxis(List<int> value) {
+    _xAxis = value;
+    secureStorage.setStringList(
+        'ff_xAxis', value.map((x) => x.toString()).toList());
+  }
+
+  void deleteXAxis() {
+    secureStorage.delete(key: 'ff_xAxis');
+  }
+
+  void addToXAxis(int value) {
+    xAxis.add(value);
+    secureStorage.setStringList(
+        'ff_xAxis', _xAxis.map((x) => x.toString()).toList());
+  }
+
+  void removeFromXAxis(int value) {
+    xAxis.remove(value);
+    secureStorage.setStringList(
+        'ff_xAxis', _xAxis.map((x) => x.toString()).toList());
+  }
+
+  void removeAtIndexFromXAxis(int index) {
+    xAxis.removeAt(index);
+    secureStorage.setStringList(
+        'ff_xAxis', _xAxis.map((x) => x.toString()).toList());
+  }
+
+  void updateXAxisAtIndex(
+    int index,
+    int Function(int) updateFn,
+  ) {
+    xAxis[index] = updateFn(_xAxis[index]);
+    secureStorage.setStringList(
+        'ff_xAxis', _xAxis.map((x) => x.toString()).toList());
+  }
+
+  void insertAtIndexInXAxis(int index, int value) {
+    xAxis.insert(index, value);
+    secureStorage.setStringList(
+        'ff_xAxis', _xAxis.map((x) => x.toString()).toList());
+  }
+
+  List<double> _yAxis = [];
+  List<double> get yAxis => _yAxis;
+  set yAxis(List<double> value) {
+    _yAxis = value;
+    secureStorage.setStringList(
+        'ff_yAxis', value.map((x) => x.toString()).toList());
+  }
+
+  void deleteYAxis() {
+    secureStorage.delete(key: 'ff_yAxis');
+  }
+
+  void addToYAxis(double value) {
+    yAxis.add(value);
+    secureStorage.setStringList(
+        'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
+  }
+
+  void removeFromYAxis(double value) {
+    yAxis.remove(value);
+    secureStorage.setStringList(
+        'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
+  }
+
+  void removeAtIndexFromYAxis(int index) {
+    yAxis.removeAt(index);
+    secureStorage.setStringList(
+        'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
+  }
+
+  void updateYAxisAtIndex(
+    int index,
+    double Function(double) updateFn,
+  ) {
+    yAxis[index] = updateFn(_yAxis[index]);
+    secureStorage.setStringList(
+        'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
+  }
+
+  void insertAtIndexInYAxis(int index, double value) {
+    yAxis.insert(index, value);
+    secureStorage.setStringList(
+        'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
   }
 
   final _transactionsQueryManager =

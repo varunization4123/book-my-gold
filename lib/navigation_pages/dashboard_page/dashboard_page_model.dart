@@ -18,14 +18,45 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
 
   double? goldDifference = 0.0;
 
+  String? buyPrice;
+
+  bool allSelected = true;
+
+  bool fySelected = false;
+
+  bool tySelected = false;
+
+  bool oySelected = false;
+
+  bool smSelected = false;
+
+  bool omSelected = false;
+
+  bool owSelected = false;
+
+  List<dynamic> goldData = [];
+  void addToGoldData(dynamic item) => goldData.add(item);
+  void removeFromGoldData(dynamic item) => goldData.remove(item);
+  void removeAtIndexFromGoldData(int index) => goldData.removeAt(index);
+  void insertAtIndexInGoldData(int index, dynamic item) =>
+      goldData.insert(index, item);
+  void updateGoldDataAtIndex(int index, Function(dynamic) updateFn) =>
+      goldData[index] = updateFn(goldData[index]);
+
   ///  State fields for stateful widgets in this page.
 
   TutorialCoachMark? appWalkthroughController;
   final unfocusNode = FocusNode();
   // Stores action output result for [Firestore Query - Query a collection] action in DashboardPage widget.
   AppSettingsRecord? readAppSettings;
-  // Stores action output result for [Backend Call - API (Gold Price)] action in DashboardPage widget.
+  // Stores action output result for [Backend Call - API (Buy Price API)] action in DashboardPage widget.
   ApiCallResponse? goldPriceFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in DashboardPage widget.
+  String? decryptedApiResponse;
+  // Stores action output result for [Backend Call - API (Historical Prices Daily rate)] action in DashboardPage widget.
+  ApiCallResponse? goldDataFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in DashboardPage widget.
+  String? decryptedGoldDataApiResponse;
   // Model for CustomGraph component.
   late CustomGraphModel customGraphModel;
   // Model for GrapOption component.

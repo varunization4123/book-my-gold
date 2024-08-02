@@ -93,6 +93,11 @@ class UsersRecord extends FirestoreRecord {
   List<DocumentReference> get userRefs => _userRefs ?? const [];
   bool hasUserRefs() => _userRefs != null;
 
+  // "user_id" field.
+  int? _userId;
+  int get userId => _userId ?? 0;
+  bool hasUserId() => _userId != null;
+
   void _initializeFields() {
     _email = snapshotData['email'] as String?;
     _displayName = snapshotData['display_name'] as String?;
@@ -109,6 +114,7 @@ class UsersRecord extends FirestoreRecord {
     _goldBought = castToType<double>(snapshotData['gold_bought']);
     _userRef = snapshotData['userRef'] as DocumentReference?;
     _userRefs = getDataList(snapshotData['userRefs']);
+    _userId = castToType<int>(snapshotData['user_id']);
   }
 
   static CollectionReference get collection =>
@@ -179,6 +185,11 @@ class UsersRecord extends FirestoreRecord {
               true,
             ).toList(),
           ),
+          'user_id': convertAlgoliaParam(
+            snapshot.data['user_id'],
+            ParamType.int,
+            false,
+          ),
         },
         UsersRecord.collection.doc(snapshot.objectID),
       );
@@ -227,6 +238,7 @@ Map<String, dynamic> createUsersRecordData({
   double? amountBought,
   double? goldBought,
   DocumentReference? userRef,
+  int? userId,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -242,6 +254,7 @@ Map<String, dynamic> createUsersRecordData({
       'amount_bought': amountBought,
       'gold_bought': goldBought,
       'userRef': userRef,
+      'user_id': userId,
     }.withoutNulls,
   );
 
@@ -268,7 +281,8 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e1?.amountBought == e2?.amountBought &&
         e1?.goldBought == e2?.goldBought &&
         e1?.userRef == e2?.userRef &&
-        listEquality.equals(e1?.userRefs, e2?.userRefs);
+        listEquality.equals(e1?.userRefs, e2?.userRefs) &&
+        e1?.userId == e2?.userId;
   }
 
   @override
@@ -287,7 +301,8 @@ class UsersRecordDocumentEquality implements Equality<UsersRecord> {
         e?.amountBought,
         e?.goldBought,
         e?.userRef,
-        e?.userRefs
+        e?.userRefs,
+        e?.userId
       ]);
 
   @override

@@ -244,16 +244,6 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                                   }
 
                                                   await currentUserReference!
-                                                      .update({
-                                                    ...mapToFirestore(
-                                                      {
-                                                        'photo_url':
-                                                            FieldValue.delete(),
-                                                      },
-                                                    ),
-                                                  });
-
-                                                  await currentUserReference!
                                                       .update(
                                                           createUsersRecordData(
                                                     photoUrl:

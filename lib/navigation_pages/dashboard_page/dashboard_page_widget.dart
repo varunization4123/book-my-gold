@@ -9,12 +9,15 @@ import '/components/sponsored_card_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/walkthroughs/app_walkthrough.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart'
     show TutorialCoachMark;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'dashboard_page_model.dart';
 export 'dashboard_page_model.dart';
 
@@ -45,17 +48,108 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
       _model.goldDifference =
           _model.readAppSettings?.goldDiffAmount.toDouble();
       setState(() {});
-      _model.goldPriceFromApi = await GoldPriceCall.call();
+      await Future.wait([
+        Future(() async {
+          _model.goldPriceFromApi =
+              await SafeGoldAPIGroupGroup.buyPriceAPICall.call();
 
-      if ((_model.goldPriceFromApi?.succeeded ?? true)) {
-        _model.goldPrice = valueOrDefault<double>(
-          GoldPriceCall.price(
-            (_model.goldPriceFromApi?.jsonBody ?? ''),
-          ),
-          6000.00,
-        );
-        setState(() {});
-      }
+          _model.decryptedApiResponse = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.goldPriceFromApi?.bodyText ?? ''),
+          );
+          if ((_model.goldPriceFromApi?.statusCode ?? 200) == 200) {
+            _model.buyPrice = valueOrDefault<String>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              )?.toString().toString(),
+              '6000',
+            );
+            setState(() {});
+            FFAppState().buyPrice = valueOrDefault<String>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              )?.toString().toString(),
+              '6000',
+            );
+            setState(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Error fetching Gold Price',
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                        fontFamily: 'Nunito',
+                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        letterSpacing: 0.0,
+                      ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).primary,
+              ),
+            );
+          }
+        }),
+        Future(() async {
+          _model.goldDataFromApi =
+              await SafeGoldAPIGroupGroup.historicalPricesDailyRateCall.call(
+            fromDate: '23-02-01',
+            toDate: '22-02-02',
+            t: 'm',
+          );
+
+          _model.decryptedGoldDataApiResponse =
+              await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.goldDataFromApi?.bodyText ?? ''),
+          );
+          if ((_model.goldDataFromApi?.statusCode ?? 200) == 200) {
+            _model.goldData = getJsonField(
+              functions.jsonFromString(_model.decryptedGoldDataApiResponse!),
+              r'''$['data']''',
+              true,
+            )!
+                .toList()
+                .cast<dynamic>();
+            setState(() {});
+            FFAppState().xAxis = functions
+                .xAxisList(getJsonField(
+                  functions
+                      .jsonFromString(_model.decryptedGoldDataApiResponse!),
+                  r'''$['data']''',
+                  true,
+                )!)
+                .toList()
+                .cast<int>();
+            FFAppState().yAxis = functions
+                .yAxisList(getJsonField(
+                  functions
+                      .jsonFromString(_model.decryptedGoldDataApiResponse!),
+                  r'''$['data']''',
+                  true,
+                )!)
+                .toList()
+                .cast<double>();
+            FFAppState().update(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Error fetching Gold Data ',
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                        fontFamily: 'Nunito',
+                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        letterSpacing: 0.0,
+                      ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).primary,
+              ),
+            );
+          }
+        }),
+      ]);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
@@ -70,6 +164,8 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -616,27 +712,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                         ].divide(const SizedBox(width: 8.0)),
                                       ),
                                       Text(
-                                        '${valueOrDefault<String>(
-                                          formatNumber(
-                                            valueOrDefault<double>(
-                                                  _model.goldPrice,
-                                                  6000.00,
-                                                ) +
-                                                (valueOrDefault<double>(
-                                                      _model.goldPrice,
-                                                      6000.00,
-                                                    ) *
-                                                    (valueOrDefault<double>(
-                                                          _model.goldDifference,
-                                                          0.0,
-                                                        ) /
-                                                        100)),
-                                            formatType: FormatType.custom,
-                                            format: '###.##',
-                                            locale: 'en_US',
-                                          ),
-                                          '6000',
-                                        )}/gm',
+                                        '${_model.buyPrice}/gm',
                                         style: FlutterFlowTheme.of(context)
                                             .labelLarge
                                             .override(
@@ -745,67 +821,179 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel1,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '1W',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = false;
+                                          _model.tySelected = false;
+                                          _model.oySelected = false;
+                                          _model.smSelected = false;
+                                          _model.omSelected = false;
+                                          _model.owSelected = true;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel1,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '1W',
+                                            isSelected: _model.owSelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel2,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '1M',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = false;
+                                          _model.tySelected = false;
+                                          _model.oySelected = false;
+                                          _model.smSelected = false;
+                                          _model.omSelected = true;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel2,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '1M',
+                                            isSelected: _model.omSelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel3,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '6M',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = false;
+                                          _model.tySelected = false;
+                                          _model.oySelected = false;
+                                          _model.smSelected = true;
+                                          _model.omSelected = false;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel3,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '6M',
+                                            isSelected: _model.smSelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel4,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '1Y',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = false;
+                                          _model.tySelected = false;
+                                          _model.oySelected = true;
+                                          _model.smSelected = false;
+                                          _model.omSelected = false;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel4,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '1Y',
+                                            isSelected: _model.oySelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel5,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '3Y',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = false;
+                                          _model.tySelected = true;
+                                          _model.oySelected = false;
+                                          _model.smSelected = false;
+                                          _model.omSelected = false;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel5,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '3Y',
+                                            isSelected: _model.tySelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel6,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: '5Y',
-                                          isSelected: false,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = false;
+                                          _model.fySelected = true;
+                                          _model.tySelected = false;
+                                          _model.oySelected = false;
+                                          _model.smSelected = false;
+                                          _model.omSelected = false;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel6,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: '5Y',
+                                            isSelected: _model.fySelected,
+                                          ),
                                         ),
                                       ),
-                                      wrapWithModel(
-                                        model: _model.grapOptionModel7,
-                                        updateCallback: () => setState(() {}),
-                                        updateOnChange: true,
-                                        child: const GrapOptionWidget(
-                                          value: 'All',
-                                          isSelected: true,
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          _model.allSelected = true;
+                                          _model.fySelected = false;
+                                          _model.tySelected = false;
+                                          _model.oySelected = false;
+                                          _model.smSelected = false;
+                                          _model.omSelected = false;
+                                          _model.owSelected = false;
+                                          setState(() {});
+                                        },
+                                        child: wrapWithModel(
+                                          model: _model.grapOptionModel7,
+                                          updateCallback: () => setState(() {}),
+                                          updateOnChange: true,
+                                          child: GrapOptionWidget(
+                                            value: 'All',
+                                            isSelected: _model.allSelected,
+                                          ),
                                         ),
                                       ),
                                     ],

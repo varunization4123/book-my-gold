@@ -19,6 +19,10 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   double? sellingFees = 1.0;
 
+  String? rateId;
+
+  bool isLoading = false;
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -28,8 +32,10 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
   AppSettingsRecord? readAppSettings;
   InstantTimer? mainTimer;
   InstantTimer? refreshTimer;
-  // Stores action output result for [Backend Call - API (Gold Price)] action in SellingPage widget.
-  ApiCallResponse? goldDataAPI;
+  // Stores action output result for [Backend Call - API (Sell Price API)] action in SellingPage widget.
+  ApiCallResponse? goldSellPriceFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SellingPage widget.
+  String? decryptedApiResponse;
   // State field(s) for Timer widget.
   final timerInitialTimeMs = 300000;
   int timerMilliseconds = 300000;
@@ -56,8 +62,8 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
       return 'Field is required';
     }
 
-    if (val.length < 2) {
-      return 'Enter a value greater than ₹9';
+    if (val.isEmpty) {
+      return 'Requires at least 1 characters.';
     }
 
     return null;
@@ -65,8 +71,8 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   // Model for WithdrawFull component.
   late WithdrawFullModel withdrawFullModel1;
-  // Stores action output result for [Backend Call - API (Gold Price)] action in SetupBtn widget.
-  ApiCallResponse? apiResultd1v;
+  // Stores action output result for [Backend Call - API (Sell Verify API)] action in SetupBtn widget.
+  ApiCallResponse? sellVerifyApi;
   // State field(s) for gramsField widget.
   FocusNode? gramsFieldFocusNode;
   TextEditingController? gramsFieldTextController;
@@ -82,6 +88,10 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   // Model for WithdrawFull component.
   late WithdrawFullModel withdrawFullModel2;
+  // Stores action output result for [Backend Call - API (Sell Verify API)] action in SetupBtn widget.
+  ApiCallResponse? sellVerifyApi2;
+  // Stores action output result for [Custom Action - encryptSellVerifyApiRequest] action in SetupBtn widget.
+  String? encryptSellVerifyApiRequest2;
 
   @override
   void initState(BuildContext context) {

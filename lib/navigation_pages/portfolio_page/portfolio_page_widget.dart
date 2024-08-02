@@ -7,10 +7,13 @@ import '/components/transaction_tile_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'portfolio_page_model.dart';
 export 'portfolio_page_model.dart';
@@ -36,14 +39,28 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
         parameters: {'screen_name': 'PortfolioPage'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.goldApiData = await GoldPriceCall.call();
+      _model.goldPriceFromApi =
+          await SafeGoldAPIGroupGroup.buyPriceAPICall.call();
 
-      if ((_model.goldApiData?.succeeded ?? true)) {
+      _model.decryptedApiResponse = await actions.decryptApiResponse(
+        FFAppState().safeGoldAccessToken,
+        (_model.goldPriceFromApi?.bodyText ?? ''),
+      );
+      if ((_model.goldPriceFromApi?.statusCode ?? 200) == 200) {
         _model.goldPrice = valueOrDefault<double>(
-          GoldPriceCall.price(
-            (_model.goldApiData?.jsonBody ?? ''),
+          getJsonField(
+            functions.jsonFromString(_model.decryptedApiResponse!),
+            r'''$['current_price']''',
           ),
           6000.0,
+        );
+        setState(() {});
+        FFAppState().buyPrice = valueOrDefault<String>(
+          getJsonField(
+            functions.jsonFromString(_model.decryptedApiResponse!),
+            r'''$['current_price']''',
+          )?.toString().toString(),
+          '6000',
         );
         setState(() {});
       }
@@ -61,6 +78,8 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -229,14 +248,14 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                             builder: (context) => Text(
                                               valueOrDefault<String>(
                                                 formatNumber(
-                                                  valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.goldBought,
-                                                              0.0) *
-                                                          (_model.goldPrice!) +
-                                                      ((_model.goldPrice!) *
-                                                          ((_model.goldDifference!) /
-                                                              100)),
+                                                  valueOrDefault<double>(
+                                                        valueOrDefault(
+                                                            currentUserDocument
+                                                                ?.goldBought,
+                                                            0.0),
+                                                        0.0,
+                                                      ) *
+                                                      (_model.goldPrice!),
                                                   formatType: FormatType.custom,
                                                   currency: '₹',
                                                   format: '###.##',
@@ -352,14 +371,11 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                   valueOrDefault<String>(
                                                     formatNumber(
                                                       (valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  (_model
-                                                                      .goldPrice!) +
-                                                              ((_model.goldPrice!) *
-                                                                  ((_model.goldDifference!) /
-                                                                      100))) -
+                                                                  currentUserDocument
+                                                                      ?.goldBought,
+                                                                  0.0) *
+                                                              (_model
+                                                                  .goldPrice!)) -
                                                           valueOrDefault(
                                                               currentUserDocument
                                                                   ?.amountBought,
@@ -538,9 +554,8 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                               ),
                                                               '0',
                                                             )) {
-                                                          return FlutterFlowTheme
-                                                                  .of(context)
-                                                              .accent2;
+                                                          return const Color(
+                                                              0xFFAAFFB5);
                                                         } else if (valueOrDefault<
                                                                 String>(
                                                               formatNumber(
@@ -576,18 +591,15 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                               ),
                                                               '0',
                                                             )) {
-                                                          return FlutterFlowTheme
-                                                                  .of(context)
-                                                              .accent4;
+                                                          return const Color(
+                                                              0xFFFFBE9A);
                                                         } else {
                                                           return FlutterFlowTheme
                                                                   .of(context)
                                                               .alternate;
                                                         }
                                                       }(),
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .alternate,
+                                                      const Color(0xFFE3E3E3),
                                                     ),
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -602,11 +614,8 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                       '${valueOrDefault<String>(
                                                         formatNumber(
                                                           (((valueOrDefault(currentUserDocument?.goldBought, 0.0) *
-                                                                              (_model
-                                                                                  .goldPrice!) +
-                                                                          ((_model.goldPrice!) *
-                                                                              ((_model.goldDifference!) /
-                                                                                  100))) -
+                                                                          (_model
+                                                                              .goldPrice!)) -
                                                                       valueOrDefault(
                                                                           currentUserDocument
                                                                               ?.amountBought,

@@ -99,6 +99,7 @@ class _AddressBookPageWidgetState extends State<AddressBookPageWidget> {
                               text: 'You haven\'t added any address yet.',
                             );
                           }
+
                           return ListView.separated(
                             padding: EdgeInsets.zero,
                             primary: false,

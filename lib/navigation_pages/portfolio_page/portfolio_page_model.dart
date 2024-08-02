@@ -15,8 +15,10 @@ class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
-  // Stores action output result for [Backend Call - API (Gold Price)] action in PortfolioPage widget.
-  ApiCallResponse? goldApiData;
+  // Stores action output result for [Backend Call - API (Buy Price API)] action in PortfolioPage widget.
+  ApiCallResponse? goldPriceFromApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in PortfolioPage widget.
+  String? decryptedApiResponse;
   // State field(s) for ListView widget.
 
   PagingController<DocumentSnapshot?, DigiGoldBuyRecord>?

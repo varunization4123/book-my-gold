@@ -1,17 +1,27 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:async';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'onboarding_page_model.dart';
 export 'onboarding_page_model.dart';
 
 class OnboardingPageWidget extends StatefulWidget {
-  const OnboardingPageWidget({super.key});
+  const OnboardingPageWidget({
+    super.key,
+    required this.mobileNumber,
+  });
+
+  final int? mobileNumber;
 
   @override
   State<OnboardingPageWidget> createState() => _OnboardingPageWidgetState();
@@ -59,6 +69,19 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
           ),
         ],
       ),
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 2000.0.ms,
+            begin: 0.0,
+            end: 5.0,
+          ),
+        ],
+      ),
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
@@ -73,6 +96,8 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
@@ -396,16 +421,64 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                           }
                                           _model.isLoading = true;
                                           setState(() {});
-
-                                          await currentUserReference!
-                                              .update(createUsersRecordData(
+                                          unawaited(
+                                            () async {
+                                              await currentUserReference!
+                                                  .update(createUsersRecordData(
+                                                email: _model
+                                                    .emailIDTextController.text,
+                                                displayName: _model
+                                                    .nameTextController.text,
+                                              ));
+                                            }(),
+                                          );
+                                          _model.registerUserApi =
+                                              await SafeGoldAPIGroupGroup
+                                                  .registrationAPICall
+                                                  .call(
+                                            name:
+                                                _model.nameTextController.text,
                                             email: _model
                                                 .emailIDTextController.text,
-                                            displayName:
-                                                _model.nameTextController.text,
-                                          ));
+                                            mobileNo: widget.mobileNumber,
+                                            pinCode: 560061,
+                                          );
 
-                                          context.goNamed('DashboardPage');
+                                          _model.decryptedRegistrationApi =
+                                              await actions.decryptApiResponse(
+                                            FFAppState().safeGoldAccessToken,
+                                            (_model.registerUserApi?.bodyText ??
+                                                ''),
+                                          );
+                                          if ((_model.registerUserApi
+                                                      ?.statusCode ??
+                                                  200) ==
+                                              200) {
+                                            FFAppState().userId = getJsonField(
+                                              functions.jsonFromString(_model
+                                                  .decryptedRegistrationApi!),
+                                              r'''$['id']''',
+                                            );
+                                            unawaited(
+                                              () async {
+                                                await currentUserReference!
+                                                    .update(
+                                                        createUsersRecordData(
+                                                  userId: FFAppState().userId,
+                                                  kycVerified: false,
+                                                  goldBought: getJsonField(
+                                                    functions.jsonFromString(_model
+                                                        .decryptedRegistrationApi!),
+                                                    r'''$['gold_balance']''',
+                                                  ),
+                                                ));
+                                              }(),
+                                            );
+
+                                            context.goNamed('DashboardPage');
+                                          }
+
+                                          setState(() {});
                                         },
                                         child: Material(
                                           color: Colors.transparent,
@@ -446,7 +519,7 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                                   );
                                                 } else {
                                                   return CircularPercentIndicator(
-                                                    percent: 1.0,
+                                                    percent: 0.85,
                                                     radius: 10.0,
                                                     lineWidth: 3.0,
                                                     animation: true,
@@ -461,7 +534,8 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                                                 context)
                                                             .primary,
                                                     startAngle: 90.0,
-                                                  );
+                                                  ).animateOnPageLoad(animationsMap[
+                                                      'progressBarOnPageLoadAnimation']!);
                                                 }
                                               },
                                             ),

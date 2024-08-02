@@ -20,9 +20,11 @@ class OtpPageWidget extends StatefulWidget {
   const OtpPageWidget({
     super.key,
     required this.mobileNumber,
+    required this.trueMobileNumber,
   });
 
   final String? mobileNumber;
+  final int? trueMobileNumber;
 
   @override
   State<OtpPageWidget> createState() => _OtpPageWidgetState();
@@ -80,6 +82,19 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
             duration: 300.0.ms,
             begin: const Offset(-0.349, 0),
             end: const Offset(0, 0),
+          ),
+        ],
+      ),
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 2000.0.ms,
+            begin: 0.0,
+            end: 5.0,
           ),
         ],
       ),
@@ -299,66 +314,77 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                       ),
 
                                       // You will have to add an action on this rich text to go to your login page.
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          final phoneNumberVal =
-                                              FFAppState().phoneNumber;
-                                          if (phoneNumberVal.isEmpty ||
-                                              !phoneNumberVal.startsWith('+')) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    'Phone Number is required and has to start with +.'),
-                                              ),
-                                            );
-                                            return;
-                                          }
-                                          await authManager.beginPhoneAuth(
-                                            context: context,
-                                            phoneNumber: phoneNumberVal,
-                                            onCodeSent: (context) async {
-                                              context.goNamedAuth(
-                                                'OtpPage',
-                                                context.mounted,
-                                                queryParameters: {
-                                                  'mobileNumber':
-                                                      serializeParam(
-                                                    FFAppState().phoneNumber,
-                                                    ParamType.String,
-                                                  ),
-                                                }.withoutNulls,
-                                                ignoreRedirect: true,
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: RichText(
-                                          textScaler:
-                                              MediaQuery.of(context).textScaler,
-                                          text: TextSpan(
-                                            children: const [
-                                              TextSpan(
-                                                text: 'Resend OTP',
-                                                style: TextStyle(),
-                                              )
-                                            ],
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Nunito',
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .secondaryText,
-                                                  letterSpacing: 0.0,
+                                      if (_model.timerMilliseconds == 0
+                                          ? true
+                                          : false)
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          focusColor: Colors.transparent,
+                                          hoverColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () async {
+                                            final phoneNumberVal =
+                                                FFAppState().phoneNumber;
+                                            if (phoneNumberVal.isEmpty ||
+                                                !phoneNumberVal
+                                                    .startsWith('+')) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Phone Number is required and has to start with +.'),
                                                 ),
+                                              );
+                                              return;
+                                            }
+                                            await authManager.beginPhoneAuth(
+                                              context: context,
+                                              phoneNumber: phoneNumberVal,
+                                              onCodeSent: (context) async {
+                                                context.goNamedAuth(
+                                                  'OtpPage',
+                                                  context.mounted,
+                                                  queryParameters: {
+                                                    'mobileNumber':
+                                                        serializeParam(
+                                                      FFAppState().phoneNumber,
+                                                      ParamType.String,
+                                                    ),
+                                                    'trueMobileNumber':
+                                                        serializeParam(
+                                                      widget.trueMobileNumber,
+                                                      ParamType.int,
+                                                    ),
+                                                  }.withoutNulls,
+                                                  ignoreRedirect: true,
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: RichText(
+                                            textScaler: MediaQuery.of(context)
+                                                .textScaler,
+                                            text: TextSpan(
+                                              children: const [
+                                                TextSpan(
+                                                  text: 'Resend OTP',
+                                                  style: TextStyle(),
+                                                )
+                                              ],
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            ),
                                           ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -401,11 +427,24 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                       }
 
                                       if (currentUserDisplayName != '') {
+                                        FFAppState().deletePhoneNumber();
+                                        FFAppState().phoneNumber = '';
+
+                                        setState(() {});
+
                                         context.goNamedAuth(
                                             'DashboardPage', context.mounted);
                                       } else {
                                         context.goNamedAuth(
-                                            'OnboardingPage', context.mounted);
+                                          'OnboardingPage',
+                                          context.mounted,
+                                          queryParameters: {
+                                            'mobileNumber': serializeParam(
+                                              widget.trueMobileNumber,
+                                              ParamType.int,
+                                            ),
+                                          }.withoutNulls,
+                                        );
                                       }
                                     },
                                     child: Material(
@@ -446,7 +485,7 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                               );
                                             } else {
                                               return CircularPercentIndicator(
-                                                percent: 1.0,
+                                                percent: 0.85,
                                                 radius: 10.0,
                                                 lineWidth: 3.0,
                                                 animation: true,
@@ -458,7 +497,8 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                                     FlutterFlowTheme.of(context)
                                                         .primary,
                                                 startAngle: 90.0,
-                                              );
+                                              ).animateOnPageLoad(animationsMap[
+                                                  'progressBarOnPageLoadAnimation']!);
                                             }
                                           },
                                         ),

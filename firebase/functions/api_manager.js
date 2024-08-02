@@ -1,38 +1,13 @@
 const axios = require("axios").default;
 const qs = require("qs");
 
-async function _goldPriceCall(context, ffVariables) {
-  if (!context.auth) {
-    return _unauthenticatedResponse;
-  }
-
-  var url = `https://www.goldapi.io/api/XAU/INR`;
-  var headers = {
-    "x-access-token": `goldapi-5z18ld4gkwkcye86-io`,
-    "Content-Type": `application/json`,
-  };
-  var params = {};
-  var ffApiRequestBody = undefined;
-
-  return makeApiRequest({
-    method: "get",
-    url,
-    headers,
-    params,
-    returnBody: true,
-    isStreamingApi: false,
-  });
-}
-
 /// Helper functions to route to the appropriate API Call.
 
 async function makeApiCall(context, data) {
   var callName = data["callName"] || "";
   var variables = data["variables"] || {};
 
-  const callMap = {
-    GoldPriceCall: _goldPriceCall,
-  };
+  const callMap = {};
 
   if (!(callName in callMap)) {
     return {
