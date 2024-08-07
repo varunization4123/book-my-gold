@@ -10,7 +10,6 @@ class OnboardingPageModel extends FlutterFlowModel<OnboardingPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   // State field(s) for name widget.
   FocusNode? nameFocusNode;
@@ -58,7 +57,6 @@ class OnboardingPageModel extends FlutterFlowModel<OnboardingPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     nameFocusNode?.dispose();
     nameTextController?.dispose();
 

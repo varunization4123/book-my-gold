@@ -9,7 +9,6 @@ class ChatSupportPageModel extends FlutterFlowModel<ChatSupportPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode;
@@ -37,7 +36,6 @@ class ChatSupportPageModel extends FlutterFlowModel<ChatSupportPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     textFieldFocusNode?.dispose();
     textController?.dispose();
   }

@@ -9,7 +9,6 @@ class MobileSignInPageModel extends FlutterFlowModel<MobileSignInPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey = GlobalKey<FormState>();
   // State field(s) for mobileNumber widget.
   FocusNode? mobileNumberFocusNode;
@@ -38,7 +37,6 @@ class MobileSignInPageModel extends FlutterFlowModel<MobileSignInPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     mobileNumberFocusNode?.dispose();
     mobileNumberTextController?.dispose();
   }

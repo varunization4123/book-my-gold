@@ -71,7 +71,7 @@ class BuyVerifyAPICall {
     final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
-"$encryptedData"''';
+$encryptedData''';
     return ApiManager.instance.makeApiCall(
       callName: 'Buy Verify API',
       apiUrl: '$baseUrl/v4/users/$userId/buy-gold-verify',

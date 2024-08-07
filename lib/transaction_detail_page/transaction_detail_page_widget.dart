@@ -53,9 +53,7 @@ class _TransactionDetailPageWidgetState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -348,12 +346,12 @@ class _TransactionDetailPageWidgetState
                                   ),
                                   Text(
                                     '${dateTimeFormat(
-                                      'd/M/y',
+                                      "d/M/y",
                                       widget.time,
                                       locale: FFLocalizations.of(context)
                                           .languageCode,
                                     )}, ${dateTimeFormat(
-                                      'jm',
+                                      "jm",
                                       widget.time,
                                       locale: FFLocalizations.of(context)
                                           .languageCode,
@@ -452,12 +450,12 @@ class _TransactionDetailPageWidgetState
                                   ),
                                   Text(
                                     '${dateTimeFormat(
-                                      'd/M/y',
+                                      "d/M/y",
                                       widget.time,
                                       locale: FFLocalizations.of(context)
                                           .languageCode,
                                     )}, ${dateTimeFormat(
-                                      'jm',
+                                      "jm",
                                       widget.time,
                                       locale: FFLocalizations.of(context)
                                           .languageCode,

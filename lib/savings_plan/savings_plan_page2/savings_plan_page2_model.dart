@@ -17,7 +17,6 @@ class SavingsPlanPage2Model extends FlutterFlowModel<SavingsPlanPage2Widget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey3 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
@@ -143,7 +142,6 @@ class SavingsPlanPage2Model extends FlutterFlowModel<SavingsPlanPage2Widget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     mainTimer?.cancel();
     refreshTimer?.cancel();
     timerController.dispose();

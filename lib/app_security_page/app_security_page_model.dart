@@ -5,14 +5,11 @@ import 'package:flutter/material.dart';
 class AppSecurityPageModel extends FlutterFlowModel<AppSecurityPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   bool biometricVerification = false;
 
   @override
   void initState(BuildContext context) {}
 
   @override
-  void dispose() {
-    unfocusNode.dispose();
-  }
+  void dispose() {}
 }

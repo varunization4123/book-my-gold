@@ -14,7 +14,6 @@ class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - API (Buy Price API)] action in PortfolioPage widget.
   ApiCallResponse? goldPriceFromApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in PortfolioPage widget.
@@ -31,7 +30,6 @@ class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     for (var s in listViewStreamSubscriptions) {
       s?.cancel();
     }

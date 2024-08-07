@@ -49,8 +49,8 @@ class _SupportTopicWidgetState extends State<SupportTopicWidget> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 48.0,
-          height: 48.0,
+          width: 64.0,
+          height: 64.0,
           decoration: BoxDecoration(
             color: FlutterFlowTheme.of(context).accent1,
             shape: BoxShape.circle,

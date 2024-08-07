@@ -72,19 +72,16 @@ class _CustomGraphWidgetState extends State<CustomGraphWidget> {
                             ),
                           )
                         ],
-                        chartStylingInfo: ChartStylingInfo(
-                          enableTooltip: true,
-                          tooltipBackgroundColor:
-                              FlutterFlowTheme.of(context).primaryBackground,
-                          backgroundColor: const Color(0x00FFFFFF),
+                        chartStylingInfo: const ChartStylingInfo(
+                          backgroundColor: Color(0x00FFFFFF),
                           showGrid: true,
                           showBorder: false,
                         ),
                         axisBounds: const AxisBounds(
                           minX: 0.0,
-                          minY: 5000.0,
+                          minY: 5500.0,
                           maxX: 16.0,
-                          maxY: 7500.0,
+                          maxY: 7700.0,
                         ),
                         xAxisLabelInfo: const AxisLabelInfo(),
                         yAxisLabelInfo: const AxisLabelInfo(),

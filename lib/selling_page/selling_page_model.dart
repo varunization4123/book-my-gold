@@ -25,7 +25,6 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey2 = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
   // Stores action output result for [Firestore Query - Query a collection] action in SellingPage widget.
@@ -103,7 +102,6 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     mainTimer?.cancel();
     refreshTimer?.cancel();
     timerController.dispose();

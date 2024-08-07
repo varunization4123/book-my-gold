@@ -52,9 +52,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -635,13 +633,8 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                             builder: (context) {
                                               return WebViewAware(
                                                 child: GestureDetector(
-                                                  onTap: () => _model
-                                                          .unfocusNode
-                                                          .canRequestFocus
-                                                      ? FocusScope.of(context)
-                                                          .requestFocus(_model
-                                                              .unfocusNode)
-                                                      : FocusScope.of(context)
+                                                  onTap: () =>
+                                                      FocusScope.of(context)
                                                           .unfocus(),
                                                   child: Padding(
                                                     padding:
@@ -665,7 +658,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                         child: Text(
                                           valueOrDefault<String>(
                                             dateTimeFormat(
-                                              'yMMMd',
+                                              "yMMMd",
                                               currentUserDocument?.dateOfBirth,
                                               locale:
                                                   FFLocalizations.of(context)
@@ -736,13 +729,8 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget>
                                             builder: (context) {
                                               return WebViewAware(
                                                 child: GestureDetector(
-                                                  onTap: () => _model
-                                                          .unfocusNode
-                                                          .canRequestFocus
-                                                      ? FocusScope.of(context)
-                                                          .requestFocus(_model
-                                                              .unfocusNode)
-                                                      : FocusScope.of(context)
+                                                  onTap: () =>
+                                                      FocusScope.of(context)
                                                           .unfocus(),
                                                   child: Padding(
                                                     padding:

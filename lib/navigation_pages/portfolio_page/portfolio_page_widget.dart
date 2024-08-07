@@ -81,9 +81,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -452,9 +450,9 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                                 } else if (valueOrDefault<
                                                                         String>(
                                                                       formatNumber(
-                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) * (_model.goldPrice!) +
-                                                                            ((_model.goldPrice!) *
-                                                                                ((_model.goldDifference!) / 100)),
+                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) *
+                                                                            ((_model.goldPrice!) +
+                                                                                ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
                                                                         formatType:
                                                                             FormatType.custom,
                                                                         format:
@@ -560,14 +558,13 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                                 String>(
                                                               formatNumber(
                                                                 valueOrDefault(
-                                                                            currentUserDocument
-                                                                                ?.goldBought,
-                                                                            0.0) *
-                                                                        (_model
-                                                                            .goldPrice!) +
-                                                                    ((_model.goldPrice!) *
-                                                                        ((_model.goldDifference!) /
-                                                                            100)),
+                                                                        currentUserDocument
+                                                                            ?.goldBought,
+                                                                        0.0) *
+                                                                    ((_model.goldPrice!) +
+                                                                        ((_model.goldPrice!) *
+                                                                            ((_model.goldDifference!) /
+                                                                                100))),
                                                                 formatType:
                                                                     FormatType
                                                                         .custom,
@@ -695,8 +692,8 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                                     } else if (valueOrDefault<
                                                                             String>(
                                                                           formatNumber(
-                                                                            valueOrDefault(currentUserDocument?.goldBought, 0.0) * (_model.goldPrice!) +
-                                                                                ((_model.goldPrice!) * ((_model.goldDifference!) / 100)),
+                                                                            valueOrDefault(currentUserDocument?.goldBought, 0.0) *
+                                                                                ((_model.goldPrice!) + ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
                                                                             formatType:
                                                                                 FormatType.custom,
                                                                             format:
@@ -919,14 +916,13 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                   valueOrDefault<String>(
                                                     formatNumber(
                                                       valueOrDefault(
-                                                                  currentUserDocument
-                                                                      ?.goldBought,
-                                                                  0.0) *
-                                                              (_model
-                                                                  .goldPrice!) +
-                                                          ((_model.goldPrice!) *
-                                                              ((_model.goldDifference!) /
-                                                                  100)),
+                                                              currentUserDocument
+                                                                  ?.goldBought,
+                                                              0.0) *
+                                                          ((_model.goldPrice!) +
+                                                              ((_model.goldPrice!) *
+                                                                  ((_model.goldDifference!) /
+                                                                      100))),
                                                       formatType:
                                                           FormatType.custom,
                                                       currency: '₹',
@@ -1044,14 +1040,13 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                   valueOrDefault<String>(
                                                     formatNumber(
                                                       (valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.goldBought,
-                                                                      0.0) *
-                                                                  (_model
-                                                                      .goldPrice!) +
-                                                              ((_model.goldPrice!) *
-                                                                  ((_model.goldDifference!) /
-                                                                      100))) -
+                                                                  currentUserDocument
+                                                                      ?.goldBought,
+                                                                  0.0) *
+                                                              ((_model.goldPrice!) +
+                                                                  ((_model.goldPrice!) *
+                                                                      ((_model.goldDifference!) /
+                                                                          100)))) -
                                                           valueOrDefault(
                                                               currentUserDocument
                                                                   ?.amountBought,
@@ -1128,9 +1123,9 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                                 } else if (valueOrDefault<
                                                                         String>(
                                                                       formatNumber(
-                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) * (_model.goldPrice!) +
-                                                                            ((_model.goldPrice!) *
-                                                                                ((_model.goldDifference!) / 100)),
+                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) *
+                                                                            ((_model.goldPrice!) +
+                                                                                ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
                                                                         formatType:
                                                                             FormatType.custom,
                                                                         format:
@@ -1228,12 +1223,8 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                         builder: (context) {
                                           return WebViewAware(
                                             child: GestureDetector(
-                                              onTap: () => _model.unfocusNode
-                                                      .canRequestFocus
-                                                  ? FocusScope.of(context)
-                                                      .requestFocus(
-                                                          _model.unfocusNode)
-                                                  : FocusScope.of(context)
+                                              onTap: () =>
+                                                  FocusScope.of(context)
                                                       .unfocus(),
                                               child: Padding(
                                                 padding:

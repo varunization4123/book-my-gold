@@ -35,7 +35,6 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
   // Stores action output result for [Firestore Query - Query a collection] action in BuyingPage widget.
@@ -87,8 +86,10 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   late PriceOptionModel priceOptionModel3;
   // Model for PriceOptionSelected component.
   late PriceOptionSelectedModel priceOptionSelectedModel1;
-  // Stores action output result for [Custom Action - encryptBuyVerifyApiRequest] action in SetupBtn widget.
-  String? encryptedBuyVerifyApiRequest;
+  // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
+  String? encryptedApiRequest;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedApiResponseSelf;
   // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
   ApiCallResponse? buyVerifyApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
@@ -119,14 +120,6 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   late PriceOptionSelectedModel priceOptionSelectedModel2;
   // Model for PriceOption component.
   late PriceOptionModel priceOptionModel6;
-  // Stores action output result for [Custom Action - encryptBuyVerifyApiRequest] action in SetupBtn widget.
-  String? encryptedBuyVerifyApiRequest2;
-  // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
-  ApiCallResponse? buyVerifyApi2;
-  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
-  String? decryptedApiResponse2;
-  // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
-  String? razorpayPaymentIdCopy;
   // Model for FAQPoint component.
   late FAQPointModel fAQPointModel1;
   // Model for FAQPoint component.
@@ -155,7 +148,6 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     mainTimer?.cancel();
     refreshTimer?.cancel();
     timerController.dispose();

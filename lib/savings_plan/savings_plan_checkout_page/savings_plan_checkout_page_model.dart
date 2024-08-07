@@ -18,7 +18,6 @@ class SavingsPlanCheckoutPageModel
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for PaymentProvider component.
   late PaymentProviderModel paymentProviderModel1;
   // Model for PaymentProvider component.
@@ -32,7 +31,6 @@ class SavingsPlanCheckoutPageModel
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     paymentProviderModel1.dispose();
     paymentProviderModel2.dispose();
   }

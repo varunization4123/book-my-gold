@@ -173,9 +173,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -995,15 +993,8 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         return WebViewAware(
                                                           child:
                                                               GestureDetector(
-                                                            onTap: () => _model
-                                                                    .unfocusNode
-                                                                    .canRequestFocus
-                                                                ? FocusScope.of(
-                                                                        context)
-                                                                    .requestFocus(
-                                                                        _model
-                                                                            .unfocusNode)
-                                                                : FocusScope.of(
+                                                            onTap: () =>
+                                                                FocusScope.of(
                                                                         context)
                                                                     .unfocus(),
                                                             child: Padding(
@@ -1716,35 +1707,26 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                     }
                                                     _model.isLoading = true;
                                                     setState(() {});
-                                                    _model.encryptedBuyVerifyApiRequest =
+                                                    _model.encryptedApiRequest =
                                                         actions
-                                                            .encryptBuyVerifyApiRequest(
-                                                      _model.rateIdApi!,
-                                                      valueOrDefault<String>(
-                                                        formatNumber(
-                                                          (_model.enteredAmount!) /
-                                                              (_model.goldPrice *
-                                                                  1.03),
-                                                          formatType:
-                                                              FormatType.custom,
-                                                          format: '##.####',
-                                                          locale: 'en_US',
-                                                        ),
-                                                        '0',
-                                                      ),
-                                                      valueOrDefault<String>(
-                                                        formatNumber(
-                                                          _model.goldPrice *
-                                                              1.03,
-                                                          formatType:
-                                                              FormatType.custom,
-                                                          format: '###.##',
-                                                          locale: 'en_US',
-                                                        ),
-                                                        '0',
-                                                      ),
+                                                            .encryptApiRequest(
+                                                      functions.buyVerifyData(
+                                                          _model.rateIdApi!,
+                                                          _model
+                                                              .amountFieldTextController
+                                                              .text,
+                                                          _model.goldPrice
+                                                              .toString()),
                                                       FFAppState()
                                                           .safeGoldAccessToken,
+                                                    );
+                                                    _model.decryptedApiResponseSelf =
+                                                        await actions
+                                                            .decryptApiResponse(
+                                                      FFAppState()
+                                                          .safeGoldAccessToken,
+                                                      _model
+                                                          .encryptedApiRequest!,
                                                     );
                                                     _model.buyVerifyApi =
                                                         await SafeGoldAPIGroupGroup
@@ -1753,7 +1735,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                       userId:
                                                           FFAppState().userId,
                                                       encryptedData: _model
-                                                          .encryptedBuyVerifyApiRequest,
+                                                          .encryptedApiRequest,
                                                     );
 
                                                     _model.decryptedApiResponse1 =
@@ -1822,7 +1804,8 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                           .showSnackBar(
                                                         SnackBar(
                                                           content: Text(
-                                                            'Working on this - \"Encryption part\"',
+                                                            _model
+                                                                .decryptedApiResponse1!,
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .titleSmall
@@ -2356,15 +2339,8 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         return WebViewAware(
                                                           child:
                                                               GestureDetector(
-                                                            onTap: () => _model
-                                                                    .unfocusNode
-                                                                    .canRequestFocus
-                                                                ? FocusScope.of(
-                                                                        context)
-                                                                    .requestFocus(
-                                                                        _model
-                                                                            .unfocusNode)
-                                                                : FocusScope.of(
+                                                            onTap: () =>
+                                                                FocusScope.of(
                                                                         context)
                                                                     .unfocus(),
                                                             child: Padding(
@@ -3228,131 +3204,6 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                       return;
                                                     }
                                                     _model.isLoading = true;
-                                                    setState(() {});
-                                                    _model.encryptedBuyVerifyApiRequest2 =
-                                                        actions
-                                                            .encryptBuyVerifyApiRequest(
-                                                      _model.rateIdApi!,
-                                                      _model
-                                                          .goldFieldTextController
-                                                          .text,
-                                                      valueOrDefault<String>(
-                                                        formatNumber(
-                                                          _model.goldPrice *
-                                                              1.03,
-                                                          formatType:
-                                                              FormatType.custom,
-                                                          format: '###.##',
-                                                          locale: 'en_US',
-                                                        ),
-                                                        '0',
-                                                      ),
-                                                      FFAppState()
-                                                          .safeGoldAccessToken,
-                                                    );
-                                                    _model.buyVerifyApi2 =
-                                                        await SafeGoldAPIGroupGroup
-                                                            .buyVerifyAPICall
-                                                            .call(
-                                                      userId:
-                                                          FFAppState().userId,
-                                                      encryptedData: _model
-                                                          .encryptedBuyVerifyApiRequest2,
-                                                    );
-
-                                                    _model.decryptedApiResponse2 =
-                                                        await actions
-                                                            .decryptApiResponse(
-                                                      FFAppState()
-                                                          .safeGoldAccessToken,
-                                                      (_model.buyVerifyApi2
-                                                              ?.bodyText ??
-                                                          ''),
-                                                    );
-                                                    if ((_model.buyVerifyApi2
-                                                            ?.succeeded ??
-                                                        true)) {
-                                                      context.pushNamed(
-                                                          'LoadingScreen');
-
-                                                      if ((_model.buyVerifyApi2
-                                                              ?.succeeded ??
-                                                          true)) {
-                                                        await processRazorpayPayment(
-                                                          context,
-                                                          amount: _model
-                                                              .enteredAmount!
-                                                              .round(),
-                                                          currency: 'INR',
-                                                          onReceivedResponse: (paymentId) =>
-                                                              safeSetState(() =>
-                                                                  _model.razorpayPaymentIdCopy =
-                                                                      paymentId),
-                                                        );
-
-                                                        context.pushNamed(
-                                                          'PurchaseSuccessPage',
-                                                          queryParameters: {
-                                                            'amount':
-                                                                serializeParam(
-                                                              valueOrDefault<
-                                                                  String>(
-                                                                _model
-                                                                    .enteredAmount
-                                                                    ?.toString(),
-                                                                '0',
-                                                              ),
-                                                              ParamType.String,
-                                                            ),
-                                                            'gold':
-                                                                serializeParam(
-                                                              0.0,
-                                                              ParamType.double,
-                                                            ),
-                                                            'goldPrice':
-                                                                serializeParam(
-                                                              _model.goldPrice,
-                                                              ParamType.double,
-                                                            ),
-                                                          }.withoutNulls,
-                                                        );
-                                                      }
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .clearSnackBars();
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        SnackBar(
-                                                          content: Text(
-                                                            'Working on this - \"Encryption part\"',
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .titleSmall
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Nunito',
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryBackground,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                          ),
-                                                          duration: const Duration(
-                                                              milliseconds:
-                                                                  4000),
-                                                          backgroundColor:
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .primary,
-                                                        ),
-                                                      );
-                                                      _model.isLoading = false;
-                                                      setState(() {});
-                                                    }
-
                                                     setState(() {});
                                                   },
                                                   child: Container(

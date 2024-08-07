@@ -12,7 +12,6 @@ class SpinTheWheelPageModel extends FlutterFlowModel<SpinTheWheelPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for GameButton component.
   late GameButtonModel gameButtonModel;
 
@@ -23,7 +22,6 @@ class SpinTheWheelPageModel extends FlutterFlowModel<SpinTheWheelPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     gameButtonModel.dispose();
   }
 }

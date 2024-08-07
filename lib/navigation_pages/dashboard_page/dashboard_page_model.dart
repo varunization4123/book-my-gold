@@ -46,7 +46,6 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
   ///  State fields for stateful widgets in this page.
 
   TutorialCoachMark? appWalkthroughController;
-  final unfocusNode = FocusNode();
   // Stores action output result for [Firestore Query - Query a collection] action in DashboardPage widget.
   AppSettingsRecord? readAppSettings;
   // Stores action output result for [Backend Call - API (Buy Price API)] action in DashboardPage widget.
@@ -116,7 +115,6 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
   @override
   void dispose() {
     appWalkthroughController?.finish();
-    unfocusNode.dispose();
     customGraphModel.dispose();
     grapOptionModel1.dispose();
     grapOptionModel2.dispose();

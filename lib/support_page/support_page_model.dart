@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 class SupportPageModel extends FlutterFlowModel<SupportPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for SupportTopic component.
   late SupportTopicModel supportTopicModel1;
   // Model for SupportTopic component.
@@ -45,7 +44,6 @@ class SupportPageModel extends FlutterFlowModel<SupportPageWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     supportTopicModel1.dispose();
     supportTopicModel2.dispose();
     supportTopicModel3.dispose();

@@ -71,3 +71,11 @@ List<double> yAxisList(List<dynamic> data) {
     }
   }).toList();
 }
+
+String buyVerifyData(
+  String rateId,
+  String buyPrice,
+  String goldAmount,
+) {
+  return '{"rate_id":"$rateId","buy_price":"$buyPrice","gold_amount":"$goldAmount"}';
+}

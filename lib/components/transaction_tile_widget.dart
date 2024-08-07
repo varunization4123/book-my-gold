@@ -136,14 +136,14 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                     Text(
                       '${valueOrDefault<String>(
                         dateTimeFormat(
-                          'yMMMd',
+                          "yMMMd",
                           widget.transactionDate,
                           locale: FFLocalizations.of(context).languageCode,
                         ),
                         'Mar 12, 2024',
                       )} | ${valueOrDefault<String>(
                         dateTimeFormat(
-                          'jm',
+                          "jm",
                           widget.transactionDate,
                           locale: FFLocalizations.of(context).languageCode,
                         ),

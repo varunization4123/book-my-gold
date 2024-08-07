@@ -8,7 +8,6 @@ class WithdrawSuccessfulPageModel
     extends FlutterFlowModel<WithdrawSuccessfulPageWidget> {
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Model for GoldCoinWidget component.
   late GoldCoinWidgetModel goldCoinWidgetModel;
   // Model for GoldCoinWidgetSmall component.
@@ -27,7 +26,6 @@ class WithdrawSuccessfulPageModel
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     goldCoinWidgetModel.dispose();
     goldCoinWidgetSmallModel1.dispose();
     goldCoinWidgetSmallModel2.dispose();

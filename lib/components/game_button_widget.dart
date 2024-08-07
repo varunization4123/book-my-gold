@@ -38,7 +38,7 @@ class _GameButtonWidgetState extends State<GameButtonWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 74.0,
+      height: 58.0,
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.contain,
