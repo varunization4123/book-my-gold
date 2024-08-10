@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
     <application
-        android:label="BookMyGold"
+        android:label="BookurGold"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
@@ -48,7 +48,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="bookmygold" android:host="bookmygold.com" />
+                <data android:scheme="bookurgold" android:host="bookurgold.com" />
             </intent-filter>
 
         </activity>

@@ -56,6 +56,14 @@ class DashboardPageModel extends FlutterFlowModel<DashboardPageWidget> {
   ApiCallResponse? goldDataFromApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in DashboardPage widget.
   String? decryptedGoldDataApiResponse;
+  // Stores action output result for [Backend Call - API (Fetch Balance API)] action in DashboardPage widget.
+  ApiCallResponse? fetchBalanceApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in DashboardPage widget.
+  String? decryptedFetchBalanceApiResponse;
+  // Stores action output result for [Backend Call - API (User Transactions API)] action in DashboardPage widget.
+  ApiCallResponse? userTransactionApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in DashboardPage widget.
+  String? decryptedUserTransactionApi;
   // Model for CustomGraph component.
   late CustomGraphModel customGraphModel;
   // Model for GrapOption component.

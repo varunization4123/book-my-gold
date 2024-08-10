@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
   ///  Local state fields for this page.
 
-  double? goldPrice = 6000.0;
+  double? goldSellingPrice = 6000.0;
 
   double? goldDifference = 1.0;
 
@@ -25,8 +25,7 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final formKey2 = GlobalKey<FormState>();
-  final formKey1 = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   // Stores action output result for [Firestore Query - Query a collection] action in SellingPage widget.
   AppSettingsRecord? readAppSettings;
   InstantTimer? mainTimer;
@@ -46,11 +45,6 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
   FlutterFlowTimerController timerController =
       FlutterFlowTimerController(StopWatchTimer(mode: StopWatchMode.countDown));
 
-  // State field(s) for TabBar widget.
-  TabController? tabBarController;
-  int get tabBarCurrentIndex =>
-      tabBarController != null ? tabBarController!.index : 0;
-
   // State field(s) for amountField widget.
   FocusNode? amountFieldFocusNode;
   TextEditingController? amountFieldTextController;
@@ -69,35 +63,18 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
   }
 
   // Model for WithdrawFull component.
-  late WithdrawFullModel withdrawFullModel1;
+  late WithdrawFullModel withdrawFullModel;
+  // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
+  String? encryptedSellVerifyRequest;
   // Stores action output result for [Backend Call - API (Sell Verify API)] action in SetupBtn widget.
   ApiCallResponse? sellVerifyApi;
-  // State field(s) for gramsField widget.
-  FocusNode? gramsFieldFocusNode;
-  TextEditingController? gramsFieldTextController;
-  String? Function(BuildContext, String?)? gramsFieldTextControllerValidator;
-  String? _gramsFieldTextControllerValidator(
-      BuildContext context, String? val) {
-    if (val == null || val.isEmpty) {
-      return 'Field is required';
-    }
-
-    return null;
-  }
-
-  // Model for WithdrawFull component.
-  late WithdrawFullModel withdrawFullModel2;
-  // Stores action output result for [Backend Call - API (Sell Verify API)] action in SetupBtn widget.
-  ApiCallResponse? sellVerifyApi2;
-  // Stores action output result for [Custom Action - encryptSellVerifyApiRequest] action in SetupBtn widget.
-  String? encryptSellVerifyApiRequest2;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedSellVerifyResponse;
 
   @override
   void initState(BuildContext context) {
     amountFieldTextControllerValidator = _amountFieldTextControllerValidator;
-    withdrawFullModel1 = createModel(context, () => WithdrawFullModel());
-    gramsFieldTextControllerValidator = _gramsFieldTextControllerValidator;
-    withdrawFullModel2 = createModel(context, () => WithdrawFullModel());
+    withdrawFullModel = createModel(context, () => WithdrawFullModel());
   }
 
   @override
@@ -105,14 +82,9 @@ class SellingPageModel extends FlutterFlowModel<SellingPageWidget> {
     mainTimer?.cancel();
     refreshTimer?.cancel();
     timerController.dispose();
-    tabBarController?.dispose();
     amountFieldFocusNode?.dispose();
     amountFieldTextController?.dispose();
 
-    withdrawFullModel1.dispose();
-    gramsFieldFocusNode?.dispose();
-    gramsFieldTextController?.dispose();
-
-    withdrawFullModel2.dispose();
+    withdrawFullModel.dispose();
   }
 }

@@ -33,6 +33,14 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
 
   bool isLoading = false;
 
+  double? buyRate;
+
+  int? txId;
+
+  String pincode = '560061';
+
+  double? enteredGold;
+
   ///  State fields for stateful widgets in this page.
 
   final formKey1 = GlobalKey<FormState>();
@@ -87,15 +95,19 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   // Model for PriceOptionSelected component.
   late PriceOptionSelectedModel priceOptionSelectedModel1;
   // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
-  String? encryptedApiRequest;
-  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
-  String? decryptedApiResponseSelf;
+  String? encryptedBuyVerifyApiRequest;
   // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
   ApiCallResponse? buyVerifyApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
-  String? decryptedApiResponse1;
+  String? decryptedBuyVerifyApiResponse;
   // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
-  String? razorpayPaymentId;
+  String? razorpayPaymentInRupees;
+  // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
+  String? encryptedBuyConfirmApiRequest;
+  // Stores action output result for [Backend Call - API (Buy Confirm API)] action in SetupBtn widget.
+  ApiCallResponse? buyConfirmApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedBuyConfirmApiResponse;
   // State field(s) for goldField widget.
   FocusNode? goldFieldFocusNode;
   TextEditingController? goldFieldTextController;
@@ -120,6 +132,20 @@ class BuyingPageModel extends FlutterFlowModel<BuyingPageWidget> {
   late PriceOptionSelectedModel priceOptionSelectedModel2;
   // Model for PriceOption component.
   late PriceOptionModel priceOptionModel6;
+  // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
+  String? encryptedBuyVerifyApiRequest2;
+  // Stores action output result for [Backend Call - API (Buy Verify API)] action in SetupBtn widget.
+  ApiCallResponse? buyVerifyApi2;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedBuyVerifyApiResponse2;
+  // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
+  String? razorpayPaymentInGold;
+  // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
+  String? encryptedBuyConfirmApiRequest2;
+  // Stores action output result for [Backend Call - API (Buy Confirm API)] action in SetupBtn widget.
+  ApiCallResponse? buyConfirmApi2;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
+  String? decryptedBuyConfirmApiResponse2;
   // Model for FAQPoint component.
   late FAQPointModel fAQPointModel1;
   // Model for FAQPoint component.

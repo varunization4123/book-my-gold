@@ -1,7 +1,13 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'purchase_success_page_model.dart';
 export 'purchase_success_page_model.dart';
 
@@ -11,11 +17,15 @@ class PurchaseSuccessPageWidget extends StatefulWidget {
     required this.amount,
     required this.gold,
     required this.goldPrice,
+    required this.invoiceId,
+    required this.txId,
   });
 
   final String? amount;
   final double? gold;
   final double? goldPrice;
+  final String? invoiceId;
+  final int? txId;
 
   @override
   State<PurchaseSuccessPageWidget> createState() =>
@@ -34,6 +44,29 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'PurchaseSuccessPage'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.isUpdating = true;
+      setState(() {});
+
+      await currentUserReference!.update({
+        ...mapToFirestore(
+          {
+            'amount_bought': FieldValue.increment(valueOrDefault<double>(
+              double.parse(valueOrDefault<String>(
+                widget.amount,
+                '0',
+              )),
+              0.0,
+            )),
+            'gold_bought': FieldValue.increment(widget.gold!),
+          },
+        ),
+      });
+      _model.isUpdating = false;
+      setState(() {});
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -46,6 +79,8 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: WillPopScope(
@@ -377,7 +412,7 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                                                 ),
                                           ),
                                           Text(
-                                            'MMTC - PAMP Reference Number',
+                                            'SafeGold Reference Number',
                                             style: FlutterFlowTheme.of(context)
                                                 .bodySmall
                                                 .override(
@@ -391,7 +426,10 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               Text(
-                                                'S20240010132102',
+                                                valueOrDefault<String>(
+                                                  widget.invoiceId,
+                                                  'S20240010132102',
+                                                ),
                                                 style:
                                                     FlutterFlowTheme.of(context)
                                                         .bodySmall
@@ -535,26 +573,54 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.download_sharp,
-                              color: FlutterFlowTheme.of(context).primary,
-                              size: 20.0,
-                            ),
-                            Text(
-                              'Download Invoice',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyLarge
-                                  .override(
-                                    fontFamily: 'Nunito',
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                          ].divide(const SizedBox(width: 12.0)),
+                        child: InkWell(
+                          splashColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () async {
+                            _model.invoiceApi =
+                                await SafeGoldAPIGroupGroup.invoiceAPICall.call(
+                              txId: widget.txId,
+                            );
+
+                            _model.decryptedBuyInvoiceApiResponse =
+                                await actions.decryptApiResponse(
+                              FFAppState().safeGoldAccessToken,
+                              (_model.invoiceApi?.bodyText ?? ''),
+                            );
+                            if ((_model.invoiceApi?.succeeded ?? true)) {
+                              await launchURL(getJsonField(
+                                functions.jsonFromString(
+                                    _model.decryptedBuyInvoiceApiResponse!),
+                                r'''$['link']''',
+                              ).toString());
+                            }
+
+                            setState(() {});
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.download_sharp,
+                                color: FlutterFlowTheme.of(context).primary,
+                                size: 20.0,
+                              ),
+                              Text(
+                                'Download Invoice',
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyLarge
+                                    .override(
+                                      fontFamily: 'Nunito',
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
+                            ].divide(const SizedBox(width: 12.0)),
+                          ),
                         ),
                       ),
                       Align(
@@ -569,7 +635,29 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                context.pushNamed('DashboardPage');
+                                if (_model.isUpdating) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please wait, while we update the transaction',
+                                        style: FlutterFlowTheme.of(context)
+                                            .titleSmall
+                                            .override(
+                                              fontFamily: 'Nunito',
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ),
+                                      duration: const Duration(milliseconds: 4000),
+                                      backgroundColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                    ),
+                                  );
+                                } else {
+                                  context.pushNamed('DashboardPage');
+                                }
                               },
                               child: Container(
                                 height: 45.0,
@@ -608,7 +696,29 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                context.pushNamed('BuyingPage');
+                                if (_model.isUpdating) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please wait, while we update the transaction',
+                                        style: FlutterFlowTheme.of(context)
+                                            .titleSmall
+                                            .override(
+                                              fontFamily: 'Nunito',
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryBackground,
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ),
+                                      duration: const Duration(milliseconds: 4000),
+                                      backgroundColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                    ),
+                                  );
+                                } else {
+                                  context.pushNamed('BuyingPage');
+                                }
                               },
                               child: Container(
                                 height: 45.0,
@@ -668,7 +778,28 @@ class _PurchaseSuccessPageWidgetState extends State<PurchaseSuccessPageWidget> {
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
-                          context.goNamed('PortfolioPage');
+                          if (_model.isUpdating) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please wait, while we update the transaction',
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: 'Nunito',
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryBackground,
+                                        letterSpacing: 0.0,
+                                      ),
+                                ),
+                                duration: const Duration(milliseconds: 4000),
+                                backgroundColor:
+                                    FlutterFlowTheme.of(context).primary,
+                              ),
+                            );
+                          } else {
+                            context.goNamed('PortfolioPage');
+                          }
                         },
                         child: Text(
                           'Transaction',

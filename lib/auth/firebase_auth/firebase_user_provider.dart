@@ -7,8 +7,8 @@ import '../base_auth_user_provider.dart';
 
 export '../base_auth_user_provider.dart';
 
-class BookMyGoldFirebaseUser extends BaseAuthUser {
-  BookMyGoldFirebaseUser(this.user);
+class BookurGoldFirebaseUser extends BaseAuthUser {
+  BookurGoldFirebaseUser(this.user);
   User? user;
   @override
   bool get loggedIn => user != null;
@@ -57,17 +57,17 @@ class BookMyGoldFirebaseUser extends BaseAuthUser {
   static BaseAuthUser fromUserCredential(UserCredential userCredential) =>
       fromFirebaseUser(userCredential.user);
   static BaseAuthUser fromFirebaseUser(User? user) =>
-      BookMyGoldFirebaseUser(user);
+      BookurGoldFirebaseUser(user);
 }
 
-Stream<BaseAuthUser> bookMyGoldFirebaseUserStream() => FirebaseAuth.instance
+Stream<BaseAuthUser> bookurGoldFirebaseUserStream() => FirebaseAuth.instance
         .authStateChanges()
         .debounce((user) => user == null && !loggedIn
             ? TimerStream(true, const Duration(seconds: 1))
             : Stream.value(user))
         .map<BaseAuthUser>(
       (user) {
-        currentUser = BookMyGoldFirebaseUser(user);
+        currentUser = BookurGoldFirebaseUser(user);
         if (!kIsWeb) {
           FirebaseCrashlytics.instance.setUserIdentifier(user?.uid ?? '');
         }

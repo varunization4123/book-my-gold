@@ -428,6 +428,8 @@ class _OtpPageWidgetState extends State<OtpPageWidget>
                                         FFAppState().deletePhoneNumber();
                                         FFAppState().phoneNumber = '';
 
+                                        FFAppState().userId = valueOrDefault(
+                                            currentUserDocument?.userId, 0);
                                         setState(() {});
 
                                         context.goNamedAuth(

@@ -1,8 +1,15 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
+import '/backend/backend.dart';
 import '/components/gold_coin_widget_small_widget.dart';
 import '/components/gold_coin_widget_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'withdraw_successful_page_model.dart';
 export 'withdraw_successful_page_model.dart';
 
@@ -12,11 +19,15 @@ class WithdrawSuccessfulPageWidget extends StatefulWidget {
     required this.amount,
     required this.gold,
     required this.upiId,
+    required this.txId,
+    required this.invoiceId,
   });
 
   final String? amount;
   final String? gold;
   final String? upiId;
+  final int? txId;
+  final String? invoiceId;
 
   @override
   State<WithdrawSuccessfulPageWidget> createState() =>
@@ -36,6 +47,24 @@ class _WithdrawSuccessfulPageWidgetState
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'WithdrawSuccessfulPage'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await currentUserReference!.update({
+        ...mapToFirestore(
+          {
+            'amount_bought': FieldValue.increment(-(valueOrDefault<double>(
+              double.parse((widget.amount!)),
+              0.0,
+            ))),
+            'gold_bought': FieldValue.increment(-(valueOrDefault<double>(
+              double.parse((widget.gold!)),
+              0.0,
+            ))),
+          },
+        ),
+      });
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -48,6 +77,8 @@ class _WithdrawSuccessfulPageWidgetState
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: WillPopScope(
@@ -185,11 +216,14 @@ class _WithdrawSuccessfulPageWidgetState
                                   ),
                             ),
                             Text(
-                              formatNumber(
-                                double.parse((widget.gold!)),
-                                formatType: FormatType.custom,
-                                format: '###.##',
-                                locale: 'en_US',
+                              valueOrDefault<String>(
+                                formatNumber(
+                                  double.parse((widget.gold!)),
+                                  formatType: FormatType.custom,
+                                  format: '###.##',
+                                  locale: 'en_US',
+                                ),
+                                '0',
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .labelLarge
@@ -206,26 +240,56 @@ class _WithdrawSuccessfulPageWidgetState
                         thickness: 0.25,
                         color: FlutterFlowTheme.of(context).secondaryText,
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.download_sharp,
-                            color: FlutterFlowTheme.of(context).primary,
-                            size: 20.0,
-                          ),
-                          Text(
-                            'Download Invoice',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyLarge
-                                .override(
-                                  fontFamily: 'Nunito',
-                                  color: FlutterFlowTheme.of(context).primary,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        ].divide(const SizedBox(width: 12.0)),
+                      InkWell(
+                        splashColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        onTap: () async {
+                          _model.txId = widget.txId;
+                          _model.invoiceId = widget.invoiceId;
+                          setState(() {});
+                          _model.invoiceApi =
+                              await SafeGoldAPIGroupGroup.invoiceAPICall.call(
+                            txId: widget.txId,
+                          );
+
+                          _model.decryptedSellInvoiceApiResponse =
+                              await actions.decryptApiResponse(
+                            FFAppState().safeGoldAccessToken,
+                            (_model.invoiceApi?.bodyText ?? ''),
+                          );
+                          if ((_model.invoiceApi?.succeeded ?? true)) {
+                            await launchURL(getJsonField(
+                              functions.jsonFromString(
+                                  _model.decryptedSellInvoiceApiResponse!),
+                              r'''$['link']''',
+                            ).toString());
+                          }
+
+                          setState(() {});
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.download_sharp,
+                              color: FlutterFlowTheme.of(context).primary,
+                              size: 20.0,
+                            ),
+                            Text(
+                              'Download Invoice',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyLarge
+                                  .override(
+                                    fontFamily: 'Nunito',
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ].divide(const SizedBox(width: 12.0)),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
@@ -436,6 +500,103 @@ class _WithdrawSuccessfulPageWidgetState
                               ],
                             ),
                           ),
+                        ),
+                      ),
+                      Align(
+                        alignment: const AlignmentDirectional(0.0, 0.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed('DashboardPage');
+                              },
+                              child: Container(
+                                height: 45.0,
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .primaryBackground,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                child: Align(
+                                  alignment: const AlignmentDirectional(0.0, 0.0),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        26.0, 0.0, 26.0, 0.0),
+                                    child: Text(
+                                      'Go to Dashboard',
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Nunito',
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed('BuyingPage');
+                              },
+                              child: Container(
+                                height: 45.0,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      FlutterFlowTheme.of(context).secondary,
+                                      FlutterFlowTheme.of(context).tertiary,
+                                      FlutterFlowTheme.of(context).secondary
+                                    ],
+                                    stops: const [0.0, 0.5, 1.0],
+                                    begin: const AlignmentDirectional(1.0, 0.98),
+                                    end: const AlignmentDirectional(-1.0, -0.98),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                child: Align(
+                                  alignment: const AlignmentDirectional(0.0, 0.0),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        26.0, 0.0, 26.0, 0.0),
+                                    child: Text(
+                                      'Buy More Gold',
+                                      style: FlutterFlowTheme.of(context)
+                                          .labelMedium
+                                          .override(
+                                            fontFamily: 'Nunito',
+                                            color: FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                            letterSpacing: 0.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ].divide(const SizedBox(width: 20.0)),
                         ),
                       ),
                       Text(

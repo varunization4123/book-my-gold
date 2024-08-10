@@ -45,15 +45,18 @@ class _ListEmptyComponentWidgetState extends State<ListEmptyComponentWidget> {
   Widget build(BuildContext context) {
     return Align(
       alignment: const AlignmentDirectional(0.0, 0.0),
-      child: Text(
-        valueOrDefault<String>(
-          widget.text,
-          '[Empty}',
+      child: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Text(
+          valueOrDefault<String>(
+            widget.text,
+            '[Empty}',
+          ),
+          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                fontFamily: 'Nunito',
+                letterSpacing: 0.0,
+              ),
         ),
-        style: FlutterFlowTheme.of(context).bodyMedium.override(
-              fontFamily: 'Nunito',
-              letterSpacing: 0.0,
-            ),
       ),
     );
   }

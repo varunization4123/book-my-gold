@@ -457,20 +457,47 @@ class _OnboardingPageWidgetState extends State<OnboardingPageWidget>
                                                   .decryptedRegistrationApi!),
                                               r'''$['id']''',
                                             );
-                                            unawaited(
-                                              () async {
-                                                await currentUserReference!
-                                                    .update(
-                                                        createUsersRecordData(
-                                                  userId: FFAppState().userId,
-                                                  kycVerified: false,
-                                                  goldBought: getJsonField(
+
+                                            await currentUserReference!
+                                                .update(createUsersRecordData(
+                                              userId: FFAppState().userId,
+                                              kycVerified: false,
+                                              goldBought:
+                                                  valueOrDefault<double>(
+                                                double.parse(
+                                                    valueOrDefault<String>(
+                                                  getJsonField(
                                                     functions.jsonFromString(_model
                                                         .decryptedRegistrationApi!),
                                                     r'''$['gold_balance']''',
-                                                  ),
-                                                ));
-                                              }(),
+                                                  )?.toString(),
+                                                  '0',
+                                                )),
+                                                0.0,
+                                              ),
+                                            ));
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Firebase Updated Sucessfully',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .titleSmall
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .primaryBackground,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                                duration: const Duration(
+                                                    milliseconds: 4000),
+                                                backgroundColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primary,
+                                              ),
                                             );
 
                                             context.goNamed('DashboardPage');

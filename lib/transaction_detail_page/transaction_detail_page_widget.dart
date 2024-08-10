@@ -1,8 +1,15 @@
+import '/backend/api_requests/api_calls.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'transaction_detail_page_model.dart';
 export 'transaction_detail_page_model.dart';
 
@@ -13,6 +20,8 @@ class TransactionDetailPageWidget extends StatefulWidget {
     String? gold,
     bool? status,
     required this.time,
+    required this.txId,
+    required this.type,
   })  : amount = amount ?? '0',
         gold = gold ?? '0',
         status = status ?? true;
@@ -20,7 +29,9 @@ class TransactionDetailPageWidget extends StatefulWidget {
   final String amount;
   final String gold;
   final bool status;
-  final DateTime? time;
+  final String? time;
+  final int? txId;
+  final String? type;
 
   @override
   State<TransactionDetailPageWidget> createState() =>
@@ -28,10 +39,12 @@ class TransactionDetailPageWidget extends StatefulWidget {
 }
 
 class _TransactionDetailPageWidgetState
-    extends State<TransactionDetailPageWidget> {
+    extends State<TransactionDetailPageWidget> with TickerProviderStateMixin {
   late TransactionDetailPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -40,6 +53,22 @@ class _TransactionDetailPageWidgetState
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'TransactionDetailPage'});
+    animationsMap.addAll({
+      'progressBarOnPageLoadAnimation': AnimationInfo(
+        loop: true,
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          RotateEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 2000.0.ms,
+            begin: 0.0,
+            end: 5.0,
+          ),
+        ],
+      ),
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -52,6 +81,8 @@ class _TransactionDetailPageWidgetState
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -186,7 +217,17 @@ class _TransactionDetailPageWidgetState
                                       ),
                                 ),
                                 Text(
-                                  'Gold Purchased',
+                                  'Gold ${() {
+                                    if (widget.type == 'buy') {
+                                      return 'Purchased';
+                                    } else if (widget.type == 'sell') {
+                                      return 'Sold';
+                                    } else if (widget.type == 'delivery') {
+                                      return 'Delivered';
+                                    } else {
+                                      return null;
+                                    }
+                                  }()}',
                                   style: FlutterFlowTheme.of(context)
                                       .bodyMedium
                                       .override(
@@ -345,17 +386,7 @@ class _TransactionDetailPageWidgetState
                                     ),
                                   ),
                                   Text(
-                                    '${dateTimeFormat(
-                                      "d/M/y",
-                                      widget.time,
-                                      locale: FFLocalizations.of(context)
-                                          .languageCode,
-                                    )}, ${dateTimeFormat(
-                                      "jm",
-                                      widget.time,
-                                      locale: FFLocalizations.of(context)
-                                          .languageCode,
-                                    )}',
+                                    '${functions.splitDateTimeString(widget.time).first}, ${functions.splitDateTimeString(widget.time).last}',
                                     style: FlutterFlowTheme.of(context)
                                         .bodySmall
                                         .override(
@@ -401,7 +432,17 @@ class _TransactionDetailPageWidgetState
                                     ),
                                   ),
                                   Text(
-                                    'Gold Purchased',
+                                    'Gold ${() {
+                                      if (widget.type == 'buy') {
+                                        return 'Purchased';
+                                      } else if (widget.type == 'sell') {
+                                        return 'Sold';
+                                      } else if (widget.type == 'delivery') {
+                                        return 'Delivered';
+                                      } else {
+                                        return null;
+                                      }
+                                    }()}',
                                     style: FlutterFlowTheme.of(context)
                                         .bodyMedium
                                         .override(
@@ -449,17 +490,7 @@ class _TransactionDetailPageWidgetState
                                     ),
                                   ),
                                   Text(
-                                    '${dateTimeFormat(
-                                      "d/M/y",
-                                      widget.time,
-                                      locale: FFLocalizations.of(context)
-                                          .languageCode,
-                                    )}, ${dateTimeFormat(
-                                      "jm",
-                                      widget.time,
-                                      locale: FFLocalizations.of(context)
-                                          .languageCode,
-                                    )}',
+                                    '${functions.splitDateTimeString(widget.time).first}, ${functions.splitDateTimeString(widget.time).last}',
                                     style: FlutterFlowTheme.of(context)
                                         .bodySmall
                                         .override(
@@ -483,7 +514,17 @@ class _TransactionDetailPageWidgetState
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 0.0),
                             child: Text(
-                              'Gold has been added to your locker',
+                              'Gold has been ${() {
+                                if (widget.type == 'buy') {
+                                  return 'added to';
+                                } else if (widget.type == 'sell') {
+                                  return 'removed from';
+                                } else if (widget.type == 'delivery') {
+                                  return 'sent from';
+                                } else {
+                                  return null;
+                                }
+                              }()} your locker',
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -498,38 +539,117 @@ class _TransactionDetailPageWidgetState
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 12.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4.0),
-                                border: Border.all(
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  width: 2.0,
+                            child: InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                _model.isLoading = true;
+                                setState(() {});
+                                _model.invoiceApi = await SafeGoldAPIGroupGroup
+                                    .invoiceAPICall
+                                    .call(
+                                  txId: widget.txId,
+                                );
+
+                                _model.decryptedBuyInvoiceApiResponse =
+                                    await actions.decryptApiResponse(
+                                  FFAppState().safeGoldAccessToken,
+                                  (_model.invoiceApi?.bodyText ?? ''),
+                                );
+                                if ((_model.invoiceApi?.succeeded ?? true)) {
+                                  await launchURL(getJsonField(
+                                    functions.jsonFromString(
+                                        _model.decryptedBuyInvoiceApiResponse!),
+                                    r'''$['link']''',
+                                  ).toString());
+                                  _model.isLoading = false;
+                                  setState(() {});
+                                } else {
+                                  _model.isLoading = false;
+                                  setState(() {});
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Something Went Wrong',
+                                        style: TextStyle(
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                        ),
+                                      ),
+                                      duration: const Duration(milliseconds: 4000),
+                                      backgroundColor:
+                                          FlutterFlowTheme.of(context)
+                                              .secondary,
+                                    ),
+                                  );
+                                }
+
+                                setState(() {});
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                  border: Border.all(
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    width: 2.0,
+                                  ),
                                 ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    10.0, 6.0, 10.0, 6.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.download_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      size: 24.0,
-                                    ),
-                                    Text(
-                                      'Invoice',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyLarge
-                                          .override(
-                                            fontFamily: 'Nunito',
-                                            letterSpacing: 0.0,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                    ),
-                                  ].divide(const SizedBox(width: 6.0)),
+                                child: Builder(
+                                  builder: (context) {
+                                    if (!_model.isLoading) {
+                                      return Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            10.0, 6.0, 10.0, 6.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.download_rounded,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              size: 24.0,
+                                            ),
+                                            Text(
+                                              'Invoice',
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyLarge
+                                                      .override(
+                                                        fontFamily: 'Nunito',
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                            ),
+                                          ].divide(const SizedBox(width: 6.0)),
+                                        ),
+                                      );
+                                    } else {
+                                      return Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            41.0, 8.0, 41.0, 8.0),
+                                        child: CircularPercentIndicator(
+                                          percent: 0.85,
+                                          radius: 10.0,
+                                          lineWidth: 3.0,
+                                          animation: true,
+                                          animateFromLastPercent: true,
+                                          progressColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primaryText,
+                                          backgroundColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                          startAngle: 90.0,
+                                        ).animateOnPageLoad(animationsMap[
+                                            'progressBarOnPageLoadAnimation']!),
+                                      );
+                                    }
+                                  },
                                 ),
                               ),
                             ),

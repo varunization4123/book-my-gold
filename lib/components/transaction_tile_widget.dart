@@ -1,5 +1,6 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'transaction_tile_model.dart';
@@ -8,22 +9,26 @@ export 'transaction_tile_model.dart';
 class TransactionTileWidget extends StatefulWidget {
   const TransactionTileWidget({
     super.key,
-    required this.transactionDate,
-    required this.transactionValue,
-    required this.transactionGold,
-    required this.transactionGoldPrice,
-    required this.digital,
-    required this.purchasedOrSold,
-    required this.successOrFailure,
-  });
+    this.transactionDate,
+    this.transactionValue,
+    this.transactionGold,
+    this.transactionGoldPrice,
+    String? buy,
+    String? sell,
+    String? delivery,
+    this.txId,
+  })  : buy = buy ?? '',
+        sell = sell ?? '',
+        delivery = delivery ?? '';
 
-  final DateTime? transactionDate;
+  final String? transactionDate;
   final String? transactionValue;
   final String? transactionGold;
   final String? transactionGoldPrice;
-  final bool? digital;
-  final bool? purchasedOrSold;
-  final bool? successOrFailure;
+  final String buy;
+  final String sell;
+  final String delivery;
+  final int? txId;
 
   @override
   State<TransactionTileWidget> createState() => _TransactionTileWidgetState();
@@ -90,10 +95,7 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          valueOrDefault<String>(
-                            widget.digital! ? 'Digital' : 'Physical',
-                            'Digital',
-                          ),
+                          'Digital',
                           style: FlutterFlowTheme.of(context)
                               .bodyMedium
                               .override(
@@ -118,7 +120,17 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                         ),
                         Text(
                           valueOrDefault<String>(
-                            widget.purchasedOrSold! ? 'Purchased' : 'Sold',
+                            () {
+                              if (widget.buy != '') {
+                                return 'Purchased';
+                              } else if (widget.sell != '') {
+                                return 'Sold';
+                              } else if (widget.delivery != '') {
+                                return 'Delivered';
+                              } else {
+                                return '-';
+                              }
+                            }(),
                             'Purchased',
                           ),
                           style: FlutterFlowTheme.of(context)
@@ -135,19 +147,21 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                     ),
                     Text(
                       '${valueOrDefault<String>(
-                        dateTimeFormat(
-                          "yMMMd",
-                          widget.transactionDate,
-                          locale: FFLocalizations.of(context).languageCode,
-                        ),
-                        'Mar 12, 2024',
+                        functions
+                            .splitDateTimeString(valueOrDefault<String>(
+                              widget.transactionDate,
+                              '0',
+                            ))
+                            .first,
+                        '0',
                       )} | ${valueOrDefault<String>(
-                        dateTimeFormat(
-                          "jm",
-                          widget.transactionDate,
-                          locale: FFLocalizations.of(context).languageCode,
-                        ),
-                        '5:30 PM',
+                        functions
+                            .splitDateTimeString(valueOrDefault<String>(
+                              widget.transactionDate,
+                              '0',
+                            ))
+                            .last,
+                        '0',
                       )}',
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                             fontFamily: 'Nunito',
@@ -164,7 +178,10 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                   children: [
                     Text(
                       valueOrDefault<String>(
-                        '₹ ${widget.transactionValue}',
+                        '₹ ${valueOrDefault<String>(
+                          widget.transactionValue,
+                          '0',
+                        )}',
                         '₹ 7000',
                       ),
                       style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -176,7 +193,13 @@ class _TransactionTileWidgetState extends State<TransactionTileWidget> {
                     ),
                     Text(
                       valueOrDefault<String>(
-                        '${widget.transactionGold}gm  @ ₹${widget.transactionGoldPrice} /gm',
+                        '${valueOrDefault<String>(
+                          widget.transactionGold,
+                          '0',
+                        )}gm  @ ₹${valueOrDefault<String>(
+                          widget.transactionGoldPrice,
+                          '0',
+                        )} /gm',
                         '0.99 gm @ ₹6864.80 /gm',
                       ),
                       style: FlutterFlowTheme.of(context).bodyMedium.override(

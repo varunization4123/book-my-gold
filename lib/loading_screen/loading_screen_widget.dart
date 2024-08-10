@@ -1,13 +1,34 @@
+import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import 'loading_screen_model.dart';
 export 'loading_screen_model.dart';
 
 class LoadingScreenWidget extends StatefulWidget {
-  const LoadingScreenWidget({super.key});
+  const LoadingScreenWidget({
+    super.key,
+    String? invoiceId,
+    required this.goldAmount,
+    String? buyPrice,
+    int? txId,
+    required this.goldPrice,
+    required this.amount,
+  })  : invoiceId = invoiceId ?? 'SG000',
+        buyPrice = buyPrice ?? '0',
+        txId = txId ?? 0;
+
+  final String invoiceId;
+  final double? goldAmount;
+  final String buyPrice;
+  final int txId;
+  final double? goldPrice;
+  final String? amount;
 
   @override
   State<LoadingScreenWidget> createState() => _LoadingScreenWidgetState();
@@ -28,6 +49,51 @@ class _LoadingScreenWidgetState extends State<LoadingScreenWidget>
 
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'LoadingScreen'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      _model.buyStatusApi = await SafeGoldAPIGroupGroup.buyStatusAPICall.call(
+        txId: widget.txId,
+      );
+
+      _model.decryptedBuyVerifyApiResponse = await actions.decryptApiResponse(
+        FFAppState().safeGoldAccessToken,
+        (_model.buyStatusApi?.bodyText ?? ''),
+      );
+      if ((_model.buyStatusApi?.succeeded ?? true)) {
+        context.goNamed(
+          'PurchaseSuccessPage',
+          queryParameters: {
+            'amount': serializeParam(
+              widget.amount,
+              ParamType.String,
+            ),
+            'gold': serializeParam(
+              widget.goldAmount,
+              ParamType.double,
+            ),
+            'goldPrice': serializeParam(
+              valueOrDefault<double>(
+                widget.goldPrice,
+                6000.0,
+              ),
+              ParamType.double,
+            ),
+            'invoiceId': serializeParam(
+              widget.invoiceId,
+              ParamType.String,
+            ),
+            'txId': serializeParam(
+              widget.txId,
+              ParamType.int,
+            ),
+          }.withoutNulls,
+        );
+      } else {
+        context.pushNamed('PurchaseFailurePage');
+      }
+    });
+
     animationsMap.addAll({
       'circleImageOnPageLoadAnimation': AnimationInfo(
         loop: true,
@@ -56,6 +122,8 @@ class _LoadingScreenWidgetState extends State<LoadingScreenWidget>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: WillPopScope(
@@ -103,50 +171,27 @@ class _LoadingScreenWidgetState extends State<LoadingScreenWidget>
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              24.0, 64.0, 24.0, 0.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Align(
-                                alignment: const AlignmentDirectional(-1.0, -1.0),
-                                child: Icon(
-                                  Icons.arrow_back_ios_rounded,
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  size: 24.0,
-                                ),
+                        Align(
+                          alignment: const AlignmentDirectional(0.0, -1.0),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0.0, 64.0, 0.0, 0.0),
+                            child: Container(
+                              decoration: const BoxDecoration(),
+                              child: Text(
+                                'Transaction Initiated',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .titleMedium
+                                    .override(
+                                      fontFamily: 'Nunito',
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText,
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                              Align(
-                                alignment: const AlignmentDirectional(0.0, -1.0),
-                                child: Text(
-                                  'Withdraw Initiated',
-                                  textAlign: TextAlign.center,
-                                  style: FlutterFlowTheme.of(context)
-                                      .titleMedium
-                                      .override(
-                                        fontFamily: 'Nunito',
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                ),
-                              ),
-                              Opacity(
-                                opacity: 0.0,
-                                child: Container(
-                                  width: 0.0,
-                                  height: 27.0,
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                         Padding(

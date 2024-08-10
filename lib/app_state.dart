@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'flutter_flow/request_manager.dart';
-import '/backend/backend.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:csv/csv.dart';
 import 'package:synchronized/synchronized.dart';
+import 'flutter_flow/flutter_flow_util.dart';
+import 'dart:convert';
 
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
@@ -42,6 +42,30 @@ class FFAppState extends ChangeNotifier {
               ?.map(double.parse)
               .toList() ??
           _yAxis;
+    });
+    await _safeInitAsync(() async {
+      _sellableBalance = await secureStorage.getDouble('ff_sellableBalance') ??
+          _sellableBalance;
+    });
+    await _safeInitAsync(() async {
+      _goldBalance =
+          await secureStorage.getDouble('ff_goldBalance') ?? _goldBalance;
+    });
+    await _safeInitAsync(() async {
+      _transactions =
+          (await secureStorage.getStringList('ff_transactions'))?.map((x) {
+                try {
+                  return jsonDecode(x);
+                } catch (e) {
+                  print("Can't decode persisted json. Error: $e.");
+                  return {};
+                }
+              }).toList() ??
+              _transactions;
+    });
+    await _safeInitAsync(() async {
+      _amountBought =
+          await secureStorage.getDouble('ff_amountBought') ?? _amountBought;
     });
   }
 
@@ -222,21 +246,83 @@ class FFAppState extends ChangeNotifier {
         'ff_yAxis', _yAxis.map((x) => x.toString()).toList());
   }
 
-  final _transactionsQueryManager =
-      FutureRequestManager<List<DigiGoldBuyRecord>>();
-  Future<List<DigiGoldBuyRecord>> transactionsQuery({
-    String? uniqueQueryKey,
-    bool? overrideCache,
-    required Future<List<DigiGoldBuyRecord>> Function() requestFn,
-  }) =>
-      _transactionsQueryManager.performRequest(
-        uniqueQueryKey: uniqueQueryKey,
-        overrideCache: overrideCache,
-        requestFn: requestFn,
-      );
-  void clearTransactionsQueryCache() => _transactionsQueryManager.clear();
-  void clearTransactionsQueryCacheKey(String? uniqueKey) =>
-      _transactionsQueryManager.clearRequest(uniqueKey);
+  double _sellableBalance = 0.0;
+  double get sellableBalance => _sellableBalance;
+  set sellableBalance(double value) {
+    _sellableBalance = value;
+    secureStorage.setDouble('ff_sellableBalance', value);
+  }
+
+  void deleteSellableBalance() {
+    secureStorage.delete(key: 'ff_sellableBalance');
+  }
+
+  double _goldBalance = 0.0;
+  double get goldBalance => _goldBalance;
+  set goldBalance(double value) {
+    _goldBalance = value;
+    secureStorage.setDouble('ff_goldBalance', value);
+  }
+
+  void deleteGoldBalance() {
+    secureStorage.delete(key: 'ff_goldBalance');
+  }
+
+  List<dynamic> _transactions = [];
+  List<dynamic> get transactions => _transactions;
+  set transactions(List<dynamic> value) {
+    _transactions = value;
+    secureStorage.setStringList(
+        'ff_transactions', value.map((x) => jsonEncode(x)).toList());
+  }
+
+  void deleteTransactions() {
+    secureStorage.delete(key: 'ff_transactions');
+  }
+
+  void addToTransactions(dynamic value) {
+    transactions.add(value);
+    secureStorage.setStringList(
+        'ff_transactions', _transactions.map((x) => jsonEncode(x)).toList());
+  }
+
+  void removeFromTransactions(dynamic value) {
+    transactions.remove(value);
+    secureStorage.setStringList(
+        'ff_transactions', _transactions.map((x) => jsonEncode(x)).toList());
+  }
+
+  void removeAtIndexFromTransactions(int index) {
+    transactions.removeAt(index);
+    secureStorage.setStringList(
+        'ff_transactions', _transactions.map((x) => jsonEncode(x)).toList());
+  }
+
+  void updateTransactionsAtIndex(
+    int index,
+    dynamic Function(dynamic) updateFn,
+  ) {
+    transactions[index] = updateFn(_transactions[index]);
+    secureStorage.setStringList(
+        'ff_transactions', _transactions.map((x) => jsonEncode(x)).toList());
+  }
+
+  void insertAtIndexInTransactions(int index, dynamic value) {
+    transactions.insert(index, value);
+    secureStorage.setStringList(
+        'ff_transactions', _transactions.map((x) => jsonEncode(x)).toList());
+  }
+
+  double _amountBought = 0.0;
+  double get amountBought => _amountBought;
+  set amountBought(double value) {
+    _amountBought = value;
+    secureStorage.setDouble('ff_amountBought', value);
+  }
+
+  void deleteAmountBought() {
+    secureStorage.delete(key: 'ff_amountBought');
+  }
 }
 
 void _safeInit(Function() initializeField) {

@@ -8,9 +8,12 @@ class CustomListTileWidget extends StatefulWidget {
   const CustomListTileWidget({
     super.key,
     String? item,
-  }) : item = item ?? 'null';
+    bool? isSelected,
+  })  : item = item ?? 'null',
+        isSelected = isSelected ?? false;
 
   final String item;
+  final bool isSelected;
 
   @override
   State<CustomListTileWidget> createState() => _CustomListTileWidgetState();
@@ -50,7 +53,12 @@ class _CustomListTileWidgetState extends State<CustomListTileWidget> {
           color: FlutterFlowTheme.of(context).secondaryBackground,
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
-            color: FlutterFlowTheme.of(context).secondary,
+            color: valueOrDefault<Color>(
+              widget.isSelected
+                  ? FlutterFlowTheme.of(context).primaryText
+                  : FlutterFlowTheme.of(context).secondary,
+              FlutterFlowTheme.of(context).secondary,
+            ),
             width: 1.0,
           ),
         ),

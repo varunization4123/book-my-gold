@@ -23,8 +23,8 @@ encrypt.IV generateRandomIV(int length) {
   return encrypt.IV(ivBytes);
 }
 
-String encryptApiRequest(String buyVerifyData, String accessToken) {
-  print("data: $buyVerifyData");
+String encryptApiRequest(String data, String accessToken) {
+  print("data: $data");
 
   try {
     final String keyString =
@@ -42,7 +42,7 @@ String encryptApiRequest(String buyVerifyData, String accessToken) {
 
     final encrypter =
         encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-    final encrypted = encrypter.encrypt(buyVerifyData, iv: iv);
+    final encrypted = encrypter.encrypt(data, iv: iv);
     print('Encrypted Text (base64): ${encrypted.base64}');
 
     final combined = iv.bytes + encrypted.bytes;

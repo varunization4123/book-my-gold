@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
 
     _appStateNotifier = AppStateNotifier.instance;
     _router = createRouter(_appStateNotifier);
-    userStream = bookMyGoldFirebaseUserStream()
+    userStream = bookurGoldFirebaseUserStream()
       ..listen((user) {
         _appStateNotifier.update(user);
       });
@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'BookMyGold',
+      title: 'BookurGold',
       localizationsDelegates: const [
         FFLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

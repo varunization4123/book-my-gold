@@ -140,7 +140,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           requireAuth: true,
           builder: (context, params) => params.isEmpty
               ? const NavBarPage(initialPage: 'PortfolioPage')
-              : const PortfolioPageWidget(),
+              : const NavBarPage(
+                  initialPage: 'PortfolioPage',
+                  page: PortfolioPageWidget(),
+                ),
         ),
         FFRoute(
           name: 'PurchaseSuccessPage',
@@ -158,6 +161,14 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             goldPrice: params.getParam(
               'goldPrice',
               ParamType.double,
+            ),
+            invoiceId: params.getParam(
+              'invoiceId',
+              ParamType.String,
+            ),
+            txId: params.getParam(
+              'txId',
+              ParamType.int,
             ),
           ),
         ),
@@ -178,6 +189,14 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'upiId',
               ParamType.String,
             ),
+            txId: params.getParam(
+              'txId',
+              ParamType.int,
+            ),
+            invoiceId: params.getParam(
+              'invoiceId',
+              ParamType.String,
+            ),
           ),
         ),
         FFRoute(
@@ -190,7 +209,32 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: 'LoadingScreen',
           path: '/loadingScreen',
           requireAuth: true,
-          builder: (context, params) => const LoadingScreenWidget(),
+          builder: (context, params) => LoadingScreenWidget(
+            invoiceId: params.getParam(
+              'invoiceId',
+              ParamType.String,
+            ),
+            goldAmount: params.getParam(
+              'goldAmount',
+              ParamType.double,
+            ),
+            buyPrice: params.getParam(
+              'buyPrice',
+              ParamType.String,
+            ),
+            txId: params.getParam(
+              'txId',
+              ParamType.int,
+            ),
+            goldPrice: params.getParam(
+              'goldPrice',
+              ParamType.double,
+            ),
+            amount: params.getParam(
+              'amount',
+              ParamType.String,
+            ),
+          ),
         ),
         FFRoute(
           name: 'MarketplacePage',
@@ -293,7 +337,15 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
             ),
             time: params.getParam(
               'time',
-              ParamType.DateTime,
+              ParamType.String,
+            ),
+            txId: params.getParam(
+              'txId',
+              ParamType.int,
+            ),
+            type: params.getParam(
+              'type',
+              ParamType.String,
             ),
           ),
         ),

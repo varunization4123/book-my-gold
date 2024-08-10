@@ -1,9 +1,7 @@
 import '/backend/api_requests/api_calls.dart';
-import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'portfolio_page_widget.dart' show PortfolioPageWidget;
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
   ///  Local state fields for this page.
@@ -12,61 +10,31 @@ class PortfolioPageModel extends FlutterFlowModel<PortfolioPageWidget> {
 
   double? goldDifference = 1.0;
 
+  List<dynamic> transactions = [];
+  void addToTransactions(dynamic item) => transactions.add(item);
+  void removeFromTransactions(dynamic item) => transactions.remove(item);
+  void removeAtIndexFromTransactions(int index) => transactions.removeAt(index);
+  void insertAtIndexInTransactions(int index, dynamic item) =>
+      transactions.insert(index, item);
+  void updateTransactionsAtIndex(int index, Function(dynamic) updateFn) =>
+      transactions[index] = updateFn(transactions[index]);
+
+  double currentPrice = 0.0;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - API (Buy Price API)] action in PortfolioPage widget.
   ApiCallResponse? goldPriceFromApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in PortfolioPage widget.
   String? decryptedApiResponse;
-  // State field(s) for ListView widget.
-
-  PagingController<DocumentSnapshot?, DigiGoldBuyRecord>?
-      listViewPagingController;
-  Query? listViewPagingQuery;
-  List<StreamSubscription?> listViewStreamSubscriptions = [];
+  // Stores action output result for [Backend Call - API (User Transactions API)] action in PortfolioPage widget.
+  ApiCallResponse? userTransactionApi;
+  // Stores action output result for [Custom Action - decryptApiResponse] action in PortfolioPage widget.
+  String? decryptedUserTransactionApi;
 
   @override
   void initState(BuildContext context) {}
 
   @override
-  void dispose() {
-    for (var s in listViewStreamSubscriptions) {
-      s?.cancel();
-    }
-    listViewPagingController?.dispose();
-  }
-
-  /// Additional helper methods.
-  PagingController<DocumentSnapshot?, DigiGoldBuyRecord> setListViewController(
-    Query query, {
-    DocumentReference<Object?>? parent,
-  }) {
-    listViewPagingController ??= _createListViewController(query, parent);
-    if (listViewPagingQuery != query) {
-      listViewPagingQuery = query;
-      listViewPagingController?.refresh();
-    }
-    return listViewPagingController!;
-  }
-
-  PagingController<DocumentSnapshot?, DigiGoldBuyRecord>
-      _createListViewController(
-    Query query,
-    DocumentReference<Object?>? parent,
-  ) {
-    final controller = PagingController<DocumentSnapshot?, DigiGoldBuyRecord>(
-        firstPageKey: null);
-    return controller
-      ..addPageRequestListener(
-        (nextPageMarker) => queryDigiGoldBuyRecordPage(
-          parent: parent,
-          queryBuilder: (_) => listViewPagingQuery ??= query,
-          nextPageMarker: nextPageMarker,
-          streamSubscriptions: listViewStreamSubscriptions,
-          controller: controller,
-          pageSize: 8,
-          isStream: true,
-        ),
-      );
-  }
+  void dispose() {}
 }

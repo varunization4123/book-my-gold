@@ -18,18 +18,23 @@ dynamic jsonFromString(String decrypted) {
   return jsonData;
 }
 
-dynamic buyVerifyDataAsJson(
-  String? buyPrice,
-  String? rateId,
-  String? goldAmount,
-) {
-  final jsonData = {
-    "buy_price": "$buyPrice",
-    "rate_id": "$buyPrice",
-    "gold_amount": "$buyPrice",
-  };
+String sellConfirmData(String txId) {
+  return '{"tx_id":"$txId"}';
+}
 
-  return jsonData;
+String buyConfirmData(
+  String txId,
+  String pincode,
+) {
+  return '{"tx_id":"$txId","pincode":"$pincode"}';
+}
+
+String sellVerifyData(
+  String rateId,
+  String sellPrice,
+  String goldAmount,
+) {
+  return '{"rate_id":"$rateId","sell_price":"$sellPrice","gold_amount":"$goldAmount"}';
 }
 
 List<int> xAxisList(List<dynamic> data) {
@@ -78,4 +83,28 @@ String buyVerifyData(
   String goldAmount,
 ) {
   return '{"rate_id":"$rateId","buy_price":"$buyPrice","gold_amount":"$goldAmount"}';
+}
+
+List<String> splitDateTimeString(String? dateTimeString) {
+// Check if the input string is empty or null
+  if (dateTimeString == null || dateTimeString.isEmpty) {
+    return ['', '']; // Return empty strings if input is invalid
+  }
+
+  // Split the string by space
+  List<String> parts = dateTimeString.split(' ');
+
+  // Check if we have exactly two parts
+  if (parts.length != 2) {
+    return ['', '']; // Return empty strings if format is incorrect
+  }
+
+  String datePart = parts[0]; // "2021-05-28"
+  String timePart = parts[1]; // "13:38:32"
+
+  // You can add additional validation here if needed
+  // For example, checking if the date and time are in the correct format
+
+  // Return the result as a List
+  return [datePart, timePart];
 }

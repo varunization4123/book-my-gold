@@ -1,6 +1,4 @@
-import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
-import '/backend/backend.dart';
 import '/components/list_empty_component_widget.dart';
 import '/components/sort_by_options_widget.dart';
 import '/components/transaction_tile_widget.dart';
@@ -12,7 +10,6 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
 import 'portfolio_page_model.dart';
@@ -39,31 +36,102 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
         parameters: {'screen_name': 'PortfolioPage'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.goldPriceFromApi =
-          await SafeGoldAPIGroupGroup.buyPriceAPICall.call();
-
-      _model.decryptedApiResponse = await actions.decryptApiResponse(
-        FFAppState().safeGoldAccessToken,
-        (_model.goldPriceFromApi?.bodyText ?? ''),
+      FFAppState().amountBought = valueOrDefault<double>(
+        FFAppState().amountBought,
+        0.0,
       );
-      if ((_model.goldPriceFromApi?.statusCode ?? 200) == 200) {
-        _model.goldPrice = valueOrDefault<double>(
-          getJsonField(
-            functions.jsonFromString(_model.decryptedApiResponse!),
-            r'''$['current_price']''',
-          ),
-          6000.0,
-        );
-        setState(() {});
-        FFAppState().buyPrice = valueOrDefault<String>(
-          getJsonField(
-            functions.jsonFromString(_model.decryptedApiResponse!),
-            r'''$['current_price']''',
-          )?.toString().toString(),
-          '6000',
-        );
-        setState(() {});
-      }
+      setState(() {});
+      await Future.wait([
+        Future(() async {
+          setState(() {});
+          _model.goldPriceFromApi =
+              await SafeGoldAPIGroupGroup.buyPriceAPICall.call();
+
+          _model.decryptedApiResponse = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.goldPriceFromApi?.bodyText ?? ''),
+          );
+          if ((_model.goldPriceFromApi?.statusCode ?? 200) == 200) {
+            _model.goldPrice = valueOrDefault<double>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              ),
+              6000.0,
+            );
+            _model.currentPrice = valueOrDefault<double>(
+                  FFAppState().goldBalance,
+                  0.0,
+                ) *
+                valueOrDefault<double>(
+                  _model.goldPrice,
+                  6000.0,
+                );
+            setState(() {});
+            FFAppState().buyPrice = valueOrDefault<String>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              )?.toString().toString(),
+              '6000',
+            );
+            setState(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Couldn\'t fetch Gold Data',
+                  style: TextStyle(
+                    color: FlutterFlowTheme.of(context).primaryText,
+                  ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).secondary,
+              ),
+            );
+            await actions.forceCloseTheApp();
+          }
+        }),
+        Future(() async {
+          _model.userTransactionApi =
+              await SafeGoldAPIGroupGroup.userTransactionsAPICall.call(
+            userId: FFAppState().userId,
+          );
+
+          _model.decryptedUserTransactionApi = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.userTransactionApi?.bodyText ?? ''),
+          );
+          if ((_model.userTransactionApi?.succeeded ?? true)) {
+            FFAppState().transactions = getJsonField(
+              functions.jsonFromString(_model.decryptedUserTransactionApi!),
+              r'''$['transactions']''',
+              true,
+            )!
+                .toList()
+                .cast<dynamic>();
+            setState(() {});
+            _model.transactions =
+                FFAppState().transactions.toList().cast<dynamic>();
+            setState(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Couldn\'t fetch User Gold Data',
+                  style: TextStyle(
+                    color: FlutterFlowTheme.of(context).primaryText,
+                  ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).secondary,
+              ),
+            );
+            await Future.delayed(const Duration(milliseconds: 6000));
+            await actions.forceCloseTheApp();
+          }
+        }),
+      ]);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
@@ -141,6 +209,7 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                           Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Container(
+                              width: double.infinity,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
@@ -148,35 +217,20 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                     FlutterFlowTheme.of(context).tertiary,
                                     FlutterFlowTheme.of(context).secondary
                                   ],
-                                  stops: const [0.0, 0.6, 1.0],
-                                  begin: const AlignmentDirectional(0.64, 1.0),
-                                  end: const AlignmentDirectional(-0.64, -1.0),
+                                  stops: const [0.0, 0.5, 1.0],
+                                  begin: const AlignmentDirectional(1.0, 0.0),
+                                  end: const AlignmentDirectional(-1.0, 0),
                                 ),
                                 borderRadius: BorderRadius.circular(12.0),
                                 border: Border.all(
-                                  color: FlutterFlowTheme.of(context).tertiary,
-                                  width: 3.0,
+                                  color: FlutterFlowTheme.of(context).secondary,
                                 ),
                               ),
                               child: Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    12.0, 6.0, 12.0, 6.0),
+                                padding: const EdgeInsets.all(12.0),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 6.0, 0.0, 12.0),
-                                      child: Text(
-                                        'Total Investment Value',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Nunito',
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ),
-                                    ),
                                     Padding(
                                       padding: const EdgeInsetsDirectional.fromSTEB(
                                           12.0, 2.0, 12.0, 2.0),
@@ -191,6 +245,9 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                 .bodyMedium
                                                 .override(
                                                   fontFamily: 'Nunito',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
@@ -200,6 +257,9 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                 .bodyMedium
                                                 .override(
                                                   fontFamily: 'Nunito',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
@@ -214,65 +274,56 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          AuthUserStreamWidget(
-                                            builder: (context) => Text(
-                                              valueOrDefault<String>(
-                                                formatNumber(
-                                                  valueOrDefault(
-                                                      currentUserDocument
-                                                          ?.amountBought,
-                                                      0.0),
-                                                  formatType: FormatType.custom,
-                                                  currency: '₹',
-                                                  format: '###.##',
-                                                  locale: 'en_US',
-                                                ),
-                                                '0',
+                                          Text(
+                                            valueOrDefault<String>(
+                                              formatNumber(
+                                                FFAppState().amountBought,
+                                                formatType: FormatType.custom,
+                                                currency: '₹',
+                                                format: '###.##',
+                                                locale: 'en_US',
                                               ),
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .titleMedium
-                                                  .override(
-                                                    fontFamily: 'Nunito',
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
+                                              '0',
                                             ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .titleMedium
+                                                .override(
+                                                  fontFamily: 'Nunito',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
                                           ),
-                                          AuthUserStreamWidget(
-                                            builder: (context) => Text(
-                                              valueOrDefault<String>(
-                                                formatNumber(
-                                                  valueOrDefault<double>(
-                                                        valueOrDefault(
-                                                            currentUserDocument
-                                                                ?.goldBought,
-                                                            0.0),
-                                                        0.0,
-                                                      ) *
-                                                      (_model.goldPrice!),
-                                                  formatType: FormatType.custom,
-                                                  currency: '₹',
-                                                  format: '###.##',
-                                                  locale: 'en_US',
-                                                ),
-                                                '0',
+                                          Text(
+                                            valueOrDefault<String>(
+                                              formatNumber(
+                                                valueOrDefault<double>(
+                                                      FFAppState().goldBalance,
+                                                      0.0,
+                                                    ) *
+                                                    valueOrDefault<double>(
+                                                      _model.goldPrice,
+                                                      6000.0,
+                                                    ),
+                                                formatType: FormatType.custom,
+                                                currency: '₹',
+                                                format: '###.##',
+                                                locale: 'en_US',
                                               ),
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .titleMedium
-                                                  .override(
-                                                    fontFamily: 'Nunito',
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    letterSpacing: 0.0,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
+                                              '0',
                                             ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .titleMedium
+                                                .override(
+                                                  fontFamily: 'Nunito',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -285,53 +336,35 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          AuthUserStreamWidget(
-                                            builder: (context) => Text(
-                                              '(${valueOrDefault<String>(
-                                                formatNumber(
-                                                  valueOrDefault(
-                                                      currentUserDocument
-                                                          ?.goldBought,
-                                                      0.0),
-                                                  formatType: FormatType.custom,
-                                                  format: '###.##',
-                                                  locale: 'en_US',
+                                          Text(
+                                            '(${valueOrDefault<String>(
+                                              FFAppState()
+                                                  .goldBalance
+                                                  .toString(),
+                                              '0',
+                                            )} gm)',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Nunito',
+                                                  fontSize: 12.0,
+                                                  letterSpacing: 0.0,
                                                 ),
-                                                '0',
-                                              )} gm)',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        fontSize: 12.0,
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                            ),
                                           ),
-                                          AuthUserStreamWidget(
-                                            builder: (context) => Text(
-                                              '(${valueOrDefault<String>(
-                                                formatNumber(
-                                                  valueOrDefault(
-                                                      currentUserDocument
-                                                          ?.goldBought,
-                                                      0.0),
-                                                  formatType: FormatType.custom,
-                                                  format: '###.##',
-                                                  locale: 'en_US',
+                                          Text(
+                                            '(${valueOrDefault<String>(
+                                              FFAppState()
+                                                  .goldBalance
+                                                  .toString(),
+                                              '0',
+                                            )} gm)',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Nunito',
+                                                  fontSize: 12.0,
+                                                  letterSpacing: 0.0,
                                                 ),
-                                                '0',
-                                              )} gm)',
-                                              style:
-                                                  FlutterFlowTheme.of(context)
-                                                      .bodyMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        fontSize: 12.0,
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                            ),
                                           ),
                                         ],
                                       ),
@@ -352,392 +385,75 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                           Text(
                                             'P&L',
                                             style: FlutterFlowTheme.of(context)
-                                                .titleSmall
+                                                .labelLarge
                                                 .override(
                                                   fontFamily: 'Nunito',
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primaryText,
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  valueOrDefault<String>(
-                                                    formatNumber(
-                                                      (valueOrDefault(
-                                                                  currentUserDocument
-                                                                      ?.goldBought,
-                                                                  0.0) *
-                                                              (_model
-                                                                  .goldPrice!)) -
-                                                          valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.amountBought,
-                                                              0.0),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      currency: '₹',
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
-                                                  ),
-                                                  style:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily:
-                                                                'Nunito',
-                                                            color:
+                                          Text(
+                                            '${valueOrDefault<String>(
+                                              formatNumber(
+                                                (((valueOrDefault<double>(
+                                                                  FFAppState()
+                                                                      .goldBalance,
+                                                                  0.0,
+                                                                ) *
                                                                 valueOrDefault<
-                                                                    Color>(
-                                                              () {
-                                                                if (valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault<double>(
-                                                                              valueOrDefault(currentUserDocument?.goldBought, 0.0),
-                                                                              1.0,
-                                                                            ) *
-                                                                            valueOrDefault<double>(
-                                                                              valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) +
-                                                                                  (valueOrDefault<double>(
-                                                                                        _model.goldPrice,
-                                                                                        6000.0,
-                                                                                      ) *
-                                                                                      (valueOrDefault<double>(
-                                                                                            _model.goldDifference,
-                                                                                            1.0,
-                                                                                          ) /
-                                                                                          100)),
-                                                                              6000.0,
-                                                                            ),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    ) ==
-                                                                    valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(
-                                                                            currentUserDocument?.amountBought,
-                                                                            0.0),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    )) {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .accent2;
-                                                                } else if (valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) *
-                                                                            ((_model.goldPrice!) +
-                                                                                ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    ) ==
-                                                                    valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(
-                                                                            currentUserDocument?.amountBought,
-                                                                            0.0),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    )) {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .accent4;
-                                                                } else {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryText;
-                                                                }
-                                                              }(),
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .secondaryText,
-                                                            ),
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                ),
-                                              ),
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Container(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        valueOrDefault<Color>(
-                                                      () {
-                                                        if (valueOrDefault<
-                                                                String>(
-                                                              formatNumber(
-                                                                valueOrDefault<
-                                                                        double>(
-                                                                      valueOrDefault(
-                                                                          currentUserDocument
-                                                                              ?.goldBought,
-                                                                          0.0),
-                                                                      1.0,
-                                                                    ) *
-                                                                    valueOrDefault<
-                                                                        double>(
-                                                                      valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.0,
-                                                                          ) +
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) *
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    1.0,
-                                                                                  ) /
-                                                                                  100)),
-                                                                      6000.0,
-                                                                    ),
-                                                                formatType:
-                                                                    FormatType
-                                                                        .custom,
-                                                                format: '##.##',
-                                                                locale: 'en_US',
-                                                              ),
-                                                              '0',
-                                                            ) ==
+                                                                    double>(
+                                                                  _model
+                                                                      .goldPrice,
+                                                                  6000.0,
+                                                                )) -
                                                             valueOrDefault<
-                                                                String>(
-                                                              formatNumber(
-                                                                valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.amountBought,
-                                                                    0.0),
-                                                                formatType:
-                                                                    FormatType
-                                                                        .custom,
-                                                                format: '##.##',
-                                                                locale: 'en_US',
-                                                              ),
-                                                              '0',
-                                                            )) {
-                                                          return const Color(
-                                                              0xFFAAFFB5);
-                                                        } else if (valueOrDefault<
-                                                                String>(
-                                                              formatNumber(
-                                                                valueOrDefault(
-                                                                        currentUserDocument
-                                                                            ?.goldBought,
-                                                                        0.0) *
-                                                                    ((_model.goldPrice!) +
-                                                                        ((_model.goldPrice!) *
-                                                                            ((_model.goldDifference!) /
-                                                                                100))),
-                                                                formatType:
-                                                                    FormatType
-                                                                        .custom,
-                                                                format: '##.##',
-                                                                locale: 'en_US',
-                                                              ),
-                                                              '0',
-                                                            ) ==
-                                                            valueOrDefault<
-                                                                String>(
-                                                              formatNumber(
-                                                                valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.amountBought,
-                                                                    0.0),
-                                                                formatType:
-                                                                    FormatType
-                                                                        .custom,
-                                                                format: '##.##',
-                                                                locale: 'en_US',
-                                                              ),
-                                                              '0',
-                                                            )) {
-                                                          return const Color(
-                                                              0xFFFFBE9A);
-                                                        } else {
-                                                          return FlutterFlowTheme
-                                                                  .of(context)
-                                                              .alternate;
-                                                        }
-                                                      }(),
-                                                      const Color(0xFFE3E3E3),
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(8.0, 2.0,
-                                                                8.0, 2.0),
-                                                    child: Text(
-                                                      '${valueOrDefault<String>(
-                                                        formatNumber(
-                                                          (((valueOrDefault(currentUserDocument?.goldBought, 0.0) *
-                                                                          (_model
-                                                                              .goldPrice!)) -
-                                                                      valueOrDefault(
-                                                                          currentUserDocument
-                                                                              ?.amountBought,
-                                                                          0.0)) /
-                                                                  valueOrDefault(
-                                                                      currentUserDocument
-                                                                          ?.amountBought,
-                                                                      0.0)) *
-                                                              100,
-                                                          formatType:
-                                                              FormatType.custom,
-                                                          format: '###.##',
-                                                          locale: 'en_US',
-                                                        ),
-                                                        '0',
-                                                      )}%',
-                                                      style:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Nunito',
-                                                                color:
-                                                                    valueOrDefault<
-                                                                        Color>(
-                                                                  () {
-                                                                    if (valueOrDefault<
-                                                                            String>(
-                                                                          formatNumber(
-                                                                            valueOrDefault<double>(
-                                                                                  valueOrDefault(currentUserDocument?.goldBought, 0.0),
-                                                                                  1.0,
-                                                                                ) *
-                                                                                valueOrDefault<double>(
-                                                                                  valueOrDefault<double>(
-                                                                                        _model.goldPrice,
-                                                                                        6000.0,
-                                                                                      ) +
-                                                                                      (valueOrDefault<double>(
-                                                                                            _model.goldPrice,
-                                                                                            6000.0,
-                                                                                          ) *
-                                                                                          (valueOrDefault<double>(
-                                                                                                _model.goldDifference,
-                                                                                                1.0,
-                                                                                              ) /
-                                                                                              100)),
-                                                                                  6000.0,
-                                                                                ),
-                                                                            formatType:
-                                                                                FormatType.custom,
-                                                                            format:
-                                                                                '##.##',
-                                                                            locale:
-                                                                                'en_US',
-                                                                          ),
-                                                                          '0',
-                                                                        ) ==
-                                                                        valueOrDefault<
-                                                                            String>(
-                                                                          formatNumber(
-                                                                            valueOrDefault(currentUserDocument?.amountBought,
-                                                                                0.0),
-                                                                            formatType:
-                                                                                FormatType.custom,
-                                                                            format:
-                                                                                '##.##',
-                                                                            locale:
-                                                                                'en_US',
-                                                                          ),
-                                                                          '0',
-                                                                        )) {
-                                                                      return FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .accent2;
-                                                                    } else if (valueOrDefault<
-                                                                            String>(
-                                                                          formatNumber(
-                                                                            valueOrDefault(currentUserDocument?.goldBought, 0.0) *
-                                                                                ((_model.goldPrice!) + ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
-                                                                            formatType:
-                                                                                FormatType.custom,
-                                                                            format:
-                                                                                '##.##',
-                                                                            locale:
-                                                                                'en_US',
-                                                                          ),
-                                                                          '0',
-                                                                        ) ==
-                                                                        valueOrDefault<
-                                                                            String>(
-                                                                          formatNumber(
-                                                                            valueOrDefault(currentUserDocument?.amountBought,
-                                                                                0.0),
-                                                                            formatType:
-                                                                                FormatType.custom,
-                                                                            format:
-                                                                                '##.##',
-                                                                            locale:
-                                                                                'en_US',
-                                                                          ),
-                                                                          '0',
-                                                                        )) {
-                                                                      return FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .accent4;
-                                                                    } else {
-                                                                      return FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .secondaryText;
-                                                                    }
-                                                                  }(),
-                                                                  FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryText,
-                                                                ),
-                                                                letterSpacing:
-                                                                    0.0,
-                                                              ),
-                                                    ),
-                                                  ),
-                                                ),
+                                                                double>(
+                                                              FFAppState()
+                                                                  .amountBought,
+                                                              0.0,
+                                                            )) /
+                                                        valueOrDefault<double>(
+                                                          FFAppState()
+                                                              .amountBought,
+                                                          0.0,
+                                                        )) *
+                                                    100,
+                                                formatType: FormatType.custom,
+                                                format: '###.##',
+                                                locale: 'en_US',
                                               ),
-                                            ].divide(const SizedBox(width: 8.0)),
+                                              '0',
+                                            )}%',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Nunito',
+                                                  color: valueOrDefault<Color>(
+                                                    () {
+                                                      if (_model.currentPrice >
+                                                          FFAppState()
+                                                              .amountBought) {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .accent3;
+                                                      } else if (_model
+                                                              .currentPrice <
+                                                          FFAppState()
+                                                              .amountBought) {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .accent4;
+                                                      } else {
+                                                        return FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryText;
+                                                      }
+                                                    }(),
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryText,
+                                                  ),
+                                                  fontSize: 16.0,
+                                                  letterSpacing: 0.0,
+                                                ),
                                           ),
                                         ],
                                       ),
@@ -880,71 +596,63 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  valueOrDefault<String>(
-                                                    formatNumber(
-                                                      valueOrDefault(
-                                                          currentUserDocument
-                                                              ?.amountBought,
-                                                          0.0),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      currency: '₹',
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
+                                              Text(
+                                                valueOrDefault<String>(
+                                                  formatNumber(
+                                                    FFAppState().amountBought,
+                                                    formatType:
+                                                        FormatType.custom,
+                                                    currency: '₹',
+                                                    format: '###.##',
+                                                    locale: 'en_US',
                                                   ),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .titleMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primaryText,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
+                                                  '0',
                                                 ),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
                                               ),
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  valueOrDefault<String>(
-                                                    formatNumber(
-                                                      valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.goldBought,
-                                                              0.0) *
-                                                          ((_model.goldPrice!) +
-                                                              ((_model.goldPrice!) *
-                                                                  ((_model.goldDifference!) /
-                                                                      100))),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      currency: '₹',
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
+                                              Text(
+                                                valueOrDefault<String>(
+                                                  formatNumber(
+                                                    valueOrDefault<double>(
+                                                          FFAppState()
+                                                              .goldBalance,
+                                                          0.0,
+                                                        ) *
+                                                        valueOrDefault<double>(
+                                                          _model.goldPrice,
+                                                          6000.0,
+                                                        ),
+                                                    formatType:
+                                                        FormatType.custom,
+                                                    currency: '₹',
+                                                    format: '###.##',
+                                                    locale: 'en_US',
                                                   ),
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .titleMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primaryText,
-                                                        letterSpacing: 0.0,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
+                                                  '0',
                                                 ),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .titleMedium
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
                                               ),
                                             ],
                                           ),
@@ -958,55 +666,37 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  '(${valueOrDefault<String>(
-                                                    formatNumber(
-                                                      valueOrDefault(
-                                                          currentUserDocument
-                                                              ?.goldBought,
-                                                          0.0),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
-                                                  )} gm)',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        fontSize: 12.0,
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                                ),
+                                              Text(
+                                                '(${valueOrDefault<String>(
+                                                  FFAppState()
+                                                      .goldBalance
+                                                      .toString(),
+                                                  '0',
+                                                )} gm)',
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          fontSize: 12.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
                                               ),
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  '(${valueOrDefault<String>(
-                                                    formatNumber(
-                                                      valueOrDefault(
-                                                          currentUserDocument
-                                                              ?.goldBought,
-                                                          0.0),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
-                                                  )} gm)',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .bodyMedium
-                                                      .override(
-                                                        fontFamily: 'Nunito',
-                                                        fontSize: 12.0,
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                                ),
+                                              Text(
+                                                '(${valueOrDefault<String>(
+                                                  FFAppState()
+                                                      .goldBalance
+                                                      .toString(),
+                                                  '0',
+                                                )} gm)',
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          fontSize: 12.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
                                               ),
                                             ],
                                           ),
@@ -1035,138 +725,67 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                                                           letterSpacing: 0.0,
                                                         ),
                                               ),
-                                              AuthUserStreamWidget(
-                                                builder: (context) => Text(
-                                                  valueOrDefault<String>(
-                                                    formatNumber(
-                                                      (valueOrDefault(
-                                                                  currentUserDocument
-                                                                      ?.goldBought,
-                                                                  0.0) *
-                                                              ((_model.goldPrice!) +
-                                                                  ((_model.goldPrice!) *
-                                                                      ((_model.goldDifference!) /
-                                                                          100)))) -
-                                                          valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.amountBought,
-                                                              0.0),
-                                                      formatType:
-                                                          FormatType.custom,
-                                                      currency: '₹',
-                                                      format: '###.##',
-                                                      locale: 'en_US',
-                                                    ),
-                                                    '0',
+                                              Text(
+                                                valueOrDefault<String>(
+                                                  formatNumber(
+                                                    (valueOrDefault<double>(
+                                                              FFAppState()
+                                                                  .goldBalance,
+                                                              0.0,
+                                                            ) *
+                                                            valueOrDefault<
+                                                                double>(
+                                                              _model.goldPrice,
+                                                              6000.0,
+                                                            )) -
+                                                        valueOrDefault<double>(
+                                                          FFAppState()
+                                                              .amountBought,
+                                                          0.0,
+                                                        ),
+                                                    formatType:
+                                                        FormatType.custom,
+                                                    currency: '₹',
+                                                    format: '###.##',
+                                                    locale: 'en_US',
                                                   ),
-                                                  style:
-                                                      FlutterFlowTheme.of(
-                                                              context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily:
-                                                                'Nunito',
-                                                            color:
-                                                                valueOrDefault<
-                                                                    Color>(
-                                                              () {
-                                                                if (valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault<double>(
-                                                                              valueOrDefault(currentUserDocument?.goldBought, 0.0),
-                                                                              1.0,
-                                                                            ) *
-                                                                            valueOrDefault<double>(
-                                                                              valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) +
-                                                                                  (valueOrDefault<double>(
-                                                                                        _model.goldPrice,
-                                                                                        6000.0,
-                                                                                      ) *
-                                                                                      (valueOrDefault<double>(
-                                                                                            _model.goldDifference,
-                                                                                            1.0,
-                                                                                          ) /
-                                                                                          100)),
-                                                                              6000.0,
-                                                                            ),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    ) ==
-                                                                    valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(
-                                                                            currentUserDocument?.amountBought,
-                                                                            0.0),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    )) {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .accent2;
-                                                                } else if (valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(currentUserDocument?.goldBought, 0.0) *
-                                                                            ((_model.goldPrice!) +
-                                                                                ((_model.goldPrice!) * ((_model.goldDifference!) / 100))),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    ) ==
-                                                                    valueOrDefault<
-                                                                        String>(
-                                                                      formatNumber(
-                                                                        valueOrDefault(
-                                                                            currentUserDocument?.amountBought,
-                                                                            0.0),
-                                                                        formatType:
-                                                                            FormatType.custom,
-                                                                        format:
-                                                                            '##.##',
-                                                                        locale:
-                                                                            'en_US',
-                                                                      ),
-                                                                      '0',
-                                                                    )) {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .accent4;
-                                                                } else {
-                                                                  return FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .secondaryText;
-                                                                }
-                                                              }(),
-                                                              FlutterFlowTheme.of(
-                                                                      context)
-                                                                  .secondaryText,
-                                                            ),
-                                                            fontSize: 16.0,
-                                                            letterSpacing: 0.0,
-                                                          ),
+                                                  '0',
                                                 ),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          fontFamily: 'Nunito',
+                                                          color: valueOrDefault<
+                                                              Color>(
+                                                            () {
+                                                              if (_model
+                                                                      .currentPrice >
+                                                                  FFAppState()
+                                                                      .amountBought) {
+                                                                return FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .accent3;
+                                                              } else if (_model
+                                                                      .currentPrice <
+                                                                  FFAppState()
+                                                                      .amountBought) {
+                                                                return FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .accent4;
+                                                              } else {
+                                                                return FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondaryText;
+                                                              }
+                                                            }(),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                          ),
+                                                          fontSize: 16.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
                                               ),
                                             ],
                                           ),
@@ -1255,113 +874,234 @@ class _PortfolioPageWidgetState extends State<PortfolioPageWidget> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
-                            child: PagedListView<DocumentSnapshot<Object?>?,
-                                DigiGoldBuyRecord>.separated(
-                              pagingController: _model.setListViewController(
-                                  DigiGoldBuyRecord.collection(
-                                          currentUserReference)
-                                      .orderBy('time'),
-                                  parent: currentUserReference),
-                              padding: const EdgeInsets.symmetric(vertical: 6.0),
-                              primary: false,
-                              shrinkWrap: true,
-                              reverse: false,
-                              scrollDirection: Axis.vertical,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 6.0),
-                              builderDelegate:
-                                  PagedChildBuilderDelegate<DigiGoldBuyRecord>(
-                                // Customize what your widget looks like when it's loading the first page.
-                                firstPageProgressIndicatorBuilder: (_) =>
-                                    Center(
-                                  child: SizedBox(
-                                    width: 40.0,
-                                    height: 40.0,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        FlutterFlowTheme.of(context).secondary,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // Customize what your widget looks like when it's loading another page.
-                                newPageProgressIndicatorBuilder: (_) => Center(
-                                  child: SizedBox(
-                                    width: 40.0,
-                                    height: 40.0,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        FlutterFlowTheme.of(context).secondary,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                noItemsFoundIndicatorBuilder: (_) =>
-                                    const ListEmptyComponentWidget(
-                                  text:
-                                      'You haven\'t made any transaction yet.',
-                                ),
-                                itemBuilder: (context, _, listViewIndex) {
-                                  final listViewDigiGoldBuyRecord = _model
-                                      .listViewPagingController!
-                                      .itemList![listViewIndex];
-                                  return InkWell(
-                                    splashColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: () async {
-                                      context.pushNamed(
-                                        'TransactionDetailPage',
-                                        queryParameters: {
-                                          'amount': serializeParam(
-                                            listViewDigiGoldBuyRecord.amount,
-                                            ParamType.String,
-                                          ),
-                                          'gold': serializeParam(
-                                            listViewDigiGoldBuyRecord.gold,
-                                            ParamType.String,
-                                          ),
-                                          'status': serializeParam(
-                                            listViewDigiGoldBuyRecord.status ==
-                                                    'success'
-                                                ? true
-                                                : false,
-                                            ParamType.bool,
-                                          ),
-                                          'time': serializeParam(
-                                            listViewDigiGoldBuyRecord.time,
-                                            ParamType.DateTime,
-                                          ),
-                                        }.withoutNulls,
-                                      );
-                                    },
-                                    child: TransactionTileWidget(
-                                      key: Key(
-                                          'Keyx1j_${listViewIndex}_of_${_model.listViewPagingController!.itemList!.length}'),
-                                      transactionValue:
-                                          listViewDigiGoldBuyRecord.amount,
-                                      transactionGold: valueOrDefault<String>(
-                                        formatNumber(
-                                          double.parse(
-                                              listViewDigiGoldBuyRecord.gold),
-                                          formatType: FormatType.custom,
-                                          format: '###.##',
-                                          locale: 'en_US',
-                                        ),
-                                        '0',
-                                      ),
-                                      transactionGoldPrice:
-                                          listViewDigiGoldBuyRecord.goldPrice,
-                                      digital: true,
-                                      purchasedOrSold: true,
-                                      successOrFailure: true,
-                                      transactionDate:
-                                          listViewDigiGoldBuyRecord.time!,
-                                    ),
+                            child: Builder(
+                              builder: (context) {
+                                final transactionList =
+                                    FFAppState().transactions.toList();
+                                if (transactionList.isEmpty) {
+                                  return const ListEmptyComponentWidget(
+                                    text:
+                                        'You haven\'t made any transaction yet.',
                                   );
-                                },
-                              ),
+                                }
+
+                                return ListView.separated(
+                                  padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                  primary: false,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: transactionList.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 6.0),
+                                  itemBuilder: (context, transactionListIndex) {
+                                    final transactionListItem =
+                                        transactionList[transactionListIndex];
+                                    return InkWell(
+                                      splashColor: Colors.transparent,
+                                      focusColor: Colors.transparent,
+                                      hoverColor: Colors.transparent,
+                                      highlightColor: Colors.transparent,
+                                      onTap: () async {
+                                        context.pushNamed(
+                                          'TransactionDetailPage',
+                                          queryParameters: {
+                                            'amount': serializeParam(
+                                              valueOrDefault<String>(
+                                                () {
+                                                  if (valueOrDefault<String>(
+                                                        getJsonField(
+                                                          transactionListItem,
+                                                          r'''$['type']''',
+                                                        )?.toString(),
+                                                        'buy',
+                                                      ) ==
+                                                      'buy') {
+                                                    return getJsonField(
+                                                      transactionListItem,
+                                                      r'''$['buy_price']''',
+                                                    ).toString();
+                                                  } else if (valueOrDefault<String>(
+                                                        getJsonField(
+                                                          transactionListItem,
+                                                          r'''$['type']''',
+                                                        )?.toString(),
+                                                        'buy',
+                                                      ) ==
+                                                      'sell') {
+                                                    return getJsonField(
+                                                      transactionListItem,
+                                                      r'''$['sell_price']''',
+                                                    ).toString();
+                                                  } else if (valueOrDefault<String>(
+                                                        getJsonField(
+                                                          transactionListItem,
+                                                          r'''$['type']''',
+                                                        )?.toString(),
+                                                        'buy',
+                                                      ) ==
+                                                      'delivery') {
+                                                    return getJsonField(
+                                                      transactionListItem,
+                                                      r'''$['delivery_price']''',
+                                                    ).toString();
+                                                  } else {
+                                                    return 'null';
+                                                  }
+                                                }(),
+                                                '0',
+                                              ),
+                                              ParamType.String,
+                                            ),
+                                            'gold': serializeParam(
+                                              valueOrDefault<String>(
+                                                getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['gold_amount']''',
+                                                )?.toString(),
+                                                '0',
+                                              ),
+                                              ParamType.String,
+                                            ),
+                                            'status': serializeParam(
+                                              true,
+                                              ParamType.bool,
+                                            ),
+                                            'time': serializeParam(
+                                              valueOrDefault<String>(
+                                                getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['tx_date']''',
+                                                )?.toString(),
+                                                '0',
+                                              ),
+                                              ParamType.String,
+                                            ),
+                                            'txId': serializeParam(
+                                              valueOrDefault<int>(
+                                                getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['tx_id']''',
+                                                ),
+                                                0,
+                                              ),
+                                              ParamType.int,
+                                            ),
+                                            'type': serializeParam(
+                                              valueOrDefault<String>(
+                                                getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['type']''',
+                                                )?.toString(),
+                                                '0',
+                                              ),
+                                              ParamType.String,
+                                            ),
+                                          }.withoutNulls,
+                                        );
+                                      },
+                                      child: TransactionTileWidget(
+                                        key: Key(
+                                            'Keyyjb_${transactionListIndex}_of_${transactionList.length}'),
+                                        transactionValue:
+                                            valueOrDefault<String>(
+                                          () {
+                                            if (getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['type']''',
+                                                ).toString() ==
+                                                'buy') {
+                                              return getJsonField(
+                                                transactionListItem,
+                                                r'''$['buy_price']''',
+                                              ).toString();
+                                            } else if (getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['type']''',
+                                                ).toString() ==
+                                                'sell') {
+                                              return getJsonField(
+                                                transactionListItem,
+                                                r'''$['sell_price']''',
+                                              ).toString();
+                                            } else if (getJsonField(
+                                                  transactionListItem,
+                                                  r'''$['type']''',
+                                                ).toString() ==
+                                                'delivery') {
+                                              return getJsonField(
+                                                transactionListItem,
+                                                r'''$['delivery_price']''',
+                                              ).toString();
+                                            } else {
+                                              return 'null';
+                                            }
+                                          }(),
+                                          '0',
+                                        ),
+                                        transactionGold: valueOrDefault<String>(
+                                          getJsonField(
+                                            transactionListItem,
+                                            r'''$['gold_amount']''',
+                                          )?.toString(),
+                                          '0',
+                                        ),
+                                        transactionGoldPrice:
+                                            valueOrDefault<String>(
+                                          getJsonField(
+                                            transactionListItem,
+                                            r'''$['rate']''',
+                                          )?.toString(),
+                                          '0',
+                                        ),
+                                        transactionDate: valueOrDefault<String>(
+                                          getJsonField(
+                                            transactionListItem,
+                                            r'''$['tx_date']''',
+                                          )?.toString(),
+                                          '0',
+                                        ),
+                                        buy: valueOrDefault<String>(
+                                          getJsonField(
+                                                    transactionListItem,
+                                                    r'''$['type']''',
+                                                  ).toString() ==
+                                                  'buy'
+                                              ? 'buy'
+                                              : 'none',
+                                          '0',
+                                        ),
+                                        sell: valueOrDefault<String>(
+                                          getJsonField(
+                                                    transactionListItem,
+                                                    r'''$['type']''',
+                                                  ).toString() ==
+                                                  'sell'
+                                              ? 'sell'
+                                              : 'none',
+                                          '0',
+                                        ),
+                                        delivery: valueOrDefault<String>(
+                                          getJsonField(
+                                                    transactionListItem,
+                                                    r'''$['type']''',
+                                                  ).toString() ==
+                                                  'delivery'
+                                              ? 'delivery'
+                                              : 'none',
+                                          '0',
+                                        ),
+                                        txId: valueOrDefault<int>(
+                                          getJsonField(
+                                            transactionListItem,
+                                            r'''$['tx_id']''',
+                                          ),
+                                          0,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                           Container(

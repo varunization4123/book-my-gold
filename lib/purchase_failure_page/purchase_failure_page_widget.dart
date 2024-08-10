@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
@@ -184,15 +185,17 @@ class _PurchaseFailurePageWidgetState extends State<PurchaseFailurePageWidget> {
                                     letterSpacing: 0.0,
                                   ),
                             ),
-                            Text(
-                              'User Name',
-                              style: FlutterFlowTheme.of(context)
-                                  .labelLarge
-                                  .override(
-                                    fontFamily: 'Nunito',
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                            AuthUserStreamWidget(
+                              builder: (context) => Text(
+                                currentUserDisplayName,
+                                style: FlutterFlowTheme.of(context)
+                                    .labelLarge
+                                    .override(
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.0,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
                             ),
                           ],
                         ),
@@ -205,7 +208,7 @@ class _PurchaseFailurePageWidgetState extends State<PurchaseFailurePageWidget> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'From Account : ',
+                              'Payment Method : ',
                               style: FlutterFlowTheme.of(context)
                                   .labelLarge
                                   .override(
@@ -214,7 +217,7 @@ class _PurchaseFailurePageWidgetState extends State<PurchaseFailurePageWidget> {
                                   ),
                             ),
                             Text(
-                              'PhonePe',
+                              'Razorpay',
                               style: FlutterFlowTheme.of(context)
                                   .labelLarge
                                   .override(

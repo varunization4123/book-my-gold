@@ -1,4 +1,4 @@
-# BookMyGold
+# BookurGold
 
 A new Flutter project.
 

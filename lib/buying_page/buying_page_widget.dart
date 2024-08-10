@@ -1,3 +1,4 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/backend/razorpay/razorpay_payment_sheet.dart';
@@ -105,6 +106,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
               '123456',
             );
             setState(() {});
+            _model.buyRate = ((_model.goldPrice * 1.03) * 100).round() / 100;
             FFAppState().buyPrice = valueOrDefault<String>(
               getJsonField(
                 functions.jsonFromString(_model.decryptedApiResponse!),
@@ -112,7 +114,6 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
               )?.toString().toString(),
               '6000',
             );
-            setState(() {});
           }
         }),
       ]);
@@ -638,7 +639,6 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                         setState(() {});
                                       },
                                       () async {
-                                        _model.enteredAmount = 0.0;
                                         _model.isLoading = false;
                                         setState(() {});
                                         setState(() {
@@ -1707,7 +1707,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                     }
                                                     _model.isLoading = true;
                                                     setState(() {});
-                                                    _model.encryptedApiRequest =
+                                                    _model.encryptedBuyVerifyApiRequest =
                                                         actions
                                                             .encryptApiRequest(
                                                       functions.buyVerifyData(
@@ -1715,18 +1715,18 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                           _model
                                                               .amountFieldTextController
                                                               .text,
-                                                          _model.goldPrice
-                                                              .toString()),
+                                                          valueOrDefault<
+                                                              String>(
+                                                            (((double.parse(_model.amountFieldTextController.text) /
+                                                                                (_model.buyRate!)) *
+                                                                            10000)
+                                                                        .truncate() /
+                                                                    10000)
+                                                                .toString(),
+                                                            '0',
+                                                          )),
                                                       FFAppState()
                                                           .safeGoldAccessToken,
-                                                    );
-                                                    _model.decryptedApiResponseSelf =
-                                                        await actions
-                                                            .decryptApiResponse(
-                                                      FFAppState()
-                                                          .safeGoldAccessToken,
-                                                      _model
-                                                          .encryptedApiRequest!,
                                                     );
                                                     _model.buyVerifyApi =
                                                         await SafeGoldAPIGroupGroup
@@ -1735,10 +1735,10 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                       userId:
                                                           FFAppState().userId,
                                                       encryptedData: _model
-                                                          .encryptedApiRequest,
+                                                          .encryptedBuyVerifyApiRequest,
                                                     );
 
-                                                    _model.decryptedApiResponse1 =
+                                                    _model.decryptedBuyVerifyApiResponse =
                                                         await actions
                                                             .decryptApiResponse(
                                                       FFAppState()
@@ -1747,53 +1747,231 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               ?.bodyText ??
                                                           ''),
                                                     );
+                                                    _model.txId = getJsonField(
+                                                      functions.jsonFromString(
+                                                          _model
+                                                              .decryptedBuyVerifyApiResponse!),
+                                                      r'''$['tx_id']''',
+                                                    );
+                                                    setState(() {});
                                                     if ((_model.buyVerifyApi
                                                             ?.succeeded ??
                                                         true)) {
-                                                      context.pushNamed(
-                                                          'LoadingScreen');
+                                                      await processRazorpayPayment(
+                                                        context,
+                                                        amount: int.parse(_model
+                                                                .amountFieldTextController
+                                                                .text) *
+                                                            100,
+                                                        currency: 'INR',
+                                                        description:
+                                                            'User -${FFAppState().userId.toString()} bought Gold in Rupees for - ${_model.amountFieldTextController.text}',
+                                                        userName: FFAppState()
+                                                            .userId
+                                                            .toString(),
+                                                        userEmail:
+                                                            currentUserEmail,
+                                                        userContact:
+                                                            FFAppState()
+                                                                .phoneNumber,
+                                                        timeout: 120,
+                                                        onReceivedResponse:
+                                                            (paymentId) =>
+                                                                safeSetState(() =>
+                                                                    _model.razorpayPaymentInRupees =
+                                                                        paymentId),
+                                                      );
 
-                                                      if ((_model.buyVerifyApi
-                                                              ?.succeeded ??
-                                                          true)) {
-                                                        await processRazorpayPayment(
-                                                          context,
-                                                          amount: _model
-                                                              .enteredAmount!
-                                                              .round(),
-                                                          currency: 'INR',
-                                                          onReceivedResponse: (paymentId) =>
-                                                              safeSetState(() =>
-                                                                  _model.razorpayPaymentId =
-                                                                      paymentId),
+                                                      if (_model.razorpayPaymentInRupees !=
+                                                              null &&
+                                                          _model.razorpayPaymentInRupees !=
+                                                              '') {
+                                                        _model.encryptedBuyConfirmApiRequest =
+                                                            actions
+                                                                .encryptApiRequest(
+                                                          functions
+                                                              .buyConfirmData(
+                                                                  _model.txId!
+                                                                      .toString(),
+                                                                  _model
+                                                                      .pincode),
+                                                          FFAppState()
+                                                              .safeGoldAccessToken,
                                                         );
+                                                        _model.buyConfirmApi =
+                                                            await SafeGoldAPIGroupGroup
+                                                                .buyConfirmAPICall
+                                                                .call(
+                                                          userId: FFAppState()
+                                                              .userId,
+                                                          encryptedData: _model
+                                                              .encryptedBuyConfirmApiRequest,
+                                                        );
+
+                                                        _model.decryptedBuyConfirmApiResponse =
+                                                            await actions
+                                                                .decryptApiResponse(
+                                                          FFAppState()
+                                                              .safeGoldAccessToken,
+                                                          (_model.buyConfirmApi
+                                                                  ?.bodyText ??
+                                                              ''),
+                                                        );
+                                                        if ((_model
+                                                                .buyConfirmApi
+                                                                ?.succeeded ??
+                                                            true)) {
+                                                          _model.isLoading =
+                                                              false;
+                                                          setState(() {});
+
+                                                          context.goNamed(
+                                                            'LoadingScreen',
+                                                            queryParameters: {
+                                                              'invoiceId':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyConfirmApiResponse!),
+                                                                  r'''$['invoice_id']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                              'goldAmount':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse!),
+                                                                  r'''$['gold_amount']''',
+                                                                ),
+                                                                ParamType
+                                                                    .double,
+                                                              ),
+                                                              'buyPrice':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse!),
+                                                                  r'''$['buy_price']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                              'txId':
+                                                                  serializeParam(
+                                                                _model.txId,
+                                                                ParamType.int,
+                                                              ),
+                                                              'goldPrice':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse!),
+                                                                  r'''$['sg_rate']''',
+                                                                ),
+                                                                ParamType
+                                                                    .double,
+                                                              ),
+                                                              'amount':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse!),
+                                                                  r'''$['pre_gst_buy_price']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                            }.withoutNulls,
+                                                          );
+                                                        } else {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .clearSnackBars();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Something Went Wrong',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .override(
+                                                                      fontFamily:
+                                                                          'Nunito',
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBackground,
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                    ),
+                                                              ),
+                                                              duration: const Duration(
+                                                                  milliseconds:
+                                                                      4000),
+                                                              backgroundColor:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primary,
+                                                            ),
+                                                          );
+                                                          _model.isLoading =
+                                                              false;
+                                                          setState(() {});
+
+                                                          context.pushNamed(
+                                                              'PurchaseFailurePage');
+                                                        }
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .clearSnackBars();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'Something Went Wrong',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .titleSmall
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Nunito',
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                  ),
+                                                            ),
+                                                            duration: const Duration(
+                                                                milliseconds:
+                                                                    4000),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                          ),
+                                                        );
+                                                        _model.isLoading =
+                                                            false;
+                                                        setState(() {});
 
                                                         context.pushNamed(
-                                                          'PurchaseSuccessPage',
-                                                          queryParameters: {
-                                                            'amount':
-                                                                serializeParam(
-                                                              valueOrDefault<
-                                                                  String>(
-                                                                _model
-                                                                    .enteredAmount
-                                                                    ?.toString(),
-                                                                '0',
-                                                              ),
-                                                              ParamType.String,
-                                                            ),
-                                                            'gold':
-                                                                serializeParam(
-                                                              0.0,
-                                                              ParamType.double,
-                                                            ),
-                                                            'goldPrice':
-                                                                serializeParam(
-                                                              _model.goldPrice,
-                                                              ParamType.double,
-                                                            ),
-                                                          }.withoutNulls,
-                                                        );
+                                                            'PurchaseFailurePage');
                                                       }
                                                     } else {
                                                       ScaffoldMessenger.of(
@@ -1804,8 +1982,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                           .showSnackBar(
                                                         SnackBar(
                                                           content: Text(
-                                                            _model
-                                                                .decryptedApiResponse1!,
+                                                            'Something Went Wrong',
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .titleSmall
@@ -1830,6 +2007,9 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                       );
                                                       _model.isLoading = false;
                                                       setState(() {});
+
+                                                      context.pushNamed(
+                                                          'PurchaseFailurePage');
                                                     }
 
                                                     setState(() {});
@@ -1929,6 +2109,48 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         ),
                                                   ),
                                                 ],
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        0.0, 36.0, 0.0, 0.0),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Powered by',
+                                                      style: FlutterFlowTheme
+                                                              .of(context)
+                                                          .labelSmall
+                                                          .override(
+                                                            fontFamily:
+                                                                'Nunito',
+                                                            fontSize: 8.0,
+                                                            letterSpacing: 0.0,
+                                                          ),
+                                                    ),
+                                                    Container(
+                                                      width: 60.0,
+                                                      height: 20.0,
+                                                      decoration: BoxDecoration(
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        image: const DecorationImage(
+                                                          fit: BoxFit.fitHeight,
+                                                          image:
+                                                              CachedNetworkImageProvider(
+                                                            'https://firebasestorage.googleapis.com/v0/b/jar-app-2kol48.appspot.com/o/app-images%2FSafe%20Gold%20Logo.png?alt=media&token=493efbfb-e2b3-4cb4-9ae4-a27116949694',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ].divide(
+                                                      const SizedBox(width: 4.0)),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -2036,7 +2258,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                       milliseconds:
                                                                           25),
                                                                   () async {
-                                                                    _model.enteredAmount =
+                                                                    _model.enteredGold =
                                                                         valueOrDefault<
                                                                             double>(
                                                                       double.tryParse(_model
@@ -2176,122 +2398,23 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               (valueOrDefault<
                                                                           double>(
                                                                         _model
-                                                                            .enteredAmount,
-                                                                        0.0,
+                                                                            .goldPrice,
+                                                                        6000.0,
                                                                       ) *
-                                                                      (valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.0,
-                                                                          ) +
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) *
-                                                                              valueOrDefault<double>(
-                                                                                _model.goldDifference,
-                                                                                0.0,
-                                                                              ) /
-                                                                              100))) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .buyingFees,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .commisionFees,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100) +
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .gst,
-                                                                        3.0,
-                                                                      ) /
-                                                                      100) -
-                                                                  ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
-                                                                            0.0,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldPrice,
-                                                                                6000.0,
-                                                                              ) +
-                                                                              (valueOrDefault<double>(
-                                                                                    _model.goldPrice,
-                                                                                    6000.0,
-                                                                                  ) *
-                                                                                  valueOrDefault<double>(
-                                                                                    _model.goldDifference,
-                                                                                    0.0,
-                                                                                  ) /
-                                                                                  100))) *
-                                                                      valueOrDefault<double>(
-                                                                        _model
-                                                                            .discount,
-                                                                        0.0,
-                                                                      ) /
-                                                                      100),
+                                                                      1.03) *
+                                                                  valueOrDefault<
+                                                                      double>(
+                                                                    _model
+                                                                        .enteredGold,
+                                                                    0.0,
+                                                                  ),
                                                               formatType:
                                                                   FormatType
                                                                       .custom,
-                                                              format: '####.0#',
+                                                              format: '####.##',
                                                               locale: 'en_US',
                                                             ),
-                                                            '1',
+                                                            '0',
                                                           ),
                                                           style: FlutterFlowTheme
                                                                   .of(context)
@@ -2360,7 +2483,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                     formatNumber(
                                                                       (valueOrDefault<
                                                                               double>(
-                                                                            _model.enteredAmount,
+                                                                            _model.enteredGold,
                                                                             0.0,
                                                                           ) *
                                                                           (valueOrDefault<double>(
@@ -2713,7 +2836,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               (valueOrDefault<
                                                                           double>(
                                                                         _model
-                                                                            .enteredAmount,
+                                                                            .enteredGold,
                                                                         0.0,
                                                                       ) *
                                                                       (valueOrDefault<
@@ -2731,7 +2854,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                               ) /
                                                                               100))) +
                                                                   ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
+                                                                            _model.enteredGold,
                                                                             0.0,
                                                                           ) *
                                                                           (valueOrDefault<double>(
@@ -2754,7 +2877,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                       ) /
                                                                       100) +
                                                                   ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
+                                                                            _model.enteredGold,
                                                                             0.0,
                                                                           ) *
                                                                           (valueOrDefault<double>(
@@ -2777,7 +2900,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                       ) /
                                                                       100) -
                                                                   ((valueOrDefault<double>(
-                                                                            _model.enteredAmount,
+                                                                            _model.enteredGold,
                                                                             0.0,
                                                                           ) *
                                                                           (valueOrDefault<double>(
@@ -2832,7 +2955,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                               ((valueOrDefault<
                                                                           double>(
                                                                         _model
-                                                                            .enteredAmount,
+                                                                            .enteredGold,
                                                                         0.0,
                                                                       ) *
                                                                       (valueOrDefault<
@@ -2937,8 +3060,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                     .text
                                                                     .length);
                                                       });
-                                                      _model.enteredAmount =
-                                                          0.1;
+                                                      _model.enteredGold = 0.1;
                                                       setState(() {});
                                                     },
                                                     child: wrapWithModel(
@@ -2973,8 +3095,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                     .text
                                                                     .length);
                                                       });
-                                                      _model.enteredAmount =
-                                                          0.5;
+                                                      _model.enteredGold = 0.5;
                                                       setState(() {});
                                                     },
                                                     child: wrapWithModel(
@@ -3020,7 +3141,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                           .text
                                                                           .length);
                                                             });
-                                                            _model.enteredAmount =
+                                                            _model.enteredGold =
                                                                 1.0;
                                                             setState(() {});
                                                           },
@@ -3086,8 +3207,7 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                                     .text
                                                                     .length);
                                                       });
-                                                      _model.enteredAmount =
-                                                          1.5;
+                                                      _model.enteredGold = 1.5;
                                                       setState(() {});
                                                     },
                                                     child: wrapWithModel(
@@ -3205,6 +3325,358 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                     }
                                                     _model.isLoading = true;
                                                     setState(() {});
+                                                    _model.encryptedBuyVerifyApiRequest2 =
+                                                        actions
+                                                            .encryptApiRequest(
+                                                      functions.buyVerifyData(
+                                                          _model.rateIdApi!,
+                                                          formatNumber(
+                                                            ((double.parse(_model.goldFieldTextController.text) *
+                                                                            (_model.buyRate!)) *
+                                                                        100)
+                                                                    .round() /
+                                                                100,
+                                                            formatType:
+                                                                FormatType
+                                                                    .custom,
+                                                            format: '####.##',
+                                                            locale: 'en_US',
+                                                          ),
+                                                          valueOrDefault<
+                                                              String>(
+                                                            formatNumber(
+                                                              _model
+                                                                  .enteredGold,
+                                                              formatType:
+                                                                  FormatType
+                                                                      .custom,
+                                                              format: '##.####',
+                                                              locale: 'en_US',
+                                                            ),
+                                                            '0',
+                                                          )),
+                                                      FFAppState()
+                                                          .safeGoldAccessToken,
+                                                    );
+                                                    _model.buyVerifyApi2 =
+                                                        await SafeGoldAPIGroupGroup
+                                                            .buyVerifyAPICall
+                                                            .call(
+                                                      userId:
+                                                          FFAppState().userId,
+                                                      encryptedData: _model
+                                                          .encryptedBuyVerifyApiRequest2,
+                                                    );
+
+                                                    _model.decryptedBuyVerifyApiResponse2 =
+                                                        await actions
+                                                            .decryptApiResponse(
+                                                      FFAppState()
+                                                          .safeGoldAccessToken,
+                                                      (_model.buyVerifyApi2
+                                                              ?.bodyText ??
+                                                          ''),
+                                                    );
+                                                    _model.txId = getJsonField(
+                                                      functions.jsonFromString(
+                                                          _model
+                                                              .decryptedBuyVerifyApiResponse2!),
+                                                      r'''$['tx_id']''',
+                                                    );
+                                                    setState(() {});
+                                                    if ((_model.buyVerifyApi2
+                                                            ?.succeeded ??
+                                                        true)) {
+                                                      await processRazorpayPayment(
+                                                        context,
+                                                        amount: ((double.parse(_model
+                                                                        .goldFieldTextController
+                                                                        .text) *
+                                                                    (_model
+                                                                        .buyRate!)) *
+                                                                100)
+                                                            .round(),
+                                                        currency: 'INR',
+                                                        description:
+                                                            'User -${FFAppState().userId.toString()} bought Gold in Rupees for - ${_model.amountFieldTextController.text}',
+                                                        userName: FFAppState()
+                                                            .userId
+                                                            .toString(),
+                                                        userEmail:
+                                                            currentUserEmail,
+                                                        userContact:
+                                                            FFAppState()
+                                                                .phoneNumber,
+                                                        timeout: 120,
+                                                        onReceivedResponse:
+                                                            (paymentId) =>
+                                                                safeSetState(() =>
+                                                                    _model.razorpayPaymentInGold =
+                                                                        paymentId),
+                                                      );
+
+                                                      if (_model.razorpayPaymentInGold !=
+                                                              null &&
+                                                          _model.razorpayPaymentInGold !=
+                                                              '') {
+                                                        _model.encryptedBuyConfirmApiRequest2 =
+                                                            actions
+                                                                .encryptApiRequest(
+                                                          functions
+                                                              .buyConfirmData(
+                                                                  _model.txId!
+                                                                      .toString(),
+                                                                  _model
+                                                                      .pincode),
+                                                          FFAppState()
+                                                              .safeGoldAccessToken,
+                                                        );
+                                                        _model.buyConfirmApi2 =
+                                                            await SafeGoldAPIGroupGroup
+                                                                .buyConfirmAPICall
+                                                                .call(
+                                                          userId: FFAppState()
+                                                              .userId,
+                                                          encryptedData: _model
+                                                              .encryptedBuyConfirmApiRequest2,
+                                                        );
+
+                                                        _model.decryptedBuyConfirmApiResponse2 =
+                                                            await actions
+                                                                .decryptApiResponse(
+                                                          FFAppState()
+                                                              .safeGoldAccessToken,
+                                                          (_model.buyConfirmApi2
+                                                                  ?.bodyText ??
+                                                              ''),
+                                                        );
+                                                        if ((_model
+                                                                .buyConfirmApi
+                                                                ?.succeeded ??
+                                                            true)) {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .clearSnackBars();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'INR ${_model.amountFieldTextController.text}- Gold Bought Successfully',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .override(
+                                                                      fontFamily:
+                                                                          'Nunito',
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBackground,
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                    ),
+                                                              ),
+                                                              duration: const Duration(
+                                                                  milliseconds:
+                                                                      4000),
+                                                              backgroundColor:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primary,
+                                                            ),
+                                                          );
+                                                          _model.isLoading =
+                                                              false;
+                                                          setState(() {});
+
+                                                          context.goNamed(
+                                                            'LoadingScreen',
+                                                            queryParameters: {
+                                                              'invoiceId':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyConfirmApiResponse2!),
+                                                                  r'''$['invoice_id']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                              'goldAmount':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse2!),
+                                                                  r'''$['gold_amount']''',
+                                                                ),
+                                                                ParamType
+                                                                    .double,
+                                                              ),
+                                                              'buyPrice':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse2!),
+                                                                  r'''$['buy_price']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                              'txId':
+                                                                  serializeParam(
+                                                                _model.txId,
+                                                                ParamType.int,
+                                                              ),
+                                                              'goldPrice':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse2!),
+                                                                  r'''$['sg_rate']''',
+                                                                ),
+                                                                ParamType
+                                                                    .double,
+                                                              ),
+                                                              'amount':
+                                                                  serializeParam(
+                                                                getJsonField(
+                                                                  functions
+                                                                      .jsonFromString(
+                                                                          _model
+                                                                              .decryptedBuyVerifyApiResponse2!),
+                                                                  r'''$['pre_gst_buy_price']''',
+                                                                ).toString(),
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                            }.withoutNulls,
+                                                          );
+                                                        } else {
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .clearSnackBars();
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Something Went Wrong',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .titleSmall
+                                                                    .override(
+                                                                      fontFamily:
+                                                                          'Nunito',
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBackground,
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                    ),
+                                                              ),
+                                                              duration: const Duration(
+                                                                  milliseconds:
+                                                                      4000),
+                                                              backgroundColor:
+                                                                  FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primary,
+                                                            ),
+                                                          );
+                                                          _model.isLoading =
+                                                              false;
+                                                          setState(() {});
+
+                                                          context.pushNamed(
+                                                              'PurchaseFailurePage');
+                                                        }
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .clearSnackBars();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'Something Went Wrong',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .titleSmall
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Nunito',
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                  ),
+                                                            ),
+                                                            duration: const Duration(
+                                                                milliseconds:
+                                                                    4000),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                          ),
+                                                        );
+                                                        _model.isLoading =
+                                                            false;
+                                                        setState(() {});
+
+                                                        context.pushNamed(
+                                                            'PurchaseFailurePage');
+                                                      }
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .clearSnackBars();
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                            'Something Went Wrong',
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .titleSmall
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Nunito',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryBackground,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          duration: const Duration(
+                                                              milliseconds:
+                                                                  4000),
+                                                          backgroundColor:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .primary,
+                                                        ),
+                                                      );
+                                                      _model.isLoading = false;
+                                                      setState(() {});
+
+                                                      context.pushNamed(
+                                                          'PurchaseFailurePage');
+                                                    }
+
+                                                    setState(() {});
                                                   },
                                                   child: Container(
                                                     width: double.infinity,
@@ -3301,6 +3773,48 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                                                         ),
                                                   ),
                                                 ],
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        0.0, 36.0, 0.0, 0.0),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Powered by',
+                                                      style: FlutterFlowTheme
+                                                              .of(context)
+                                                          .labelSmall
+                                                          .override(
+                                                            fontFamily:
+                                                                'Nunito',
+                                                            fontSize: 8.0,
+                                                            letterSpacing: 0.0,
+                                                          ),
+                                                    ),
+                                                    Container(
+                                                      width: 60.0,
+                                                      height: 20.0,
+                                                      decoration: BoxDecoration(
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        image: const DecorationImage(
+                                                          fit: BoxFit.fitHeight,
+                                                          image:
+                                                              CachedNetworkImageProvider(
+                                                            'https://firebasestorage.googleapis.com/v0/b/jar-app-2kol48.appspot.com/o/app-images%2FSafe%20Gold%20Logo.png?alt=media&token=493efbfb-e2b3-4cb4-9ae4-a27116949694',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ].divide(
+                                                      const SizedBox(width: 4.0)),
+                                                ),
                                               ),
                                             ],
                                           ),

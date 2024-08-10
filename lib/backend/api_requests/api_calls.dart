@@ -37,6 +37,7 @@ class SafeGoldAPIGroupGroup {
   static KYCUpdateAPICall kYCUpdateAPICall = KYCUpdateAPICall();
   static UpdationOfMobileNumberCall updationOfMobileNumberCall =
       UpdationOfMobileNumberCall();
+  static BuyStatusAPICall buyStatusAPICall = BuyStatusAPICall();
 }
 
 class BuyPriceAPICall {
@@ -96,9 +97,9 @@ $encryptedData''';
 
 class RegistrationAPICall {
   Future<ApiCallResponse> call({
-    String? name = 'Varun',
-    int? mobileNo = 9902654831,
-    String? email = 'rahul@gmail.com',
+    String? name = '',
+    int? mobileNo,
+    String? email = '',
     int? pinCode,
   }) async {
     final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
@@ -320,9 +321,12 @@ class HistoricalPricesDailyRateCall {
 class BuyConfirmAPICall {
   Future<ApiCallResponse> call({
     int? userId,
+    String? encryptedData = '',
   }) async {
     final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
 
+    final ffApiRequestBody = '''
+$encryptedData''';
     return ApiManager.instance.makeApiCall(
       callName: 'Buy Confirm API',
       apiUrl: '$baseUrl/v1/users/$userId/buy-gold-confirm',
@@ -333,7 +337,8 @@ class BuyConfirmAPICall {
         'Accept': 'application/json',
       },
       params: {},
-      bodyType: BodyType.JSON,
+      body: ffApiRequestBody,
+      bodyType: BodyType.TEXT,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -347,9 +352,12 @@ class BuyConfirmAPICall {
 class SellVerifyAPICall {
   Future<ApiCallResponse> call({
     int? userId,
+    String? encryptedData = '',
   }) async {
     final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
 
+    final ffApiRequestBody = '''
+$encryptedData''';
     return ApiManager.instance.makeApiCall(
       callName: 'Sell Verify API',
       apiUrl: '$baseUrl/v4/users/$userId/sell-gold-verify',
@@ -360,7 +368,8 @@ class SellVerifyAPICall {
         'Accept': 'application/json',
       },
       params: {},
-      bodyType: BodyType.JSON,
+      body: ffApiRequestBody,
+      bodyType: BodyType.TEXT,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -374,9 +383,12 @@ class SellVerifyAPICall {
 class SellConfirmAPICall {
   Future<ApiCallResponse> call({
     int? userId,
+    String? encryptedData = '',
   }) async {
     final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
 
+    final ffApiRequestBody = '''
+$encryptedData''';
     return ApiManager.instance.makeApiCall(
       callName: 'Sell Confirm API',
       apiUrl: '$baseUrl/v1/users/$userId/sell-gold-confirm',
@@ -387,7 +399,8 @@ class SellConfirmAPICall {
         'Accept': 'application/json',
       },
       params: {},
-      bodyType: BodyType.JSON,
+      body: ffApiRequestBody,
+      bodyType: BodyType.TEXT,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
@@ -442,6 +455,32 @@ class UpdationOfMobileNumberCall {
       },
       params: {},
       bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class BuyStatusAPICall {
+  Future<ApiCallResponse> call({
+    int? txId,
+  }) async {
+    final baseUrl = SafeGoldAPIGroupGroup.getBaseUrl();
+
+    return ApiManager.instance.makeApiCall(
+      callName: 'Buy Status API',
+      apiUrl: '$baseUrl/v1/buy-gold/$txId/order-status',
+      callType: ApiCallType.GET,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer c5a967bb7aad36f120dcbc58c7ea666d',
+        'Accept': 'application/json',
+      },
+      params: {},
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,

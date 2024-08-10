@@ -42,6 +42,8 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
         parameters: {'screen_name': 'DashboardPage'});
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      FFAppState().userId = valueOrDefault(currentUserDocument?.userId, 0);
+      setState(() {});
       _model.readAppSettings = await queryAppSettingsRecordOnce(
         singleRecord: true,
       ).then((s) => s.firstOrNull);
@@ -64,6 +66,13 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                 r'''$['current_price']''',
               )?.toString().toString(),
               '6000',
+            );
+            _model.goldPrice = valueOrDefault<double>(
+              getJsonField(
+                functions.jsonFromString(_model.decryptedApiResponse!),
+                r'''$['current_price']''',
+              ),
+              6000.0,
             );
             setState(() {});
             FFAppState().buyPrice = valueOrDefault<String>(
@@ -89,6 +98,8 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                 backgroundColor: FlutterFlowTheme.of(context).primary,
               ),
             );
+            await Future.delayed(const Duration(milliseconds: 6000));
+            await actions.forceCloseTheApp();
           }
         }),
         Future(() async {
@@ -147,7 +158,100 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                 backgroundColor: FlutterFlowTheme.of(context).primary,
               ),
             );
+            await Future.delayed(const Duration(milliseconds: 6000));
+            await actions.forceCloseTheApp();
           }
+        }),
+        Future(() async {
+          _model.fetchBalanceApi =
+              await SafeGoldAPIGroupGroup.fetchBalanceAPICall.call(
+            userId: FFAppState().userId,
+          );
+
+          _model.decryptedFetchBalanceApiResponse =
+              await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.fetchBalanceApi?.bodyText ?? ''),
+          );
+          if ((_model.fetchBalanceApi?.statusCode ?? 200) == 200) {
+            FFAppState().goldBalance = valueOrDefault<double>(
+              double.parse(getJsonField(
+                functions
+                    .jsonFromString(_model.decryptedFetchBalanceApiResponse!),
+                r'''$['gold_balance']''',
+              ).toString().toString()),
+              0.0,
+            );
+            FFAppState().sellableBalance = valueOrDefault<double>(
+              double.parse(getJsonField(
+                functions
+                    .jsonFromString(_model.decryptedFetchBalanceApiResponse!),
+                r'''$['sellable_balance']''',
+              ).toString().toString()),
+              0.0,
+            );
+            FFAppState().update(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Error fetching User Balance',
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                        fontFamily: 'Nunito',
+                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        letterSpacing: 0.0,
+                      ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).primary,
+              ),
+            );
+            await Future.delayed(const Duration(milliseconds: 6000));
+            await actions.forceCloseTheApp();
+          }
+        }),
+        Future(() async {
+          _model.userTransactionApi =
+              await SafeGoldAPIGroupGroup.userTransactionsAPICall.call(
+            userId: FFAppState().userId,
+          );
+
+          _model.decryptedUserTransactionApi = await actions.decryptApiResponse(
+            FFAppState().safeGoldAccessToken,
+            (_model.userTransactionApi?.bodyText ?? ''),
+          );
+          if ((_model.userTransactionApi?.succeeded ?? true)) {
+            FFAppState().transactions = getJsonField(
+              functions.jsonFromString(_model.decryptedUserTransactionApi!),
+              r'''$['transactions']''',
+              true,
+            )!
+                .toList()
+                .cast<dynamic>();
+            setState(() {});
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Couldn\'t fetch User Gold Data',
+                  style: TextStyle(
+                    color: FlutterFlowTheme.of(context).primaryText,
+                  ),
+                ),
+                duration: const Duration(milliseconds: 4000),
+                backgroundColor: FlutterFlowTheme.of(context).secondary,
+              ),
+            );
+            await Future.delayed(const Duration(milliseconds: 6000));
+            await actions.forceCloseTheApp();
+          }
+        }),
+        Future(() async {
+          FFAppState().amountBought = valueOrDefault<double>(
+            valueOrDefault(currentUserDocument?.amountBought, 0.0),
+            0.0,
+          );
+          setState(() {});
         }),
       ]);
     });
@@ -290,33 +394,36 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
-                                                  AuthUserStreamWidget(
-                                                    builder: (context) => Text(
-                                                      valueOrDefault<String>(
-                                                        formatNumber(
-                                                          valueOrDefault(
-                                                              currentUserDocument
-                                                                  ?.amountBought,
-                                                              0.0),
-                                                          formatType: FormatType
-                                                              .decimal,
-                                                          decimalType:
-                                                              DecimalType
-                                                                  .periodDecimal,
-                                                          currency: '₹',
-                                                        ),
-                                                        '0',
+                                                  Text(
+                                                    valueOrDefault<String>(
+                                                      formatNumber(
+                                                        valueOrDefault<double>(
+                                                              FFAppState()
+                                                                  .goldBalance,
+                                                              0.0,
+                                                            ) *
+                                                            valueOrDefault<
+                                                                double>(
+                                                              _model.goldPrice,
+                                                              6000.0,
+                                                            ),
+                                                        formatType:
+                                                            FormatType.custom,
+                                                        currency: '₹',
+                                                        format: '###.##',
+                                                        locale: 'en_US',
                                                       ),
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .titleLarge
-                                                          .override(
-                                                            fontFamily: 'Lato',
-                                                            letterSpacing: 0.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
+                                                      '0',
                                                     ),
+                                                    style: FlutterFlowTheme.of(
+                                                            context)
+                                                        .titleLarge
+                                                        .override(
+                                                          fontFamily: 'Lato',
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
                                                   ),
                                                   AuthUserStreamWidget(
                                                     builder: (context) => Text(
@@ -366,41 +473,7 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                                 AuthUserStreamWidget(
                                                   builder: (context) => Text(
                                                     valueOrDefault<String>(
-                                                      formatNumber(
-                                                        (valueOrDefault(
-                                                                    currentUserDocument
-                                                                        ?.goldBought,
-                                                                    0.0) *
-                                                                valueOrDefault<
-                                                                    double>(
-                                                                  valueOrDefault<
-                                                                          double>(
-                                                                        _model
-                                                                            .goldPrice,
-                                                                        6000.00,
-                                                                      ) +
-                                                                      (valueOrDefault<
-                                                                              double>(
-                                                                            _model.goldPrice,
-                                                                            6000.00,
-                                                                          ) *
-                                                                          (valueOrDefault<double>(
-                                                                                _model.goldDifference,
-                                                                                0.0,
-                                                                              ) /
-                                                                              100)),
-                                                                  6000.0,
-                                                                )) -
-                                                            valueOrDefault(
-                                                                currentUserDocument
-                                                                    ?.amountBought,
-                                                                0.0),
-                                                        formatType:
-                                                            FormatType.custom,
-                                                        currency: '₹',
-                                                        format: '###.##',
-                                                        locale: 'en_US',
-                                                      ),
+                                                      FFAppState().goldBalance.toString(),
                                                       '0',
                                                     ),
                                                     style:
@@ -710,7 +783,10 @@ class _DashboardPageWidgetState extends State<DashboardPageWidget> {
                                         ].divide(const SizedBox(width: 8.0)),
                                       ),
                                       Text(
-                                        '${_model.buyPrice}/gm',
+                                        '${valueOrDefault<String>(
+                                          _model.buyPrice,
+                                          '0',
+                                        )}/gm',
                                         style: FlutterFlowTheme.of(context)
                                             .labelLarge
                                             .override(
