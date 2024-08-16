@@ -360,6 +360,24 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           path: '/chatSupportPage',
           requireAuth: true,
           builder: (context, params) => const ChatSupportPageWidget(),
+        ),
+        FFRoute(
+          name: 'WeeklyBuyingPage',
+          path: '/weeklyBuyingPage',
+          requireAuth: true,
+          builder: (context, params) => const WeeklyBuyingPageWidget(),
+        ),
+        FFRoute(
+          name: 'MonthlyBuyingPage',
+          path: '/monthlyBuyingPage',
+          requireAuth: true,
+          builder: (context, params) => const MonthlyBuyingPageWidget(),
+        ),
+        FFRoute(
+          name: 'DailyBuyingPage',
+          path: '/dailyBuyingPage',
+          requireAuth: true,
+          builder: (context, params) => const DailyBuyingPageWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

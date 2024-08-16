@@ -493,6 +493,210 @@ class BuyStatusAPICall {
 
 /// End SafeGold API Group Group Code
 
+/// Start Razorpay API Group Group Code
+
+class RazorpayAPIGroupGroup {
+  static String getBaseUrl() => 'https://api.razorpay.com';
+  static Map<String, String> headers = {
+    'Content-type': 'application/json',
+    'Authorization':
+        'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+  };
+  static PlanCall planCall = PlanCall();
+  static SubscriptionCall subscriptionCall = SubscriptionCall();
+  static OrdersCall ordersCall = OrdersCall();
+  static CapturePaymentCall capturePaymentCall = CapturePaymentCall();
+  static CreateCustomerCall createCustomerCall = CreateCustomerCall();
+}
+
+class PlanCall {
+  Future<ApiCallResponse> call({
+    int? amount = 100,
+    String? type = 'daily',
+  }) async {
+    final baseUrl = RazorpayAPIGroupGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "period": "$type",
+  "interval": 3650,
+  "item": {
+    "name": "Test plan - Daily",
+    "amount": $amount,
+    "currency": "INR",
+    "description": "Description for the test plan - Weekly"
+  },
+  "notes": {
+    "notes_key_1": "Tea, Earl Grey, Hot",
+    "notes_key_2": "Tea, Earl Grey… decaf."
+  }
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'Plan',
+      apiUrl: '$baseUrl/v1/plans',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization':
+            'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class SubscriptionCall {
+  Future<ApiCallResponse> call({
+    String? planId = 'plan_Ok5PUFk7CncKLW',
+    int? totalCount = 10,
+    String? customerId = '',
+  }) async {
+    final baseUrl = RazorpayAPIGroupGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "plan_id": "$planId",
+  "total_count": $totalCount,
+  "customer_id": "$customerId"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'Subscription',
+      apiUrl: '$baseUrl/v1/subscriptions',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization':
+            'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class OrdersCall {
+  Future<ApiCallResponse> call({
+    int? amount = 100,
+  }) async {
+    final baseUrl = RazorpayAPIGroupGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "amount": $amount,
+  "currency": "INR"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'Orders',
+      apiUrl: '$baseUrl/v1/orders',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization':
+            'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class CapturePaymentCall {
+  Future<ApiCallResponse> call({
+    String? orderId = '37269747-218eada9-5aff-47ca-a4fd-77e582a93714',
+    int? amount = 100,
+    String? subscriptionId = 'sub_Ok5Qiug0mqZdsk',
+  }) async {
+    final baseUrl = RazorpayAPIGroupGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "amount": $amount,
+  "currency": "INR",
+  "subscription_id": "$subscriptionId"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'Capture Payment',
+      apiUrl: '$baseUrl/v1/payments/$orderId/capture',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization':
+            'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class CreateCustomerCall {
+  Future<ApiCallResponse> call({
+    String? userName = 'Varun Kuntoor',
+    String? contact = '+919902654831',
+    String? email = 'varunization@gmail.com',
+  }) async {
+    final baseUrl = RazorpayAPIGroupGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "name": "$userName",
+  "email": "$email",
+  "contact": "$contact",
+  "fail_existing": "0"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'Create Customer',
+      apiUrl: '$baseUrl/v1/customers',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization':
+            'Basic cnpwX3Rlc3RfMldlN0V5cTdOZEtRZ2Q6SzFRMGF5aWNjdkI3SlVRemRiUVQyQlRF',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+/// End Razorpay API Group Group Code
+
 class ApiPagingParams {
   int nextPageNumber = 0;
   int numItems = 0;

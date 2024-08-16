@@ -1,10 +1,10 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
-import '/components/custom_graph_widget.dart';
-import '/components/grap_option_widget.dart';
-import '/components/rewards_card_widget.dart';
-import '/components/s_i_p_card_widget.dart';
-import '/components/sponsored_card_widget.dart';
+import '/components/custom_graph/custom_graph_widget.dart';
+import '/components/grap_option/grap_option_widget.dart';
+import '/components/rewards_card/rewards_card_widget.dart';
+import '/components/s_i_p_card/s_i_p_card_widget.dart';
+import '/components/sponsored_card/sponsored_card_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dashboard_page_widget.dart' show DashboardPageWidget;
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart'

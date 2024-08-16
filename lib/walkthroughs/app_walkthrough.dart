@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-import '/components/walkthrough_step1_widget.dart';
-import '/components/walkthrough_step2_widget.dart';
-import '/components/walkthrough_step3_widget.dart';
+import '/components/walkthrough_step1/walkthrough_step1_widget.dart';
+import '/components/walkthrough_step2/walkthrough_step2_widget.dart';
+import '/components/walkthrough_step3/walkthrough_step3_widget.dart';
 
 // Focus widget keys for this walkthrough
 final containerVcfz0bry = GlobalKey();

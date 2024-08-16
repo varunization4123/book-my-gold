@@ -19,8 +19,8 @@ const bool _isProd = false;
 
 // Razorpay Credentials
 const _kProdRazorpayKeyId = '';
-const _kTestRazorpayKeyId = 'rzp_test_0Lq8xqt6ott1om';
-const _kBusinessName = 'Varun C S R';
+const _kTestRazorpayKeyId = 'rzp_test_2We7Eyq7NdKQgd';
+const _kBusinessName = 'BookurGold';
 
 String get razorpayKeyId => _isProd ? _kProdRazorpayKeyId : _kTestRazorpayKeyId;
 String get createOrderCallName => _isProd ? 'createOrder' : 'testCreateOrder';

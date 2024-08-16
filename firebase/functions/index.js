@@ -6,8 +6,8 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
 // Test credentials
-const kTestKeyId = "rzp_test_0Lq8xqt6ott1om";
-const kTestKeySecret = "j3bZU7Fa1cTqikLpaGfqTSGD";
+const kTestKeyId = "rzp_test_2We7Eyq7NdKQgd";
+const kTestKeySecret = "K1Q0ayiccvB7JUQzdbQT2BTE";
 
 // Prod credentials
 const kProdKeyId = "";
