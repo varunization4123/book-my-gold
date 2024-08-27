@@ -11,8 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 // Initialize Razorpay instance globally
-late Razorpay _razorpay;
-
+//late Razorpay _razorpay;
 Future openCheckout(
   int amount,
   String razorpayKey,
@@ -20,12 +19,15 @@ Future openCheckout(
   String email,
   String orderId,
 ) async {
+  print('Payment Details: $amount, $razorpayKey, $mobileNumber, $orderId');
+
+  var _razorpay = Razorpay();
   // Initialize Razorpay instance if not already initialized
   // ignore: unnecessary_null_comparison
   if (_razorpay == null) {
     _razorpay = Razorpay();
+    print('Razorpay initialized');
   }
-
   // Define event handlers for Razorpay
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     // Handle payment success logic
@@ -49,7 +51,6 @@ Future openCheckout(
   _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
   _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
   _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-
   // Open Razorpay checkout with provided options
   var options = {
     'key': razorpayKey, // Your Razorpay API key
@@ -67,7 +68,6 @@ Future openCheckout(
       'color': '#FF0000', // Optional: Customize the theme color
     },
   };
-
   try {
     _razorpay.open(options);
   } catch (e) {

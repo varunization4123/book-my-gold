@@ -228,21 +228,42 @@ class _BuyingPageWidgetState extends State<BuyingPageWidget>
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    context.goNamed('DashboardPage');
-                                  },
-                                  child: Icon(
-                                    Icons.arrow_back_ios_rounded,
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText,
-                                    size: 24.0,
+                                if (responsiveVisibility(
+                                  context: context,
+                                  phone: false,
+                                  tablet: false,
+                                ))
+                                  Opacity(
+                                    opacity: 0.0,
+                                    child: Container(
+                                      width: 0.0,
+                                      height: 27.0,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                if (responsiveVisibility(
+                                  context: context,
+                                  tabletLandscape: false,
+                                  desktop: false,
+                                ))
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      context.goNamed('DashboardPage');
+                                    },
+                                    child: Icon(
+                                      Icons.arrow_back_ios_rounded,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryText,
+                                      size: 24.0,
+                                    ),
+                                  ),
                                 Align(
                                   alignment: const AlignmentDirectional(0.0, 0.0),
                                   child: Text(

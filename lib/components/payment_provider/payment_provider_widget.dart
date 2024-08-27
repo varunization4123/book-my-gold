@@ -60,7 +60,10 @@ class _PaymentProviderWidgetState extends State<PaymentProviderWidget> {
                 : FlutterFlowTheme.of(context).formBorder,
             FlutterFlowTheme.of(context).formBorder,
           ),
-          width: 3.0,
+          width: valueOrDefault<double>(
+            widget.isSelected ? 3.0 : 0.5,
+            0.5,
+          ),
         ),
       ),
       child: Padding(

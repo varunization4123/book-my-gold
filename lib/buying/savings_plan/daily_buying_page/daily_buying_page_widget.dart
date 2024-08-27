@@ -1735,7 +1735,9 @@ class _DailyBuyingPageWidgetState extends State<DailyBuyingPageWidget>
                                                     try {
                                                       final result =
                                                           await FirebaseFunctions
-                                                              .instance
+                                                                  .instanceFor(
+                                                                      region:
+                                                                          'asia-south1')
                                                               .httpsCallable(
                                                                   'razorpayWebhookFunction')
                                                               .call({});

@@ -1,7 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
-import '/backend/razorpay/razorpay_payment_sheet.dart';
+import '/backend/custom_cloud_functions/custom_cloud_function_response_manager.dart';
 import '/components/f_a_q_point/f_a_q_point_widget.dart';
 import '/components/price_breakup/price_breakup_widget.dart';
 import '/components/price_option/price_option_widget.dart';
@@ -15,6 +15,7 @@ import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:collection/collection.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -570,7 +571,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                         padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 20.0, 0.0, 0.0),
                                         child: Text(
-                                          'Enter Amount',
+                                          'Enter Amount You Want to Save Monthly',
                                           textAlign: TextAlign.start,
                                           style: FlutterFlowTheme.of(context)
                                               .bodyMedium
@@ -634,7 +635,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                             milliseconds: 25),
                                                         () async {
                                                           _model.enteredAmount =
-                                                              double.tryParse(_model
+                                                              int.tryParse(_model
                                                                   .amountFieldTextController
                                                                   .text);
                                                           setState(() {});
@@ -883,13 +884,15 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                             valueOrDefault<
                                                                     double>(
                                                                   _model
-                                                                      .enteredAmount,
+                                                                      .enteredAmount
+                                                                      ?.toDouble(),
                                                                   0.0,
                                                                 ) -
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -902,7 +905,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -915,7 +919,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -980,13 +985,15 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                             valueOrDefault<
                                                                     double>(
                                                                   _model
-                                                                      .enteredAmount,
+                                                                      .enteredAmount
+                                                                      ?.toDouble(),
                                                                   0.0,
                                                                 ) -
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -999,7 +1006,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -1012,7 +1020,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                                 (valueOrDefault<
                                                                         double>(
                                                                       _model
-                                                                          .enteredAmount,
+                                                                          .enteredAmount
+                                                                          ?.toDouble(),
                                                                       0.0,
                                                                     ) *
                                                                     (valueOrDefault<
@@ -1170,13 +1179,15 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                 '₹${valueOrDefault<String>(
                                                   formatNumber(
                                                     valueOrDefault<double>(
-                                                          _model.enteredAmount,
+                                                          _model.enteredAmount
+                                                              ?.toDouble(),
                                                           0.0,
                                                         ) -
                                                         ((valueOrDefault<
                                                                     double>(
                                                                   _model
-                                                                      .enteredAmount,
+                                                                      .enteredAmount
+                                                                      ?.toDouble(),
                                                                   0.0,
                                                                 ) *
                                                                 (valueOrDefault<
@@ -1189,7 +1200,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                             (valueOrDefault<
                                                                     double>(
                                                                   _model
-                                                                      .enteredAmount,
+                                                                      .enteredAmount
+                                                                      ?.toDouble(),
                                                                   0.0,
                                                                 ) *
                                                                 (valueOrDefault<
@@ -1202,7 +1214,8 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                             (valueOrDefault<
                                                                     double>(
                                                                   _model
-                                                                      .enteredAmount,
+                                                                      .enteredAmount
+                                                                      ?.toDouble(),
                                                                   0.0,
                                                                 ) *
                                                                 (valueOrDefault<
@@ -1309,7 +1322,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                           .text
                                                           .length);
                                             });
-                                            _model.enteredAmount = 10.0;
+                                            _model.enteredAmount = 10;
                                             setState(() {});
                                           },
                                           child: wrapWithModel(
@@ -1329,7 +1342,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                           onTap: () async {
                                             setState(() {
                                               _model.amountFieldTextController
-                                                  ?.text = '101';
+                                                  ?.text = '20';
                                               _model.amountFieldTextController
                                                       ?.selection =
                                                   TextSelection.collapsed(
@@ -1338,7 +1351,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                           .text
                                                           .length);
                                             });
-                                            _model.enteredAmount = 101.0;
+                                            _model.enteredAmount = 20;
                                             setState(() {});
                                           },
                                           child: wrapWithModel(
@@ -1346,7 +1359,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                             updateCallback: () =>
                                                 setState(() {}),
                                             child: const PriceOptionWidget(
-                                              value: '₹101',
+                                              value: '₹20',
                                             ),
                                           ),
                                         ),
@@ -1358,7 +1371,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                           onTap: () async {
                                             setState(() {
                                               _model.amountFieldTextController
-                                                  ?.text = '501';
+                                                  ?.text = '30';
                                               _model.amountFieldTextController
                                                       ?.selection =
                                                   TextSelection.collapsed(
@@ -1367,7 +1380,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                           .text
                                                           .length);
                                             });
-                                            _model.enteredAmount = 501.0;
+                                            _model.enteredAmount = 30;
                                             setState(() {});
                                           },
                                           child: wrapWithModel(
@@ -1375,7 +1388,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                             updateCallback: () =>
                                                 setState(() {}),
                                             child: const PriceOptionWidget(
-                                              value: '₹501',
+                                              value: '₹30',
                                             ),
                                           ),
                                         ),
@@ -1398,7 +1411,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                   setState(() {
                                                     _model
                                                         .amountFieldTextController
-                                                        ?.text = '1001';
+                                                        ?.text = '50';
                                                     _model.amountFieldTextController
                                                             ?.selection =
                                                         TextSelection.collapsed(
@@ -1407,7 +1420,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                                 .text
                                                                 .length);
                                                   });
-                                                  _model.enteredAmount = 1001.0;
+                                                  _model.enteredAmount = 50;
                                                   setState(() {});
                                                 },
                                                 child: wrapWithModel(
@@ -1417,7 +1430,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                       setState(() {}),
                                                   child:
                                                       const PriceOptionSelectedWidget(
-                                                    value: '₹1001',
+                                                    value: '₹50',
                                                   ),
                                                 ),
                                               ),
@@ -1567,120 +1580,475 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                           setState(() {});
                                           if ((_model.buyVerifyApi?.succeeded ??
                                               true)) {
-                                            await processRazorpayPayment(
-                                              context,
-                                              amount: int.parse(_model
-                                                      .amountFieldTextController
-                                                      .text) *
-                                                  100,
-                                              currency: 'INR',
-                                              description:
-                                                  'User -${FFAppState().userId.toString()} bought Gold in Rupees for - ${_model.amountFieldTextController.text}',
-                                              userName: FFAppState()
-                                                  .userId
-                                                  .toString(),
-                                              userEmail: currentUserEmail,
-                                              userContact:
-                                                  FFAppState().phoneNumber,
-                                              timeout: 120,
-                                              onReceivedResponse: (paymentId) =>
-                                                  safeSetState(() => _model
-                                                          .razorpayPaymentInRupees =
-                                                      paymentId),
+                                            _model.razorpayCreateCustomerApiCall =
+                                                await RazorpayAPIGroupGroup
+                                                    .createCustomerCall
+                                                    .call(
+                                              userName: currentUserDisplayName,
+                                              contact: FFAppState().phoneNumber,
+                                              email: currentUserEmail,
                                             );
 
-                                            if (_model.razorpayPaymentInRupees !=
-                                                    null &&
-                                                _model.razorpayPaymentInRupees !=
-                                                    '') {
-                                              _model.encryptedBuyConfirmApiRequest =
-                                                  actions
-                                                      .encryptApiRequest(
-                                                functions.buyConfirmData(
-                                                    _model.txId!.toString(),
-                                                    _model.pincode),
-                                                FFAppState()
-                                                    .safeGoldAccessToken,
-                                              );
-                                              _model.buyConfirmApi =
-                                                  await SafeGoldAPIGroupGroup
-                                                      .buyConfirmAPICall
+                                            if ((_model
+                                                    .razorpayCreateCustomerApiCall
+                                                    ?.succeeded ??
+                                                true)) {
+                                              _model.razorpayPlansApiCall =
+                                                  await RazorpayAPIGroupGroup
+                                                      .planCall
                                                       .call(
-                                                userId: FFAppState().userId,
-                                                encryptedData: _model
-                                                    .encryptedBuyConfirmApiRequest,
+                                                amount: valueOrDefault<int>(
+                                                  valueOrDefault<int>(
+                                                        _model.enteredAmount,
+                                                        0,
+                                                      ) *
+                                                      100,
+                                                  0,
+                                                ),
+                                                type: 'daily',
                                               );
 
-                                              _model.decryptedBuyConfirmApiResponse =
-                                                  await actions
-                                                      .decryptApiResponse(
-                                                FFAppState()
-                                                    .safeGoldAccessToken,
-                                                (_model.buyConfirmApi
-                                                        ?.bodyText ??
-                                                    ''),
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Razorpay Plan created',
+                                                    style: TextStyle(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryText,
+                                                    ),
+                                                  ),
+                                                  duration: const Duration(
+                                                      milliseconds: 4000),
+                                                  backgroundColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondary,
+                                                ),
                                               );
-                                              if ((_model.buyConfirmApi
+                                              if ((_model.razorpayPlansApiCall
                                                       ?.succeeded ??
                                                   true)) {
-                                                _model.isLoading = false;
-                                                setState(() {});
-
-                                                context.goNamed(
-                                                  'LoadingScreen',
-                                                  queryParameters: {
-                                                    'invoiceId': serializeParam(
-                                                      getJsonField(
-                                                        functions.jsonFromString(
-                                                            _model
-                                                                .decryptedBuyConfirmApiResponse!),
-                                                        r'''$['invoice_id']''',
-                                                      ).toString(),
-                                                      ParamType.String,
-                                                    ),
-                                                    'goldAmount':
-                                                        serializeParam(
-                                                      getJsonField(
-                                                        functions.jsonFromString(
-                                                            _model
-                                                                .decryptedBuyVerifyApiResponse!),
-                                                        r'''$['gold_amount']''',
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Razorpay Plan call Success',
+                                                      style: TextStyle(
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primaryText,
                                                       ),
-                                                      ParamType.double,
                                                     ),
-                                                    'buyPrice': serializeParam(
-                                                      getJsonField(
-                                                        functions.jsonFromString(
-                                                            _model
-                                                                .decryptedBuyVerifyApiResponse!),
-                                                        r'''$['buy_price']''',
-                                                      ).toString(),
-                                                      ParamType.String,
-                                                    ),
-                                                    'txId': serializeParam(
-                                                      _model.txId,
-                                                      ParamType.int,
-                                                    ),
-                                                    'goldPrice': serializeParam(
-                                                      getJsonField(
-                                                        functions.jsonFromString(
-                                                            _model
-                                                                .decryptedBuyVerifyApiResponse!),
-                                                        r'''$['sg_rate']''',
-                                                      ),
-                                                      ParamType.double,
-                                                    ),
-                                                    'amount': serializeParam(
-                                                      getJsonField(
-                                                        functions.jsonFromString(
-                                                            _model
-                                                                .decryptedBuyVerifyApiResponse!),
-                                                        r'''$['pre_gst_buy_price']''',
-                                                      ).toString(),
-                                                      ParamType.String,
-                                                    ),
-                                                  }.withoutNulls,
+                                                    duration: const Duration(
+                                                        milliseconds: 4000),
+                                                    backgroundColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .secondary,
+                                                  ),
                                                 );
+                                                _model.razorpaySubscriptionsApiCall =
+                                                    await RazorpayAPIGroupGroup
+                                                        .subscriptionCall
+                                                        .call(
+                                                  planId: getJsonField(
+                                                    (_model.razorpayPlansApiCall
+                                                            ?.jsonBody ??
+                                                        ''),
+                                                    r'''$['id']''',
+                                                  ).toString(),
+                                                  totalCount: 10,
+                                                  customerId: getJsonField(
+                                                    (_model.razorpayCreateCustomerApiCall
+                                                            ?.jsonBody ??
+                                                        ''),
+                                                    r'''$['id']''',
+                                                  ).toString(),
+                                                );
+
+                                                if ((_model
+                                                        .razorpaySubscriptionsApiCall
+                                                        ?.succeeded ??
+                                                    true)) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        getJsonField(
+                                                          (_model.razorpaySubscriptionsApiCall
+                                                                  ?.jsonBody ??
+                                                              ''),
+                                                          r'''$['id']''',
+                                                        ).toString(),
+                                                        style: TextStyle(
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primaryText,
+                                                        ),
+                                                      ),
+                                                      duration: const Duration(
+                                                          milliseconds: 4000),
+                                                      backgroundColor:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .secondary,
+                                                    ),
+                                                  );
+                                                  _model.razorpayOrderApi =
+                                                      await RazorpayAPIGroupGroup
+                                                          .ordersCall
+                                                          .call(
+                                                    amount: valueOrDefault<int>(
+                                                      valueOrDefault<int>(
+                                                            _model
+                                                                .enteredAmount,
+                                                            0,
+                                                          ) *
+                                                          100,
+                                                      0,
+                                                    ),
+                                                  );
+
+                                                  if ((_model.razorpayOrderApi
+                                                          ?.succeeded ??
+                                                      true)) {
+                                                    await actions.openCheckout(
+                                                      getJsonField(
+                                                        (_model.razorpayOrderApi
+                                                                ?.jsonBody ??
+                                                            ''),
+                                                        r'''$['amount']''',
+                                                      ),
+                                                      'rzp_test_2We7Eyq7NdKQgd',
+                                                      currentPhoneNumber,
+                                                      currentUserEmail,
+                                                      getJsonField(
+                                                        (_model.razorpayOrderApi
+                                                                ?.jsonBody ??
+                                                            ''),
+                                                        r'''$['id']''',
+                                                      ).toString(),
+                                                    );
+                                                    try {
+                                                      final result =
+                                                          await FirebaseFunctions
+                                                                  .instanceFor(
+                                                                      region:
+                                                                          'asia-south1')
+                                                              .httpsCallable(
+                                                                  'razorpayWebhookFunction')
+                                                              .call({});
+                                                      _model.razorpayWebhookFunctionCall =
+                                                          RazorpayWebhookFunctionCloudFunctionCallResponse(
+                                                        succeeded: true,
+                                                      );
+                                                    } on FirebaseFunctionsException catch (error) {
+                                                      _model.razorpayWebhookFunctionCall =
+                                                          RazorpayWebhookFunctionCloudFunctionCallResponse(
+                                                        errorCode: error.code,
+                                                        succeeded: false,
+                                                      );
+                                                    }
+
+                                                    if (getJsonField(
+                                                          _model
+                                                              .razorpayWebhookFunctionCall
+                                                              ?.jsonBody,
+                                                          r'''$['event']''',
+                                                        ).toString() ==
+                                                        'payment.captured') {
+                                                      await DigiGoldBuyRecord
+                                                              .createDoc(
+                                                                  currentUserReference!)
+                                                          .set(
+                                                              createDigiGoldBuyRecordData(
+                                                        razorpayPaymentId: '',
+                                                        amount: '',
+                                                        time:
+                                                            getCurrentTimestamp,
+                                                      ));
+                                                      _model.encryptedBuyConfirmApiRequest =
+                                                          actions
+                                                              .encryptApiRequest(
+                                                        functions
+                                                            .buyConfirmData(
+                                                                _model.txId!
+                                                                    .toString(),
+                                                                _model.pincode),
+                                                        FFAppState()
+                                                            .safeGoldAccessToken,
+                                                      );
+                                                      _model.buyConfirmApi =
+                                                          await SafeGoldAPIGroupGroup
+                                                              .buyConfirmAPICall
+                                                              .call(
+                                                        userId:
+                                                            FFAppState().userId,
+                                                        encryptedData: _model
+                                                            .encryptedBuyConfirmApiRequest,
+                                                      );
+
+                                                      _model.decryptedBuyConfirmApiResponse =
+                                                          await actions
+                                                              .decryptApiResponse(
+                                                        FFAppState()
+                                                            .safeGoldAccessToken,
+                                                        (_model.buyConfirmApi
+                                                                ?.bodyText ??
+                                                            ''),
+                                                      );
+                                                      if ((_model.buyConfirmApi
+                                                              ?.succeeded ??
+                                                          true)) {
+                                                        _model.isLoading =
+                                                            false;
+                                                        setState(() {});
+
+                                                        context.goNamed(
+                                                          'LoadingScreen',
+                                                          queryParameters: {
+                                                            'invoiceId':
+                                                                serializeParam(
+                                                              getJsonField(
+                                                                functions
+                                                                    .jsonFromString(
+                                                                        _model
+                                                                            .decryptedBuyConfirmApiResponse!),
+                                                                r'''$['invoice_id']''',
+                                                              ).toString(),
+                                                              ParamType.String,
+                                                            ),
+                                                            'goldAmount':
+                                                                serializeParam(
+                                                              getJsonField(
+                                                                functions
+                                                                    .jsonFromString(
+                                                                        _model
+                                                                            .decryptedBuyVerifyApiResponse!),
+                                                                r'''$['gold_amount']''',
+                                                              ),
+                                                              ParamType.double,
+                                                            ),
+                                                            'buyPrice':
+                                                                serializeParam(
+                                                              getJsonField(
+                                                                functions
+                                                                    .jsonFromString(
+                                                                        _model
+                                                                            .decryptedBuyVerifyApiResponse!),
+                                                                r'''$['buy_price']''',
+                                                              ).toString(),
+                                                              ParamType.String,
+                                                            ),
+                                                            'txId':
+                                                                serializeParam(
+                                                              _model.txId,
+                                                              ParamType.int,
+                                                            ),
+                                                            'goldPrice':
+                                                                serializeParam(
+                                                              getJsonField(
+                                                                functions
+                                                                    .jsonFromString(
+                                                                        _model
+                                                                            .decryptedBuyVerifyApiResponse!),
+                                                                r'''$['sg_rate']''',
+                                                              ),
+                                                              ParamType.double,
+                                                            ),
+                                                            'amount':
+                                                                serializeParam(
+                                                              getJsonField(
+                                                                functions
+                                                                    .jsonFromString(
+                                                                        _model
+                                                                            .decryptedBuyVerifyApiResponse!),
+                                                                r'''$['pre_gst_buy_price']''',
+                                                              ).toString(),
+                                                              ParamType.String,
+                                                            ),
+                                                          }.withoutNulls,
+                                                        );
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .clearSnackBars();
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'Something Went Wrong',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .titleSmall
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Nunito',
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryBackground,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                  ),
+                                                            ),
+                                                            duration: const Duration(
+                                                                milliseconds:
+                                                                    4000),
+                                                            backgroundColor:
+                                                                FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                          ),
+                                                        );
+                                                        _model.isLoading =
+                                                            false;
+                                                        setState(() {});
+
+                                                        context.pushNamed(
+                                                            'PurchaseFailurePage');
+                                                      }
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .clearSnackBars();
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                            'Something Went Wrong',
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .titleSmall
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Nunito',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryBackground,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          duration: const Duration(
+                                                              milliseconds:
+                                                                  4000),
+                                                          backgroundColor:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .primary,
+                                                        ),
+                                                      );
+                                                      _model.isLoading = false;
+                                                      setState(() {});
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                            getJsonField(
+                                                              (_model.razorpaySubscriptionsApiCall
+                                                                      ?.jsonBody ??
+                                                                  ''),
+                                                              r'''$['id']''',
+                                                            ).toString(),
+                                                            style: TextStyle(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .primaryText,
+                                                            ),
+                                                          ),
+                                                          duration: const Duration(
+                                                              milliseconds:
+                                                                  4000),
+                                                          backgroundColor:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .secondary,
+                                                        ),
+                                                      );
+
+                                                      context.pushNamed(
+                                                          'PurchaseFailurePage');
+                                                    }
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .clearSnackBars();
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'API (Orders) Failed',
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .titleSmall
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Nunito',
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primaryBackground,
+                                                                letterSpacing:
+                                                                    0.0,
+                                                              ),
+                                                        ),
+                                                        duration: const Duration(
+                                                            milliseconds: 4000),
+                                                        backgroundColor:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .primary,
+                                                      ),
+                                                    );
+                                                    _model.isLoading = false;
+                                                    setState(() {});
+
+                                                    context.pushNamed(
+                                                        'PurchaseFailurePage');
+                                                  }
+                                                } else {
+                                                  ScaffoldMessenger.of(context)
+                                                      .clearSnackBars();
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'API (Subscription) Failed',
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .titleSmall
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Nunito',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryBackground,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                      ),
+                                                      duration: const Duration(
+                                                          milliseconds: 4000),
+                                                      backgroundColor:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primary,
+                                                    ),
+                                                  );
+                                                  _model.isLoading = false;
+                                                  setState(() {});
+
+                                                  context.pushNamed(
+                                                      'PurchaseFailurePage');
+                                                }
                                               } else {
                                                 ScaffoldMessenger.of(context)
                                                     .clearSnackBars();
@@ -1688,7 +2056,7 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                                     .showSnackBar(
                                                   SnackBar(
                                                     content: Text(
-                                                      'Something Went Wrong',
+                                                      'API (Plan) Failed',
                                                       style:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -1719,29 +2087,23 @@ class _MonthlyBuyingPageWidgetState extends State<MonthlyBuyingPageWidget>
                                               }
                                             } else {
                                               ScaffoldMessenger.of(context)
-                                                  .clearSnackBars();
-                                              ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 SnackBar(
                                                   content: Text(
-                                                    'Something Went Wrong',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .titleSmall
-                                                        .override(
-                                                          fontFamily: 'Nunito',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primaryBackground,
-                                                          letterSpacing: 0.0,
-                                                        ),
+                                                    'Couldn\'t find customer',
+                                                    style: TextStyle(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryText,
+                                                    ),
                                                   ),
                                                   duration: const Duration(
                                                       milliseconds: 4000),
                                                   backgroundColor:
                                                       FlutterFlowTheme.of(
                                                               context)
-                                                          .primary,
+                                                          .secondary,
                                                 ),
                                               );
                                               _model.isLoading = false;

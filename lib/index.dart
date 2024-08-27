@@ -46,9 +46,9 @@ export '/navigation_pages/profile/support/support_page/support_page_widget.dart'
     show SupportPageWidget;
 export '/navigation_pages/profile/support/chat_support_page/chat_support_page_widget.dart'
     show ChatSupportPageWidget;
+export '/buying/savings_plan/daily_buying_page/daily_buying_page_widget.dart'
+    show DailyBuyingPageWidget;
 export '/buying/savings_plan/weekly_buying_page/weekly_buying_page_widget.dart'
     show WeeklyBuyingPageWidget;
 export '/buying/savings_plan/monthly_buying_page/monthly_buying_page_widget.dart'
     show MonthlyBuyingPageWidget;
-export '/buying/savings_plan/daily_buying_page/daily_buying_page_widget.dart'
-    show DailyBuyingPageWidget;

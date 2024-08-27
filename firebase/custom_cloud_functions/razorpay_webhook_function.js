@@ -9,7 +9,7 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-const WEBHOOK_SECRET = "your_razorpay_webhook_secret";
+const WEBHOOK_SECRET = "BuG$2479";
 
 exports.razorpayWebhookFunction = functions.https.onCall((data, context) => {
   if (!context.auth.uid) {

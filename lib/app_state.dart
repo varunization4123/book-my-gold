@@ -323,6 +323,12 @@ class FFAppState extends ChangeNotifier {
   void deleteAmountBought() {
     secureStorage.delete(key: 'ff_amountBought');
   }
+
+  bool _discountModal = false;
+  bool get discountModal => _discountModal;
+  set discountModal(bool value) {
+    _discountModal = value;
+  }
 }
 
 void _safeInit(Function() initializeField) {

@@ -1,5 +1,6 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
+import '/backend/custom_cloud_functions/custom_cloud_function_response_manager.dart';
 import '/components/f_a_q_point/f_a_q_point_widget.dart';
 import '/components/price_option/price_option_widget.dart';
 import '/components/price_option_selected/price_option_selected_widget.dart';
@@ -27,7 +28,7 @@ class WeeklyBuyingPageModel extends FlutterFlowModel<WeeklyBuyingPageWidget> {
 
   double? goldDifference = 1.0;
 
-  double? enteredAmount = 0.0;
+  int? enteredAmount;
 
   String? rateIdApi;
 
@@ -94,8 +95,16 @@ class WeeklyBuyingPageModel extends FlutterFlowModel<WeeklyBuyingPageWidget> {
   ApiCallResponse? buyVerifyApi;
   // Stores action output result for [Custom Action - decryptApiResponse] action in SetupBtn widget.
   String? decryptedBuyVerifyApiResponse;
-  // Stores action output result for [Razorpay Payment] action in SetupBtn widget.
-  String? razorpayPaymentInRupees;
+  // Stores action output result for [Backend Call - API (Create Customer)] action in SetupBtn widget.
+  ApiCallResponse? razorpayCreateCustomerApiCall;
+  // Stores action output result for [Backend Call - API (Plan)] action in SetupBtn widget.
+  ApiCallResponse? razorpayPlansApiCall;
+  // Stores action output result for [Backend Call - API (Subscription)] action in SetupBtn widget.
+  ApiCallResponse? razorpaySubscriptionsApiCall;
+  // Stores action output result for [Backend Call - API (Orders)] action in SetupBtn widget.
+  ApiCallResponse? razorpayOrderApi;
+  // Stores action output result for [Cloud Function - razorpayWebhookFunction] action in SetupBtn widget.
+  RazorpayWebhookFunctionCloudFunctionCallResponse? razorpayWebhookFunctionCall;
   // Stores action output result for [Custom Action - encryptApiRequest] action in SetupBtn widget.
   String? encryptedBuyConfirmApiRequest;
   // Stores action output result for [Backend Call - API (Buy Confirm API)] action in SetupBtn widget.
